@@ -1,0 +1,13 @@
+[package]
+name = "fff"
+version = "0.1.0"
+authors = ["jacokoo <jaco.koo@guyong.in>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+termion = "1.5.5"
+tokio = { version = "0.2.21", features = ["full"] }
+async-trait = "0.1.36"
+thrussh = "0.28.0"
