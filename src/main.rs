@@ -1,14 +1,8 @@
-use std::env::current_dir;
-use std::fs::{metadata, symlink_metadata, read_link};
+use std::env::{current_dir};
 use std::io::Result;
-
-use tokio::fs::read_dir;
-use tokio::stream::*;
-
-use model::file::*;
-use model::make;
-use std::path::Path;
-use std::os::macos::fs::MetadataExt;
+use crate::model::file::{FileType, make};
+use crate::model::config::Config;
+use crate::model::config::enums::BindingType;
 
 mod ui;
 mod model;
@@ -27,14 +21,7 @@ async fn main() -> Result<()> {
         }
     }
 
-    let pp = Path::new("/Users/guyong/ws/rust/fff/target/debug/fff.dSYM");
-    let meta = metadata(pp)?;
-    println!("{:o}, {}, {}", meta.st_mode(), meta.file_type().is_symlink(), meta.is_dir());
-
-    let sm = symlink_metadata(pp)?;
-    println!("{:o}, {}, {}", sm.st_mode(), sm.file_type().is_symlink(), sm.is_dir());
-
-    let sp = read_link(pp)?;
-    println!("{}", sp.display());
+    let c = Config::new(dirs::home_dir().unwrap());
+    println!("{:?}", c.get_action(&BindingType::Normal, "ctrl-q"));
     Ok(())
 }

@@ -1,0 +1,91 @@
+pager = "less"
+editor = "vi"
+
+[binding.all]
+ctrl-q = "ActionQuit"                  # quit fff
+
+[binding.normal]
+s.n = "ActionSortByName"               # Sort By Name
+s.m = "ActionSortByMtime"              # Sort By MTime
+s.s = "ActionSortBySize"               # Sort By Size
+"." = "ActionToggleHidden"             # Toggle show hidden files
+d = "ActionToggleDetail"               # Toggle show file details
+j = "ActionMoveDown"                   # Move down
+k = "ActionMoveUp"                     # Move up
+l = "ActionOpenFolderRight"            # Open folder on right
+h = "ActionCloseFolderRight"           # Go to parent folder
+enter = "ActionOpenFile"               # Open file
+K = "ActionMoveToFirst"                # Move to first item
+J = "ActionMoveToLast"                 # Move to last item
+b.b = "ActionToggleBookmark"           # Toggle show bookmark
+b.n = "ActionAddBookmark"              # Bookmark current dir
+b.d = "ActionDeleteBookmarkOnce"       # Delete bookmark
+b.D = "ActionDeleteBookmark"           # Delete multiple bookmark
+b.w = "ActionJumpBookmarkOnce"         # Jump Once
+b.W = "ActionJumpBookmark"             # Jump
+"1" = "ActionChangeGroup0"             # Change group to 1
+"2" = "ActionChangeGroup1"             # Change group to 2
+"3" = "ActionChangeGroup2"             # Change group to 3
+"4" = "ActionChangeGroup3"             # Change group to 4
+"q" = "ActionQuit"                     # quit fff
+up = "ActionMoveUp"                    # Move up
+down = "ActionMoveDown"                # Move down
+right = "ActionOpenFolderRight"        # Open folder on right
+left = "ActionCloseFolderRight"        # Go to parent folder
+m = "ActionToggleMark"                 # Toggle mark
+u = "ActionToggleMarkAll"              # Clear all marks
+i = "ActionJumpCurrentDirOnce"         # Jump over current dir and stop after one jump
+I = "ActionJumpCurrentDir"             # Jump over current dir
+w = "ActionJumpAllOnce"                # Jump over items that can jump and stop after one jump
+W = "ActionJumpAll"                    # Jump over items that can jump
+f = "ActionStartFilter"                # Filter
+F = "ActionClearFilter"                # Clear filter
+g = "ActionRefresh"                    # Refresh current dir
+"+" = "ActionNewDir"                   # Create new dir in current dir
+N = "ActionNewFile"                    # Create new file in current dir
+R = "ActionRename"                     # Rename current file
+D = "ActionDeleteFile"                 # Delete marked files or current file
+C = "ActionAppendClip"                 # Append file to clip
+U = "ActionClearClip"                  # Clear clip
+P = "ActionPaste"                      # Paste file
+M = "ActionMoveFile"                   # Move file
+"!" = "ActionShell"                    # Run shell
+e = "ActionEdit"                       # Run editor
+v = "ActionView"                       # Run pager
+"?" = "ActionShowHelp"                 # Show help
+- = "ActionGoBack"                     # Go back to previous dir
+t.c = "ActionShowClipDetail"           # Show clip detail
+t.t = "ActionShowTaskDetail"           # Show task detail
+t.d = "ActionCloseTaskDetail"          # Close task detail
+t.f = "ActionFakeTask"                 # Fake task
+
+# bindings for jump mode
+[binding.jump]
+enter = "ActionQuitJump"
+esc = "ActionQuitJump"
+
+[binding.input]
+enter = "ActionQuitInputMode"
+esc = "ActionAbortInputMode"
+backspace = "ActionInputDelete"
+
+[binding.clip]
+w = "ActionDeleteClipOnce"             # Jump to delete clip once
+W = "ActionDeleteClip"                 # Jump to delete clip
+
+[binding.task]
+w = "ActionCancelTaskOnce"             # Jump to cancel task once
+W = "ActionCancelTask"                 # Jump to cancel task
+
+[color]
+normal = "black"
+keyword = "cyan"
+folder =  "cyan"
+file = "black"
+marked = "yellow"
+statusbar = "cyan"
+statusbar-title = "magenta"
+tab = "cyan"
+jump = "yellow"
+filter = "magenta"
+clip = "yellow"

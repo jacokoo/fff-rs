@@ -157,6 +157,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "dirs"
+version = "3.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "142995ed02755914747cc6ca76fc7e4583cd18578746716d0508ea6ed558b9ff"
+dependencies = [
+ "dirs-sys",
+]
+
+[[package]]
 name = "dirs-sys"
 version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -172,9 +181,30 @@ name = "fff"
 version = "0.1.0"
 dependencies = [
  "async-trait",
+ "dirs 3.0.1",
+ "fff-macros-hack",
+ "proc-macro-hack",
  "termion",
  "thrussh",
  "tokio",
+ "toml",
+]
+
+[[package]]
+name = "fff-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro-hack",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "fff-macros-hack"
+version = "0.1.0"
+dependencies = [
+ "fff-macros",
+ "proc-macro-hack",
 ]
 
 [[package]]
@@ -757,9 +787,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.33"
+version = "1.0.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8d5d96e8cbb005d6959f119f773bfaebb5684296108fb32600c00cde305b2cd"
+checksum = "936cae2873c940d92e697597c5eee105fb570cd5689c695806f672883653349b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -829,7 +859,7 @@ dependencies = [
  "byteorder",
  "cryptovec",
  "data-encoding",
- "dirs",
+ "dirs 2.0.2",
  "futures",
  "log",
  "num-bigint",
@@ -888,6 +918,15 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "toml"
+version = "0.5.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ffc92d160b1eef40665be3a05630d003936a3bc7da7421277846c2613e92c71a"
+dependencies = [
+ "serde",
 ]
 
 [[package]]

@@ -1,13 +1,13 @@
-use std::fs::{Metadata, read_link, canonicalize};
+use std::fs::{Metadata, read_link};
 use std::os::macos::fs::MetadataExt;
 use std::path::Path;
 
 use tokio::io::{Error, ErrorKind, Result};
 
 use crate::model::file::{FileInfo, FileType, LinkInfo, option_from_result};
-use crate::model::file_mode::mode_string;
-use crate::model::local::dir::LocalDir;
-use crate::model::local::file::LocalFile;
+use crate::model::file::file_mode::mode_string;
+use crate::model::file::local::file::LocalFile;
+use crate::model::file::local::dir::LocalDir;
 
 mod dir;
 mod file;

@@ -4,6 +4,13 @@ use std::time::SystemTime;
 
 use async_trait::async_trait;
 
+pub use local::make;
+
+mod cmd;
+mod file_mode;
+mod local;
+mod protocol;
+
 pub struct FileInfo {
     pub name: String,
     pub path: String,
@@ -12,22 +19,24 @@ pub struct FileInfo {
     pub modified: Option<SystemTime>,
     pub is_dir: bool,
     pub link: Option<LinkInfo>,
-    pub protocol: Option<ProtocolInfo>
+    pub protocol: Option<ProtocolInfo>,
 }
 
 impl FileInfo {
-    pub fn get_path(&self) -> &Path { Path::new(&self.path) }
+    pub fn get_path(&self) -> &Path {
+        Path::new(&self.path)
+    }
 }
 
 pub struct LinkInfo {
     pub broken: bool,
-    pub target: String
+    pub target: String,
 }
 
 pub struct ProtocolInfo {
     pub protocol: String,
     pub instance_id: u8,
-    pub root: Box<FileInfo>
+    pub root: Box<FileInfo>,
 }
 
 pub enum FileType {
@@ -39,7 +48,7 @@ impl FileType {
     pub fn info(&self) -> &FileInfo {
         match self {
             FileType::File(file) => file.get(),
-            FileType::Dir(dir) => dir.get()
+            FileType::Dir(dir) => dir.get(),
         }
     }
 }
@@ -72,5 +81,40 @@ pub trait DirOp: Op {
 }
 
 pub fn option_from_result<T, E>(r: std::result::Result<T, E>) -> Option<T> {
-    if let Ok(t) = r { Some(t) } else { None }
+    if let Ok(t) = r {
+        Some(t)
+    } else {
+        None
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::path::Path;
+
+    use crate::model::file::local::make;
+    use crate::model::file::{FileInfo, FileType};
+    use crate::model::*;
+
+    #[test]
+    fn test_make() {
+        file_info("/etc", |_is_dir, fi| {
+            // assert_eq!(is_dir, true);
+            assert_eq!(fi.path, "/etc");
+            assert_eq!(fi.name, "etc");
+            assert_eq!(fi.is_dir, true);
+            assert_eq!(fi.mode, "drwxr-xr-x")
+        });
+    }
+
+    fn file_info<F>(path: &str, ff: F)
+    where
+        F: FnOnce(bool, &FileInfo) -> (),
+    {
+        let ft = make(Path::new(path)).unwrap();
+        match ft {
+            FileType::File(file) => ff(false, file.as_ref().get()),
+            FileType::Dir(dir) => ff(true, dir.as_ref().get()),
+        }
+    }
 }

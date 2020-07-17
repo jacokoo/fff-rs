@@ -7,19 +7,18 @@ use std::io::Error;
 use std::fs;
 
 use crate::model::file::*;
-use crate::model::local::file::*;
-use crate::model::make;
 use std::fs::read_dir;
+use crate::model::file::local::file;
 
 pub struct LocalDir(FileInfo);
 
 #[async_trait]
 impl Op for LocalDir {
     fn get(&self) -> &FileInfo { &self.0 }
-    async fn parent(&self) -> Result<FileType> { parent(&self.0) }
-    async fn rename(&mut self, name: &str) -> Void { rename(&self.0, name) }
-    async fn delete(&self) -> Void { delete(&self.0) }
-    async fn open(&self) -> Void { open(&self.0) }
+    async fn parent(&self) -> Result<FileType> { file::parent(&self.0) }
+    async fn rename(&mut self, name: &str) -> Void { file::rename(&self.0, name) }
+    async fn delete(&self) -> Void { file::delete(&self.0) }
+    async fn open(&self) -> Void { file::open(&self.0) }
 }
 
 impl LocalDir {

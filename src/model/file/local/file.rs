@@ -6,7 +6,6 @@ use std::io::ErrorKind;
 use std::io::Error;
 
 use crate::model::file::*;
-use crate::model::make;
 
 pub struct LocalFile(FileInfo);
 
@@ -40,6 +39,11 @@ pub fn delete(info: &FileInfo) -> Void {
 }
 
 pub fn open(info: &FileInfo) -> Void {
+    if cfg!(target_os = "linux") || cfg!(target_os = "freebsd") {
+
+    } else if cfg!(target_os = "macos") {
+
+    }
     Ok(())
 }
 
