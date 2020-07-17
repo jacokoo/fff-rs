@@ -2,15 +2,17 @@ use std::io::Result;
 use std::path::Path;
 
 use async_trait::async_trait;
-use std::io::ErrorKind;
 use std::io::Error;
+use std::io::ErrorKind;
 
 use crate::model::file::*;
 
 pub struct LocalFile(FileInfo);
 
 impl LocalFile {
-    pub fn new(fi: FileInfo) -> LocalFile { LocalFile(fi) }
+    pub fn new(fi: FileInfo) -> LocalFile {
+        LocalFile(fi)
+    }
 }
 
 pub fn get(info: &FileInfo) -> &FileInfo {
@@ -20,13 +22,12 @@ pub fn get(info: &FileInfo) -> &FileInfo {
 pub fn parent(info: &FileInfo) -> Result<FileType> {
     match Path::new(&info.path).parent() {
         Some(p) => make(&p),
-        None => Err(Error::from(ErrorKind::NotFound))
+        None => Err(Error::from(ErrorKind::NotFound)),
     }
 }
 
 pub fn rename(info: &FileInfo, name: &str) -> Void {
-    let n = Path::new(&info.path).parent()
-        .map(move |p| { p.join(name) });
+    let n = Path::new(&info.path).parent().map(move |p| p.join(name));
 
     if let Some(nn) = n {
         std::fs::rename(Path::new(&info.path), nn)?;
@@ -40,20 +41,28 @@ pub fn delete(info: &FileInfo) -> Void {
 
 pub fn open(info: &FileInfo) -> Void {
     if cfg!(target_os = "linux") || cfg!(target_os = "freebsd") {
-
     } else if cfg!(target_os = "macos") {
-
     }
     Ok(())
 }
 
 #[async_trait]
 impl Op for LocalFile {
-    fn get(&self) -> &FileInfo { &self.0 }
-    async fn parent(&self) -> Result<FileType> { parent(&self.0) }
-    async fn rename(&mut self, name: &str) -> Void { rename(&self.0, name) }
-    async fn delete(&self) -> Void { delete(&self.0) }
-    async fn open(&self) -> Void { open(&self.0) }
+    fn get(&self) -> &FileInfo {
+        &self.0
+    }
+    async fn parent(&self) -> Result<FileType> {
+        parent(&self.0)
+    }
+    async fn rename(&mut self, name: &str) -> Void {
+        rename(&self.0, name)
+    }
+    async fn delete(&self) -> Void {
+        delete(&self.0)
+    }
+    async fn open(&self) -> Void {
+        open(&self.0)
+    }
 }
 
 #[async_trait]

@@ -1,15 +1,15 @@
 pub mod enums;
 
-use std::collections::HashMap;
 use crate::model::config::enums::{BindingType, ColorType, ColorValue};
-use toml::Value;
-use std::borrow::{Borrow};
+use std::borrow::Borrow;
+use std::collections::HashMap;
 use std::path::PathBuf;
+use toml::Value;
 
 #[derive(Debug)]
 pub enum Action {
     Normal(String),
-    Prefixed(HashMap<String, String>)
+    Prefixed(HashMap<String, String>),
 }
 
 pub type Bindings = HashMap<String, Action>;
@@ -30,7 +30,7 @@ impl Config {
             color: HashMap::new(),
             editor: "".to_string(),
             shell: "".to_string(),
-            pager: "".to_string()
+            pager: "".to_string(),
         };
 
         read(&mut c, &DEFAULT);
@@ -86,8 +86,7 @@ fn read_binding(config: &mut Config, value: &Value) {
     if let Value::Table(table) = value {
         for (k, v) in table.iter() {
             let kk = BindingType::from(k.borrow());
-            let bd = config.bindings.entry(kk)
-                .or_insert_with(|| HashMap::new());
+            let bd = config.bindings.entry(kk).or_insert_with(|| HashMap::new());
             read_binding_type(bd, v, k.borrow());
         }
         return;
@@ -101,19 +100,21 @@ fn read_binding_type(map: &mut Bindings, value: &Value, key: &str) {
             match v {
                 Value::String(v) => {
                     map.insert(k.to_owned(), Action::Normal(v.to_owned()));
-                },
+                }
                 Value::Table(tt) => {
                     if let Some(Action::Normal(_)) = map.get(k) {
                         map.insert(k.clone(), Action::Prefixed(HashMap::new()));
                     }
-                    let ac = map.entry(k.to_owned()).or_insert_with(|| Action::Prefixed(HashMap::new()));
+                    let ac = map
+                        .entry(k.to_owned())
+                        .or_insert_with(|| Action::Prefixed(HashMap::new()));
                     if let Action::Prefixed(mm) = ac {
                         for (kk, vv) in tt.iter() {
                             mm.insert(kk.to_owned(), read_str(vv, kk.borrow()));
                         }
                     }
-                },
-                _ => panic!("in valid action binding")
+                }
+                _ => panic!("in valid action binding"),
             }
         }
         return;

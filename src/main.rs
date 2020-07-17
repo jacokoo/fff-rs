@@ -1,11 +1,11 @@
-use std::env::{current_dir};
-use std::io::Result;
-use crate::model::file::{FileType, make};
-use crate::model::config::Config;
 use crate::model::config::enums::BindingType;
+use crate::model::config::Config;
+use crate::model::file::{make, FileType};
+use std::env::current_dir;
+use std::io::Result;
 
-mod ui;
 mod model;
+mod ui;
 
 #[tokio::main]
 async fn main() -> Result<()> {

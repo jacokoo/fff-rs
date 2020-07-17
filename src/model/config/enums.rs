@@ -1,6 +1,6 @@
-use termion::color::*;
 use fff_macros_hack::*;
 use std::hash::Hash;
+use termion::color::*;
 
 macro_rules! create_enum {
     ($name:ident; $($item:ident),*) => {
@@ -41,4 +41,3 @@ macro_rules! create_enum2 {
 create_enum!(BindingType; All, Normal, Jump, Input, Task, Clip);
 create_enum!(ColorType; Normal, Keyword, Folder, File, Marked, Statusbar, StatusbarTitle, Tab, Jump, Filter, Clip);
 create_enum2!(ColorValue; Black, Red, Green, Yellow, Blue, Magenta, Cyan, White);
-
