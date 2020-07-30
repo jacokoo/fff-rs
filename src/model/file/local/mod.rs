@@ -2,26 +2,25 @@ use std::fs::{read_link, Metadata};
 use std::os::macos::fs::MetadataExt;
 use std::path::Path;
 
-use tokio::io::{Error, ErrorKind, Result};
-
 use crate::model::file::file_mode::mode_string;
 use crate::model::file::local::dir::LocalDir;
 use crate::model::file::local::file::LocalFile;
-use crate::model::file::{option_from_result, FileInfo, FileType, LinkInfo};
+use crate::model::file::result::{option_from_result, Error, Res};
+use crate::model::file::{FileInfo, InnerFile, LinkInfo};
 
 mod dir;
 mod file;
 
-pub fn make(p: &Path) -> Result<FileType> {
+pub fn make(p: &Path) -> Res<InnerFile> {
     if !p.exists() {
-        return Result::Err(Error::from(ErrorKind::NotFound));
+        return Error::PathNotExists(p.display().to_string()).res();
     }
     let meta = p.symlink_metadata()?;
     let v = make_it(p, &meta);
     Ok(if meta.is_dir() {
-        FileType::Dir(Box::new(LocalDir::new(v)))
+        InnerFile::Dir(Box::new(LocalDir::new(v)))
     } else {
-        FileType::File(Box::new(LocalFile::new(v)))
+        InnerFile::File(Box::new(LocalFile::new(v)))
     })
 }
 

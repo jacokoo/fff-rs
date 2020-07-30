@@ -1,12 +1,10 @@
-use std::io::Result;
 use std::path::PathBuf;
 
 use async_trait::async_trait;
 use std::fs;
-use std::io::Error;
-use std::io::ErrorKind;
 
 use crate::model::file::local::file;
+use crate::model::file::result::{Error, Res, Void};
 use crate::model::file::*;
 use std::fs::read_dir;
 
@@ -17,7 +15,7 @@ impl Op for LocalDir {
     fn get(&self) -> &FileInfo {
         &self.0
     }
-    async fn parent(&self) -> Result<FileType> {
+    async fn parent(&self) -> Res<InnerFile> {
         file::parent(&self.0)
     }
     async fn rename(&mut self, name: &str) -> Void {
@@ -42,7 +40,7 @@ impl LocalDir {
 
 #[async_trait]
 impl DirOp for LocalDir {
-    async fn list(&self) -> Result<Vec<FileType>> {
+    async fn list(&self) -> Res<Vec<InnerFile>> {
         let dir = read_dir(self.0.get_path())?;
         Ok(dir
             .filter(|d| {
@@ -55,13 +53,13 @@ impl DirOp for LocalDir {
             .map(|d| make(&d?.path()))
             .filter(|d| d.is_ok())
             .map(|d| d.unwrap())
-            .collect::<Vec<FileType>>())
+            .collect::<Vec<InnerFile>>())
     }
 
-    async fn new_file(&self, name: &str) -> Result<()> {
+    async fn new_file(&self, name: &str) -> Void {
         let p = self.join_path(name);
         if p.exists() {
-            return Err(Error::from(ErrorKind::AlreadyExists));
+            return Err(Error::FileAlreadyExists(p.display().to_string()));
         }
         fs::File::create(p)?;
         Ok(())
@@ -72,7 +70,7 @@ impl DirOp for LocalDir {
         Ok(())
     }
 
-    async fn goto(&self, child_path: &str) -> Result<FileType> {
+    async fn goto(&self, child_path: &str) -> Res<InnerFile> {
         make(&self.join_path(child_path))
     }
 

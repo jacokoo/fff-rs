@@ -1,10 +1,9 @@
-use std::io::Result;
 use std::path::Path;
 
 use async_trait::async_trait;
-use std::io::Error;
 use std::io::ErrorKind;
 
+use crate::model::file::result::{Error, Res, Void};
 use crate::model::file::*;
 
 pub struct LocalFile(FileInfo);
@@ -19,10 +18,10 @@ pub fn get(info: &FileInfo) -> &FileInfo {
     info
 }
 
-pub fn parent(info: &FileInfo) -> Result<FileType> {
+pub fn parent(info: &FileInfo) -> Res<InnerFile> {
     match Path::new(&info.path).parent() {
         Some(p) => make(&p),
-        None => Err(Error::from(ErrorKind::NotFound)),
+        None => Err(Error::Io(ErrorKind::NotFound)),
     }
 }
 
@@ -51,7 +50,7 @@ impl Op for LocalFile {
     fn get(&self) -> &FileInfo {
         &self.0
     }
-    async fn parent(&self) -> Result<FileType> {
+    async fn parent(&self) -> Res<InnerFile> {
         parent(&self.0)
     }
     async fn rename(&mut self, name: &str) -> Void {
