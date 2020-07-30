@@ -4,8 +4,8 @@ use async_trait::async_trait;
 use std::fs;
 
 use crate::model::file::local::file;
-use crate::model::file::result::{Error, Res, Void};
 use crate::model::file::*;
+use crate::model::result::{Error, Res, Void};
 use std::fs::read_dir;
 
 pub struct LocalDir(FileInfo);

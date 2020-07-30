@@ -8,6 +8,8 @@ pub enum Error {
     ProtocolNotSupported(String),
 
     FileAlreadyExists(String),
+
+    InvalidFilter(String),
 }
 
 pub type Res<T> = std::result::Result<T, Error>;

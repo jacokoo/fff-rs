@@ -1,5 +1,5 @@
-use crate::model::file::result::Error;
 use crate::model::file::FileInfo;
+use crate::model::result::Error;
 use std::convert::TryFrom;
 use std::path::Path;
 
@@ -8,6 +8,8 @@ pub struct PathProtocolInfo {
     pub path: String,
 }
 
+// /etc/ssh/hello.ssh.fff@ssh:///home/foo/bar
+// ^----- path ---------^^- p -^^- p/path --^
 pub struct InnerPath {
     pub path: String,
     pub protocol: Option<PathProtocolInfo>,

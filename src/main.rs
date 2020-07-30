@@ -1,7 +1,10 @@
+#[macro_use]
+extern crate fff_macros;
+
 use crate::model::config::enums::BindingType;
 use crate::model::config::Config;
-use crate::model::file::result::Res;
 use crate::model::file::{make, InnerFile};
+use crate::model::result::Res;
 use std::env::current_dir;
 
 mod model;

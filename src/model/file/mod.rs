@@ -1,16 +1,16 @@
-mod path;
-pub mod result;
-
+use std::convert::TryFrom;
 use std::path::Path;
+use std::sync::Arc;
 use std::time::SystemTime;
 
 use async_trait::async_trait;
 
-use crate::model::file::path::InnerPath;
-use crate::model::file::result::{Error, Res, Void};
 pub use local::make;
-use std::convert::TryFrom;
-use std::sync::Arc;
+
+use crate::model::file::path::InnerPath;
+use crate::model::result::{Error, Res, Void};
+
+pub mod path;
 
 mod cmd;
 mod file_mode;

@@ -12,6 +12,5 @@ tokio = { version = "0.2.21", features = ["full"] }
 async-trait = "0.1.36"
 thrussh = "0.28.0"
 toml = "0.5.0"
-fff-macros-hack = { version = "0.1", path = "fff-macros-hack" }
-proc-macro-hack = "0.5"
+fff-macros = { version = "0.1", path = "fff-macros" }
 dirs = "3.0.1"

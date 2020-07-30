@@ -3,8 +3,8 @@ use std::path::Path;
 use async_trait::async_trait;
 use std::io::ErrorKind;
 
-use crate::model::file::result::{Error, Res, Void};
 use crate::model::file::*;
+use crate::model::result::{Error, Res, Void};
 
 pub struct LocalFile(FileInfo);
 

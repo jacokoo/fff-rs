@@ -5,8 +5,8 @@ use std::path::Path;
 use crate::model::file::file_mode::mode_string;
 use crate::model::file::local::dir::LocalDir;
 use crate::model::file::local::file::LocalFile;
-use crate::model::file::result::{option_from_result, Error, Res};
 use crate::model::file::{FileInfo, InnerFile, LinkInfo};
+use crate::model::result::{option_from_result, Error, Res};
 
 mod dir;
 mod file;

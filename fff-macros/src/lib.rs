@@ -1,7 +1,6 @@
-use proc_macro::{TokenStream};
-use syn::{parse_macro_input};
+use proc_macro::TokenStream;
 use quote::quote;
-use proc_macro_hack::proc_macro_hack;
+use syn::parse_macro_input;
 
 fn change_str(str: &str) -> String {
     let mut r = String::new();
@@ -18,7 +17,7 @@ fn change_str(str: &str) -> String {
     r
 }
 
-#[proc_macro_hack]
+#[proc_macro]
 pub fn kebab_str(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as syn::Ident);
     let out = change_str(&input.to_string());

@@ -1,8 +1,10 @@
+#[macro_use]
 pub mod enums;
 
 use crate::model::config::enums::{BindingType, ColorType, ColorValue};
 use std::borrow::Borrow;
 use std::collections::HashMap;
+use std::convert::TryFrom;
 use std::path::PathBuf;
 use toml::Value;
 
@@ -73,7 +75,7 @@ fn read_str(value: &Value, message: &str) -> String {
 fn read_color(config: &mut Config, value: &Value) {
     if let Value::Table(table) = value {
         for (k, v) in table.iter() {
-            let kk = ColorType::from(k.borrow());
+            let kk = ColorType::try_from(k.borrow()).unwrap();
             let vv = ColorValue::from(read_str(v, "color").borrow());
             config.color.insert(kk, vv);
         }
@@ -85,7 +87,7 @@ fn read_color(config: &mut Config, value: &Value) {
 fn read_binding(config: &mut Config, value: &Value) {
     if let Value::Table(table) = value {
         for (k, v) in table.iter() {
-            let kk = BindingType::from(k.borrow());
+            let kk = BindingType::try_from(k.borrow()).unwrap();
             let bd = config.bindings.entry(kk).or_insert_with(|| HashMap::new());
             read_binding_type(bd, v, k.borrow());
         }
