@@ -9,6 +9,7 @@ pub enum Error {
 
     FileAlreadyExists(String),
 
+    InvalidEnumValue(String),
     InvalidFilter(String),
 }
 

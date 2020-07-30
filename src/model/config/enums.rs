@@ -1,3 +1,4 @@
+use crate::model::result::Error;
 use fff_macros::*;
 use std::convert::TryFrom;
 use std::hash::Hash;
@@ -11,13 +12,13 @@ macro_rules! create_enum {
         }
 
         impl TryFrom<&str> for $name {
-            type Error = String;
+            type Error = Error;
 
-            fn try_from(s: &str) -> Result<$name, String> {
+            fn try_from(s: &str) -> Result<$name, Error> {
                 $(
                     if (kebab_str!($item) == s) { return Ok($name::$item); }
                 )*
-                Err(format!("{} can not convert to enum {}", s, stringify!($name)))
+                Err(Error::InvalidEnumValue(format!("{} can not convert to enum {}", s, stringify!($name))))
             }
         }
     }
