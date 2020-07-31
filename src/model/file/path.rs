@@ -79,9 +79,3 @@ impl ToString for InnerPath {
         self.path.clone()
     }
 }
-
-impl InnerPath {
-    pub fn root() -> InnerPath {
-        InnerPath::try_from("/".to_string()).unwrap()
-    }
-}

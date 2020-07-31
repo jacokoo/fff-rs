@@ -1,5 +1,5 @@
 use crate::model::state::publisher::Publisher;
-use crate::model::state::FileVec;
+use crate::model::state::{FileVec, MarkerTrait};
 use std::cell::RefCell;
 
 pub struct FileMarker {
@@ -25,14 +25,20 @@ impl FileMarker {
         self.publisher.borrow_mut().subscribe(f)
     }
 
-    pub fn mark(&mut self, idx: usize) {
+    fn fire(&self) {
+        self.publisher.borrow().notify(&self.marks);
+    }
+}
+
+impl MarkerTrait for FileMarker {
+    fn mark(&mut self, idx: usize) {
         if !self.marks.contains(&idx) {
             self.marks.push(idx);
             self.fire();
         }
     }
 
-    pub fn unmark(&mut self, idx: usize) {
+    fn unmark(&mut self, idx: usize) {
         if !self.marks.contains(&idx) {
             return;
         }
@@ -42,11 +48,11 @@ impl FileMarker {
         }
     }
 
-    pub fn is_marked(&self, idx: usize) -> bool {
+    fn is_marked(&self, idx: usize) -> bool {
         self.marks.contains(&idx)
     }
 
-    pub fn toggle_mark(&mut self, idx: usize) {
+    fn toggle_mark(&mut self, idx: usize) {
         if self.is_marked(idx) {
             self.unmark(idx)
         } else {
@@ -54,21 +60,17 @@ impl FileMarker {
         }
     }
 
-    pub fn clear_mark(&mut self) {
+    fn clear_mark(&mut self) {
         self.marks.clear();
         self.fire()
     }
 
-    pub fn toggle_mark_all(&mut self) {
+    fn toggle_mark_all(&mut self) {
         if !self.marks.is_empty() {
             self.marks.clear()
         } else {
             self.marks = self.files.iter().enumerate().map(|(i, _)| i).collect();
         }
         self.fire();
-    }
-
-    fn fire(&self) {
-        self.publisher.borrow().notify(&self.marks);
     }
 }

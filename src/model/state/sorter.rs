@@ -1,15 +1,7 @@
 use crate::model::state::publisher::Publisher;
-use crate::model::state::{FileHolder, FileVec};
+use crate::model::state::{FileHolder, FileSortBy, FileVec, SorterTrait};
 use std::cell::RefCell;
 use std::cmp::Ordering;
-
-
-#[derive(PartialEq, PartialOrd)]
-pub enum FileSortBy {
-    NAME,
-    MTIME,
-    SIZE,
-}
 
 pub struct FileSorter {
     files: FileVec,
@@ -43,15 +35,6 @@ impl FileSorter {
         self.do_sort();
     }
 
-    pub fn set_order(&mut self, order: FileSortBy) {
-        if order == self.order {
-            return;
-        }
-
-        self.order = order;
-        self.do_sort();
-    }
-
     fn do_sort(&mut self) {
         self.sorted = self.files.iter().map(|it| it.clone()).collect();
         let order = &self.order;
@@ -72,5 +55,20 @@ impl FileSorter {
         });
 
         self.publisher.borrow().notify(&self.sorted);
+    }
+}
+
+impl SorterTrait for FileSorter {
+    fn set_order(&mut self, order: FileSortBy) {
+        if order == self.order {
+            return;
+        }
+
+        self.order = order;
+        self.do_sort();
+    }
+
+    fn get_order(&self) -> FileSortBy {
+        self.order.clone()
     }
 }

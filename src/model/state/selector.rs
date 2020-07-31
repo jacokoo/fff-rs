@@ -1,6 +1,6 @@
 use crate::model::file::InnerFile;
 use crate::model::state::publisher::Publisher;
-use crate::model::state::FileVec;
+use crate::model::state::{FileVec, SelectorTrait};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -26,8 +26,10 @@ impl FileSelector {
     pub fn subscribe_change<F: Fn(&usize) + 'static>(&self, f: F) {
         self.publisher.borrow_mut().subscribe(f)
     }
+}
 
-    pub fn selected_file(&self) -> Option<Rc<InnerFile>> {
+impl SelectorTrait for FileSelector {
+    fn selected_file(&self) -> Option<Rc<InnerFile>> {
         if self.files.is_empty() {
             None
         } else {
@@ -35,7 +37,7 @@ impl FileSelector {
         }
     }
 
-    pub fn select(&mut self, idx: usize) -> bool {
+    fn select(&mut self, idx: usize) -> bool {
         if self.files.is_empty() || idx == self.selected {
             return false;
         }
@@ -54,7 +56,7 @@ impl FileSelector {
         return true;
     }
 
-    pub fn move_select(&mut self, delta: i32) -> bool {
+    fn move_select(&mut self, delta: i32) -> bool {
         if delta.is_negative() {
             self.select(self.selected - delta.wrapping_abs() as usize)
         } else {
@@ -62,18 +64,18 @@ impl FileSelector {
         }
     }
 
-    pub fn select_by_name(&mut self, name: &str) -> bool {
+    fn select_by_name(&mut self, name: &str) -> bool {
         if let Some(idx) = self.files.iter().position(|it| it.info().name == name) {
             return self.select(idx);
         }
         return false;
     }
 
-    pub fn select_first(&mut self) -> bool {
+    fn select_first(&mut self) -> bool {
         self.select(0)
     }
 
-    pub fn select_last(&mut self) -> bool {
+    fn select_last(&mut self) -> bool {
         self.select(self.files.len() - 1)
     }
 }

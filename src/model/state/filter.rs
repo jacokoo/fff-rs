@@ -1,8 +1,7 @@
-
-use crate::model::file::{FileInfo};
+use crate::model::file::FileInfo;
 use crate::model::result::{Error, Res, Void};
 use crate::model::state::publisher::Publisher;
-use crate::model::state::{FileHolder, FileVec};
+use crate::model::state::{FileHolder, FileVec, FilterTrait};
 use std::cell::RefCell;
 use std::convert::TryFrom;
 use std::ops::Sub;
@@ -44,23 +43,6 @@ impl FileFilter {
         self.do_filter();
     }
 
-    pub fn set_filter(&mut self, filter: String) -> Void {
-        self.filter.update(&filter)?;
-        self.do_filter();
-
-        Ok(())
-    }
-
-    pub fn set_show_detail(&mut self, show: bool) {
-        let old = self.show_detail;
-        self.show_detail = show;
-
-        if old != self.show_detail {
-            self.filter.show_hidden(self.show_detail);
-            self.do_filter();
-        }
-    }
-
     fn do_filter(&mut self) {
         self.filtered = self
             .files
@@ -69,6 +51,33 @@ impl FileFilter {
             .map(|it| it.clone())
             .collect();
         self.publisher.borrow().notify(&self.filtered);
+    }
+}
+
+impl FilterTrait for FileFilter {
+    fn is_show_detail(&self) -> bool {
+        self.show_detail
+    }
+
+    fn set_filter(&mut self, filter: String) -> Void {
+        self.filter.update(&filter)?;
+        self.do_filter();
+
+        Ok(())
+    }
+
+    fn toggle_show_detail(&mut self) {
+        self.set_show_detail(!self.is_show_detail())
+    }
+
+    fn set_show_detail(&mut self, show: bool) {
+        let old = self.show_detail;
+        self.show_detail = show;
+
+        if old != self.show_detail {
+            self.filter.show_hidden(self.show_detail);
+            self.do_filter();
+        }
     }
 }
 
