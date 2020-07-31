@@ -73,3 +73,15 @@ impl From<&FileInfo> for InnerPath {
         };
     }
 }
+
+impl ToString for InnerPath {
+    fn to_string(&self) -> String {
+        self.path.clone()
+    }
+}
+
+impl InnerPath {
+    pub fn root() -> InnerPath {
+        InnerPath::try_from("/".to_string()).unwrap()
+    }
+}

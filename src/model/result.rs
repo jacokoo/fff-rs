@@ -11,6 +11,7 @@ pub enum Error {
 
     InvalidEnumValue(String),
     InvalidFilter(String),
+    DirIsRequired(String),
 }
 
 pub type Res<T> = std::result::Result<T, Error>;

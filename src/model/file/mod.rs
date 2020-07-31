@@ -70,10 +70,10 @@ impl InnerFile {
     }
 }
 
-impl TryFrom<InnerPath> for InnerFile {
+impl TryFrom<&InnerPath> for InnerFile {
     type Error = Error;
 
-    fn try_from(value: InnerPath) -> Res<Self> {
+    fn try_from(value: &InnerPath) -> Res<Self> {
         // TODO check protocol
         return make(Path::new(&value.path));
     }
@@ -83,7 +83,7 @@ impl TryFrom<String> for InnerFile {
     type Error = Error;
 
     fn try_from(value: String) -> Res<Self> {
-        return InnerFile::try_from(InnerPath::try_from(value)?);
+        return InnerFile::try_from(&InnerPath::try_from(value)?);
     }
 }
 
