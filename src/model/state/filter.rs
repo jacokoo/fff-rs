@@ -10,7 +10,7 @@ use std::rc::Rc;
 use std::time::SystemTime;
 use tokio::time::Duration;
 
-struct FileFilter {
+pub struct FileFilter {
     files: FileVec,
     filtered: FileVec,
     filter: Filter,
@@ -33,7 +33,7 @@ impl FileFilter {
         FileFilter {
             files: Vec::new(),
             filtered: Vec::new(),
-            filter: Filter::new(),
+            filter: Filter::new(false),
             show_detail: false,
             publisher: RefCell::new(Publisher::new()),
         }
@@ -176,8 +176,10 @@ impl FilterItem {
 struct Filter(FilterItem, Vec<FilterItem>);
 
 impl Filter {
-    fn new() -> Self {
-        Filter(FilterItem::None, Vec::new())
+    fn new(show: bool) -> Self {
+        let mut f = Filter(FilterItem::None, Vec::new());
+        f.show_hidden(show);
+        return f;
     }
 
     fn parse(value: &str) -> Res<Vec<FilterItem>> {
