@@ -2,7 +2,7 @@ use crate::model::state::publisher::Publisher;
 use crate::model::state::{FileHolder, FileVec};
 use std::cell::RefCell;
 use std::cmp::Ordering;
-use std::rc::Rc;
+
 
 #[derive(PartialEq, PartialOrd)]
 pub enum FileSortBy {

@@ -1,3 +1,3 @@
-use tokio::process::Command;
 
-pub async fn execute(str: &str) {}
+
+pub async fn execute(_str: &str) {}

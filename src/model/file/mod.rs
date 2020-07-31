@@ -118,7 +118,7 @@ mod test {
 
     use crate::model::file::local::make;
     use crate::model::file::{FileInfo, InnerFile};
-    use crate::model::*;
+    
 
     #[test]
     fn test_make() {

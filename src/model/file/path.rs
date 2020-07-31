@@ -19,7 +19,7 @@ impl TryFrom<String> for InnerPath {
     type Error = Error;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
-        if let Some(idx) = value.find("@") {
+        if let Some(_idx) = value.find("@") {
             let tk: Vec<_> = value.split("@").collect();
             if tk.len() != 2 {
                 return Err(Error::InvalidPath(value));

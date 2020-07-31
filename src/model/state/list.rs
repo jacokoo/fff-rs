@@ -1,5 +1,5 @@
 use crate::model::file::path::InnerPath;
-use crate::model::file::{make, InnerFile};
+use crate::model::file::{InnerFile};
 use crate::model::result::{Error, Void};
 use crate::model::state::filter::FileFilter;
 use crate::model::state::marker::FileMarker;
@@ -52,7 +52,7 @@ impl FileList {
 
 impl FileList {
     async fn update(&mut self, path: InnerPath) -> Void {
-        if let InnerFile::Dir(dir) = InnerFile::try_from(&path)? {}
+        if let InnerFile::Dir(_dir) = InnerFile::try_from(&path)? {}
         return Err(Error::DirIsRequired(path.to_string()));
     }
 }

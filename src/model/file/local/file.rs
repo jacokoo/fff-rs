@@ -34,11 +34,11 @@ pub fn rename(info: &FileInfo, name: &str) -> Void {
     Ok(())
 }
 
-pub fn delete(info: &FileInfo) -> Void {
+pub fn delete(_info: &FileInfo) -> Void {
     Ok(())
 }
 
-pub fn open(info: &FileInfo) -> Void {
+pub fn open(_info: &FileInfo) -> Void {
     if cfg!(target_os = "linux") || cfg!(target_os = "freebsd") {
     } else if cfg!(target_os = "macos") {
     }
