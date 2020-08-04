@@ -1,7 +1,8 @@
 #[macro_use]
 pub mod enums;
 
-use crate::model::config::enums::{BindingType, ColorType, ColorValue};
+use crate::model::config::enums::{BindingType, ColorType};
+use crossterm::style::Color;
 use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::convert::TryFrom;
@@ -19,7 +20,7 @@ pub type Bindings = HashMap<String, Action>;
 #[derive(Debug)]
 pub struct Config {
     pub bindings: HashMap<BindingType, Bindings>,
-    pub color: HashMap<ColorType, ColorValue>,
+    pub color: HashMap<ColorType, Color>,
     pub editor: String,
     pub shell: String,
     pub pager: String,
@@ -76,7 +77,7 @@ fn read_color(config: &mut Config, value: &Value) {
     if let Value::Table(table) = value {
         for (k, v) in table.iter() {
             let kk = ColorType::try_from(k.borrow()).unwrap();
-            let vv = ColorValue::from(read_str(v, "color").borrow());
+            let vv = Color::try_from(read_str(v, "color").borrow()).unwrap();
             config.color.insert(kk, vv);
         }
         return;

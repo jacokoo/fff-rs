@@ -29,13 +29,6 @@ impl Error {
     pub fn res<T>(self) -> Res<T> {
         Result::Err(self)
     }
-
-    pub fn wrap<T>(res: std::io::Result<T>) -> Res<T> {
-        match res {
-            Ok(t) => Ok(t),
-            Err(e) => Err(Error::Io(e.kind())),
-        }
-    }
 }
 
 impl From<std::io::Error> for Error {

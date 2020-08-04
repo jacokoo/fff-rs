@@ -8,7 +8,6 @@ use crate::model::state::sorter::FileSorter;
 use crate::model::state::{
     FileHolder, FileSortBy, FileVec, FilterTrait, MarkerTrait, SelectorTrait, SorterTrait,
 };
-use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::convert::TryFrom;
 use std::rc::Rc;
