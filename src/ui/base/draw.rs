@@ -1,17 +1,21 @@
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
+use crate::ui::Mrc;
 use crossterm::style::ResetColor;
 use crossterm::QueueableCommand;
+use delegate::delegate;
+use std::any::Any;
 use std::cell::RefCell;
 use std::io::{stdout, Write};
+use std::rc::Rc;
 
-pub trait Draw {
-    fn id(&self) -> u16;
+pub trait Draw: Any {
     fn get_rect(&self) -> &Rect;
     fn move_to(&mut self, point: &Point);
-    fn ensure(&mut self, size: &Size) -> Size;
+    fn ensure(&mut self, min: &Size, max: &Size) -> Size;
     fn is_drawn(&self) -> bool;
     fn do_draw(&mut self);
+    fn clear(&mut self);
 
     fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>>;
 
@@ -22,20 +26,50 @@ pub trait Draw {
         self.do_draw();
         stdout().queue(ResetColor).unwrap();
     }
-
-    fn clear(&self) {
-        self.get_rect().clear()
-    }
 }
 
-pub struct Counter(u16);
-
-impl Counter {
-    pub fn next(&mut self) -> u16 {
-        let i = self.0;
-        self.0 += 1;
-        return i;
-    }
+pub struct Drawable {
+    pub rect: Rect,
+    pub drawn: bool,
 }
 
-pub const COUNTER: Counter = Counter(0);
+impl Drawable {
+    delegate! {
+        to self.rect {
+            pub fn set_x(&mut self, x: i16);
+            pub fn set_y(&mut self, y: i16);
+            pub fn set_position(&mut self, po: &Point);
+            pub fn set_width(&mut self, width: u16);
+            pub fn set_height(&mut self, height: u16);
+            pub fn set_size(&mut self, size: &Size);
+        }
+    }
+
+    pub fn new() -> Self {
+        Drawable {
+            rect: Rect::new(),
+            drawn: false,
+        }
+    }
+
+    pub fn get_rect(&self) -> &Rect {
+        &self.rect
+    }
+
+    pub fn is_drawn(&self) -> bool {
+        self.drawn
+    }
+
+    pub fn clear(&mut self) {
+        self.drawn = false;
+        self.rect.clear()
+    }
+
+    pub fn move_to(&mut self, point: &Point) {
+        self.rect.set_position(point);
+    }
+
+    pub fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>> {
+        None
+    }
+}

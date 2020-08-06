@@ -6,6 +6,7 @@ use crate::model::config::Config;
 use crate::model::file::{make, InnerFile};
 use crate::model::result::Res;
 use crossterm::cursor::{Hide, MoveTo, Show};
+use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use crossterm::style::{Color, Colors, Print, ResetColor, SetColors};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, Clear, ClearType};
 use crossterm::{event, execute, queue};
@@ -40,7 +41,7 @@ async fn main() -> Res<()> {
 
     enable_raw_mode().unwrap();
 
-    execute!(stdout(), Clear(ClearType::All), Hide);
+    execute!(stdout(), Clear(ClearType::All), Hide, EnableMouseCapture);
 
     ui::demo();
     stdout().flush();
@@ -58,7 +59,7 @@ async fn main() -> Res<()> {
         }
     }
 
-    execute!(stdout(), Show);
+    execute!(stdout(), Show, DisableMouseCapture);
 
     disable_raw_mode().unwrap();
 

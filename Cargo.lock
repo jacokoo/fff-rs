@@ -181,6 +181,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72aa14c04dfae8dd7d8a2b1cb7ca2152618cd01336dbfe704b8dcbf8d41dbd69"
 
 [[package]]
+name = "delegate"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12e531288b600a8bea48baff926d2f16a3f68fda1cd2d59240279907ba727332"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "dirs"
 version = "2.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -216,6 +227,7 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "crossterm",
+ "delegate",
  "dirs 3.0.1",
  "fff-macros",
  "thrussh",

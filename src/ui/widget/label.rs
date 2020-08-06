@@ -1,16 +1,16 @@
-use crate::ui::base::draw::{Draw, COUNTER};
+use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crossterm::style::{Colors, Print, SetColors};
 use crossterm::QueueableCommand;
+use delegate::delegate;
 use std::borrow::Borrow;
+use std::cmp;
 use std::io::stdout;
 
 pub struct Label {
-    rect: Rect,
-    id: u16,
+    drawable: Drawable,
     text: String,
-    drawn: bool,
     text_width: u16,
     colors: Colors,
 }
@@ -18,11 +18,9 @@ pub struct Label {
 impl Label {
     pub fn new(txt: String) -> Self {
         Label {
-            rect: Rect::new(),
-            id: COUNTER.next(),
+            drawable: Drawable::new(),
             text_width: Label::width(&txt),
             text: txt,
-            drawn: false,
             colors: Colors {
                 foreground: None,
                 background: None,
@@ -80,37 +78,31 @@ impl Label {
 }
 
 impl Draw for Label {
-    fn id(&self) -> u16 {
-        self.id
+    delegate! {
+        to self.drawable {
+            fn get_rect(&self) -> &Rect;
+            fn move_to(&mut self, point: &Point);
+            fn clear(&mut self);
+            fn is_drawn(&self) -> bool;
+            fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>>;
+        }
     }
 
-    fn get_rect(&self) -> &Rect {
-        &self.rect
-    }
-
-    fn move_to(&mut self, point: &Point) {
-        self.rect.set_position(point);
-    }
-
-    fn ensure(&mut self, size: &Size) -> Size {
+    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let s = Size::new(
-            if self.text_width > size.width {
-                Label::max_width_to(&self.text, size.width)
+            if self.text_width > max.width {
+                Label::max_width_to(&self.text, max.width)
             } else {
-                self.text_width
+                cmp::max(min.width, self.text_width)
             },
-            1,
+            cmp::max(min.height, 1),
         );
-        self.rect.set_size(&s);
+        self.drawable.set_size(&s);
         s
     }
 
-    fn is_drawn(&self) -> bool {
-        self.drawn
-    }
-
     fn do_draw(&mut self) {
-        let mut w = self.rect.get_width();
+        let mut w = self.get_rect().get_width();
         let print = if w < self.text_width {
             Print(Label::truncate(&self.text, w))
         } else {
@@ -118,17 +110,13 @@ impl Draw for Label {
         };
 
         stdout()
-            .queue(self.rect.top_left().move_to())
+            .queue(self.get_rect().top_left().move_to())
             .unwrap()
             .queue(SetColors(self.colors.clone()))
             .unwrap()
             .queue(print)
             .unwrap();
 
-        self.drawn = true;
-    }
-
-    fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>> {
-        None
+        self.drawable.drawn = true;
     }
 }

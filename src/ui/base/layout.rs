@@ -1,2 +1,0 @@
-struct Row();
-struct Col();
