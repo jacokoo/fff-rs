@@ -5,7 +5,12 @@ use crate::model::config::enums::BindingType;
 use crate::model::config::Config;
 use crate::model::file::{make, InnerFile};
 use crate::model::result::Res;
+use crossterm::cursor::{Hide, MoveTo, Show};
+use crossterm::style::{Color, Colors, Print, ResetColor, SetColors};
+use crossterm::terminal::{disable_raw_mode, enable_raw_mode, Clear, ClearType};
+use crossterm::{event, execute, queue};
 use std::env::current_dir;
+use std::io::{stdout, Write};
 
 mod model;
 mod ui;
@@ -26,6 +31,36 @@ async fn main() -> Res<()> {
 
     let c = Config::new(dirs::home_dir().unwrap());
     println!("{:?}", c.get_action(&BindingType::Normal, "ctrl-q"));
+    println!("{}", "什么东西啊".len());
+    println!("{}", "hello".len());
+
+    "什么东西啊💣"
+        .chars()
+        .for_each(|it| println!("{}", it.len_utf8()));
+
+    enable_raw_mode().unwrap();
+
+    execute!(stdout(), Clear(ClearType::All), Hide);
+
+    ui::demo();
+    stdout().flush();
+
+    loop {
+        if let Ok(ev) = event::read() {
+            if let event::Event::Key(ke) = ev {
+                match ke.code {
+                    event::KeyCode::Char('q') => break,
+                    _ => continue,
+                }
+            }
+        } else {
+            break;
+        }
+    }
+
+    execute!(stdout(), Show);
+
+    disable_raw_mode().unwrap();
 
     Ok(())
 }

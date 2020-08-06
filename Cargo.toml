@@ -14,3 +14,4 @@ toml = "0.5.0"
 fff-macros = { version = "0.1", path = "fff-macros" }
 dirs = "3.0.1"
 crossterm = "0.17.7"
+unicode-width = "0.1.7"
