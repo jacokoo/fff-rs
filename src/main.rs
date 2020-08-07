@@ -41,7 +41,7 @@ async fn main() -> Res<()> {
 
     enable_raw_mode().unwrap();
 
-    execute!(stdout(), Clear(ClearType::All), Hide, EnableMouseCapture);
+    execute!(stdout(), Clear(ClearType::All), Hide);
 
     ui::demo();
     stdout().flush();
@@ -59,7 +59,7 @@ async fn main() -> Res<()> {
         }
     }
 
-    execute!(stdout(), Show, DisableMouseCapture);
+    execute!(stdout(), Show);
 
     disable_raw_mode().unwrap();
 

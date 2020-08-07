@@ -11,6 +11,7 @@ pub struct Point {
     pub y: i16,
 }
 
+#[derive(Debug)]
 pub struct Size {
     pub width: u16,
     pub height: u16,
@@ -39,6 +40,14 @@ impl Point {
 impl Size {
     pub fn new(width: u16, height: u16) -> Self {
         Size { width, height }
+    }
+
+    pub fn new_width(&self, width: u16) -> Self {
+        Size::new(width, self.height)
+    }
+
+    pub fn new_height(&self, height: u16) -> Self {
+        Size::new(self.width, height)
     }
 }
 

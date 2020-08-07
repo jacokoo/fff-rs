@@ -26,7 +26,6 @@ impl Draw for Container {
     delegate! {
         to self.drawable {
             fn get_rect(&self) -> &Rect;
-            fn move_to(&mut self, point: &Point);
             fn clear(&mut self);
             fn is_drawn(&self) -> bool;
             fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>>;
@@ -38,6 +37,11 @@ impl Draw for Container {
         self.drawable.set_size(&s);
         self.child.deref().borrow_mut().ensure(&s, &s);
         s
+    }
+
+    fn move_to(&mut self, point: &Point) {
+        self.drawable.move_to(point);
+        self.child.deref().borrow_mut().move_to(point);
     }
 
     fn do_draw(&mut self) {
