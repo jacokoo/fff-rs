@@ -36,7 +36,6 @@ impl Draw for Line {
             fn get_rect(&self) -> &Rect;
             fn move_to(&mut self, point: &Point);
             fn clear(&mut self);
-            fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>>;
         }
     }
 
@@ -94,7 +93,6 @@ impl Draw for DoubleLine {
             fn get_rect(&self) -> &Rect;
             fn move_to(&mut self, point: &Point);
             fn clear(&mut self);
-            fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>>;
             fn do_draw(&mut self);
             fn ensure(&mut self, min: &Size, max: &Size) -> Size;
         }

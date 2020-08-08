@@ -1,12 +1,12 @@
 use crate::ui::base::shape::Point;
 
 pub enum JumpType {
-    OPEN_DIR,
-    DELETE,
+    OpenDir,
+    Delete,
 }
 
 pub enum JumpInfo {
-    OPEN_DIR(String),
+    OpenDir(String),
 }
 
 pub struct JumpPoint(Point, char, char, JumpInfo);

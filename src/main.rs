@@ -41,10 +41,10 @@ async fn main() -> Res<()> {
 
     enable_raw_mode().unwrap();
 
-    execute!(stdout(), Clear(ClearType::All), Hide, EnableMouseCapture);
+    execute!(stdout(), Clear(ClearType::All), Hide, EnableMouseCapture).unwrap();
 
     ui::demo();
-    stdout().flush();
+    stdout().flush().unwrap();
 
     loop {
         if let Ok(ev) = event::read() {
@@ -59,7 +59,7 @@ async fn main() -> Res<()> {
         }
     }
 
-    execute!(stdout(), Show, DisableMouseCapture);
+    execute!(stdout(), Show, DisableMouseCapture).unwrap();
 
     disable_raw_mode().unwrap();
 

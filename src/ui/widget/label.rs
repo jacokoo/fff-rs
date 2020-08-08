@@ -83,7 +83,6 @@ impl Draw for Label {
             fn get_rect(&self) -> &Rect;
             fn move_to(&mut self, point: &Point);
             fn clear(&mut self);
-            fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>>;
         }
     }
 

@@ -6,8 +6,7 @@ use crossterm::QueueableCommand;
 use delegate::delegate;
 use std::any::Any;
 
-use std::io::{stdout};
-
+use std::io::stdout;
 
 pub trait Draw: Any {
     fn get_rect(&self) -> &Rect;
@@ -16,7 +15,9 @@ pub trait Draw: Any {
     fn do_draw(&mut self);
     fn clear(&mut self);
 
-    fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>>;
+    fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>> {
+        None
+    }
 
     fn draw(&mut self) {
         self.clear();
@@ -55,9 +56,5 @@ impl Drawable {
 
     pub fn move_to(&mut self, point: &Point) {
         self.rect.set_position(point);
-    }
-
-    pub fn collect(&self, _tp: JumpType) -> Option<Vec<JumpPoint>> {
-        None
     }
 }

@@ -107,7 +107,6 @@ impl Draw for Flex {
         to self.drawable {
             fn get_rect(&self) -> &Rect;
             fn clear(&mut self);
-            fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>>;
         }
     }
 

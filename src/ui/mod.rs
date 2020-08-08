@@ -10,7 +10,7 @@ use crossterm::{event, execute, queue};
 
 use crate::ui::layout::padding::Padding;
 use crate::ui::layout::sized::SizedBox;
-use crate::ui::widget::line::{DoubleLine};
+use crate::ui::widget::line::DoubleLine;
 use std::cell::RefCell;
 use std::io::{stdout, Write};
 use std::rc::Rc;
@@ -28,14 +28,6 @@ pub trait ToMrc: Sized {
 }
 
 impl<T: Sized + Draw> ToMrc for T {}
-
-pub fn mrc<T>(t: T) -> Mrc<T> {
-    Rc::new(RefCell::new(t))
-}
-
-fn dd(x: u16, y: u16) -> u16 {
-    return x.saturating_sub(y);
-}
 
 pub fn demo() {
     let (width, height) = size().unwrap();
@@ -71,7 +63,8 @@ pub fn demo() {
             stdout(),
             Point::new(0, i).move_to(),
             Print(format!("{}", i))
-        );
+        )
+        .unwrap();
     }
-    execute!(stdout(), Point::new(0, 54).move_to());
+    execute!(stdout(), Point::new(0, 54).move_to()).unwrap();
 }
