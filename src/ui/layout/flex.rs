@@ -3,7 +3,7 @@ use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
 use delegate::delegate;
-use num_integer::Integer;
+
 use std::borrow::{Borrow, BorrowMut};
 use std::cmp;
 use std::collections::HashMap;
@@ -80,7 +80,7 @@ impl Flex {
         }
     }
 
-    fn ensure_non_flex(&mut self, min: &Size, max: &Size) -> (Size, Size) {
+    fn ensure_non_flex(&mut self, _min: &Size, max: &Size) -> (Size, Size) {
         let mi = Size::zero();
         let mut cmax = Size::zero();
         let mut csum = Size::zero();

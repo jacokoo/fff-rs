@@ -3,7 +3,7 @@ use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
 use delegate::delegate;
-use std::cmp;
+
 use std::ops::Deref;
 
 pub struct Padding {

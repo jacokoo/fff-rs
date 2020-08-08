@@ -42,11 +42,11 @@ impl SizedBox {
         self
     }
 
-    pub fn max(mut self) -> Self {
+    pub fn max(self) -> Self {
         self.max_height().max_width()
     }
 
-    pub fn size(mut self, w: u16, h: u16) -> Self {
+    pub fn size(self, w: u16, h: u16) -> Self {
         self.width(w).height(h)
     }
 }

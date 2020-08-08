@@ -10,7 +10,7 @@ use crossterm::{event, execute, queue};
 
 use crate::ui::layout::padding::Padding;
 use crate::ui::layout::sized::SizedBox;
-use crate::ui::widget::line::{DoubleLine, Line};
+use crate::ui::widget::line::{DoubleLine};
 use std::cell::RefCell;
 use std::io::{stdout, Write};
 use std::rc::Rc;

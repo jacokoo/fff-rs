@@ -1,13 +1,13 @@
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
-use crate::ui::Mrc;
+
 use crossterm::style::ResetColor;
 use crossterm::QueueableCommand;
 use delegate::delegate;
 use std::any::Any;
-use std::cell::RefCell;
-use std::io::{stdout, Write};
-use std::rc::Rc;
+
+use std::io::{stdout};
+
 
 pub trait Draw: Any {
     fn get_rect(&self) -> &Rect;
@@ -57,7 +57,7 @@ impl Drawable {
         self.rect.set_position(point);
     }
 
-    pub fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>> {
+    pub fn collect(&self, _tp: JumpType) -> Option<Vec<JumpPoint>> {
         None
     }
 }

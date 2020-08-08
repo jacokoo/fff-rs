@@ -4,7 +4,7 @@ use crate::ui::base::shape::{Point, Rect, Size};
 use crossterm::style::{Colors, Print, SetColors};
 use crossterm::QueueableCommand;
 use delegate::delegate;
-use std::borrow::Borrow;
+
 use std::cmp;
 use std::io::stdout;
 
@@ -101,7 +101,7 @@ impl Draw for Label {
     }
 
     fn do_draw(&mut self) {
-        let mut w = self.get_rect().get_width();
+        let w = self.get_rect().get_width();
         let print = if w < self.text_width {
             Print(Label::truncate(&self.text, w))
         } else {

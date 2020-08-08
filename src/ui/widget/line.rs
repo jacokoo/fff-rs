@@ -4,7 +4,7 @@ use crate::ui::base::shape::{Point, Rect, Size};
 use crossterm::style::{Colors, Print, SetColors};
 use crossterm::QueueableCommand;
 use delegate::delegate;
-use std::borrow::Borrow;
+
 use std::cmp;
 use std::io::stdout;
 
@@ -40,7 +40,7 @@ impl Draw for Line {
         }
     }
 
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn ensure(&mut self, min: &Size, _max: &Size) -> Size {
         let s = if self.vertical {
             min.new_width(cmp::max(min.width, 1))
         } else {
@@ -63,7 +63,7 @@ impl Draw for Line {
             }
         } else {
             let mut s = String::new();
-            for i in 0..self.get_rect().get_width() {
+            for _i in 0..self.get_rect().get_width() {
                 s.push(self.hchar);
             }
 

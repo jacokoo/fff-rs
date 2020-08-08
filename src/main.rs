@@ -5,11 +5,11 @@ use crate::model::config::enums::BindingType;
 use crate::model::config::Config;
 use crate::model::file::{make, InnerFile};
 use crate::model::result::Res;
-use crossterm::cursor::{Hide, MoveTo, Show};
+use crossterm::cursor::{Hide, Show};
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
-use crossterm::style::{Color, Colors, Print, ResetColor, SetColors};
+
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, Clear, ClearType};
-use crossterm::{event, execute, queue};
+use crossterm::{event, execute};
 use std::env::current_dir;
 use std::io::{stdout, Write};
 
