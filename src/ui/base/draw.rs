@@ -13,16 +13,13 @@ pub trait Draw: Any {
     fn get_rect(&self) -> &Rect;
     fn move_to(&mut self, point: &Point);
     fn ensure(&mut self, min: &Size, max: &Size) -> Size;
-    fn is_drawn(&self) -> bool;
     fn do_draw(&mut self);
     fn clear(&mut self);
 
     fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>>;
 
     fn draw(&mut self) {
-        if self.is_drawn() {
-            self.clear();
-        }
+        self.clear();
         self.do_draw();
         stdout().queue(ResetColor).unwrap();
     }
@@ -30,7 +27,6 @@ pub trait Draw: Any {
 
 pub struct Drawable {
     pub rect: Rect,
-    pub drawn: bool,
 }
 
 impl Drawable {
@@ -46,22 +42,14 @@ impl Drawable {
     }
 
     pub fn new() -> Self {
-        Drawable {
-            rect: Rect::new(),
-            drawn: false,
-        }
+        Drawable { rect: Rect::new() }
     }
 
     pub fn get_rect(&self) -> &Rect {
         &self.rect
     }
 
-    pub fn is_drawn(&self) -> bool {
-        self.drawn
-    }
-
     pub fn clear(&mut self) {
-        self.drawn = false;
         self.rect.clear()
     }
 

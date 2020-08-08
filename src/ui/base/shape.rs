@@ -2,21 +2,24 @@ use crossterm::cursor::MoveTo;
 use crossterm::style::{Color, Colors, Print, ResetColor, SetColors};
 use crossterm::QueueableCommand;
 use std::borrow::{Borrow, BorrowMut};
+use std::cmp::max;
 use std::io::{stdout, Write};
 use std::iter::FromIterator;
-use std::ops::Add;
+use std::ops::{Add, AddAssign, Sub};
 
+#[derive(Debug)]
 pub struct Point {
     pub x: i16,
     pub y: i16,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Size {
     pub width: u16,
     pub height: u16,
 }
 
+#[derive(Debug)]
 pub struct Rect(Point, Size);
 
 impl Add<(i16, i16)> for &Point {
@@ -24,6 +27,14 @@ impl Add<(i16, i16)> for &Point {
 
     fn add(self, rhs: (i16, i16)) -> Self::Output {
         Point::new(self.x + rhs.0, self.y + rhs.1)
+    }
+}
+
+impl Add<(u16, u16)> for &Point {
+    type Output = Point;
+
+    fn add(self, rhs: (u16, u16)) -> Self::Output {
+        Point::new(self.x + (rhs.0 as i16), self.y + (rhs.1 as i16))
     }
 }
 
@@ -37,9 +48,39 @@ impl Point {
     }
 }
 
+impl Add<(u16, u16)> for &Size {
+    type Output = Size;
+
+    fn add(self, rhs: (u16, u16)) -> Self::Output {
+        Size::new(self.width + rhs.0, self.height + rhs.1)
+    }
+}
+
+impl Sub<(u16, u16)> for &Size {
+    type Output = Size;
+
+    fn sub(self, rhs: (u16, u16)) -> Self::Output {
+        Size::new(
+            self.width.saturating_sub(rhs.0),
+            self.height.saturating_sub(rhs.1),
+        )
+    }
+}
+
+impl AddAssign<&Size> for Size {
+    fn add_assign(&mut self, rhs: &Size) {
+        self.width += rhs.width;
+        self.height += rhs.height;
+    }
+}
+
 impl Size {
     pub fn new(width: u16, height: u16) -> Self {
         Size { width, height }
+    }
+
+    pub fn zero() -> Self {
+        Size::new(0, 0)
     }
 
     pub fn new_width(&self, width: u16) -> Self {
@@ -48,6 +89,11 @@ impl Size {
 
     pub fn new_height(&self, height: u16) -> Self {
         Size::new(self.width, height)
+    }
+
+    pub fn keep_max(&mut self, rhs: &Size) {
+        self.width = max(self.width, rhs.width);
+        self.height = max(self.height, rhs.height);
     }
 }
 

@@ -1,10 +1,8 @@
 use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
-use crate::ui::widget::label::Label;
 use crate::ui::Mrc;
 use delegate::delegate;
-use std::any::Any;
 use std::borrow::BorrowMut;
 use std::ops::Deref;
 
@@ -27,7 +25,6 @@ impl Draw for Container {
         to self.drawable {
             fn get_rect(&self) -> &Rect;
             fn clear(&mut self);
-            fn is_drawn(&self) -> bool;
             fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>>;
         }
     }
@@ -35,7 +32,7 @@ impl Draw for Container {
     fn ensure(&mut self, _: &Size, max: &Size) -> Size {
         let s = Size::new(max.width, max.height);
         self.drawable.set_size(&s);
-        self.child.deref().borrow_mut().ensure(&s, &s);
+        self.child.deref().borrow_mut().ensure(&Size::new(0, 0), &s);
         s
     }
 
@@ -46,6 +43,5 @@ impl Draw for Container {
 
     fn do_draw(&mut self) {
         self.child.deref().borrow_mut().draw();
-        self.drawable.drawn = true;
     }
 }

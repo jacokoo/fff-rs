@@ -83,7 +83,6 @@ impl Draw for Label {
             fn get_rect(&self) -> &Rect;
             fn move_to(&mut self, point: &Point);
             fn clear(&mut self);
-            fn is_drawn(&self) -> bool;
             fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>>;
         }
     }
@@ -116,7 +115,5 @@ impl Draw for Label {
             .unwrap()
             .queue(print)
             .unwrap();
-
-        self.drawable.drawn = true;
     }
 }

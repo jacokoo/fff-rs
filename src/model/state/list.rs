@@ -8,6 +8,7 @@ use crate::model::state::sorter::FileSorter;
 use crate::model::state::{
     FileHolder, FileSortBy, FileVec, FilterTrait, MarkerTrait, SelectorTrait, SorterTrait,
 };
+use delegate::delegate;
 use std::cell::RefCell;
 use std::convert::TryFrom;
 use std::rc::Rc;
@@ -82,81 +83,47 @@ impl FileList {
 }
 
 impl FilterTrait for FileList {
-    fn is_show_detail(&self) -> bool {
-        self.filter.is_show_detail()
-    }
-
-    fn set_filter(&mut self, str: String) -> Void {
-        self.filter.set_filter(str)
-    }
-
-    fn toggle_show_detail(&mut self) {
-        self.filter.set_show_detail(!self.filter.is_show_detail())
-    }
-
-    fn set_show_detail(&mut self, show: bool) {
-        self.filter.set_show_detail(show)
+    delegate! {
+        to self.filter {
+            fn is_show_detail(&self) -> bool;
+            fn set_filter(&mut self, str: String) -> Void;
+            fn toggle_show_detail(&mut self);
+            fn set_show_detail(&mut self, show: bool);
+        }
     }
 }
 
 impl SorterTrait for FileList {
-    fn set_order(&mut self, order: FileSortBy) {
-        self.sorter.borrow_mut().set_order(order)
-    }
-
-    fn get_order(&self) -> FileSortBy {
-        self.sorter.borrow_mut().get_order()
+    delegate! {
+        to self.sorter.borrow_mut() {
+            fn set_order(&mut self, order: FileSortBy);
+            fn get_order(&self) -> FileSortBy;
+        }
     }
 }
 
 impl SelectorTrait for FileList {
-    fn selected_file(&self) -> Option<Rc<InnerFile>> {
-        self.selector.borrow_mut().selected_file()
-    }
-
-    fn select(&mut self, idx: usize) -> bool {
-        self.selector.borrow_mut().select(idx)
-    }
-
-    fn move_select(&mut self, delta: i32) -> bool {
-        self.selector.borrow_mut().move_select(delta)
-    }
-
-    fn select_by_name(&mut self, name: &str) -> bool {
-        self.selector.borrow_mut().select_by_name(name)
-    }
-
-    fn select_first(&mut self) -> bool {
-        self.selector.borrow_mut().select_first()
-    }
-
-    fn select_last(&mut self) -> bool {
-        self.selector.borrow_mut().select_last()
+    delegate! {
+        to self.selector.borrow_mut() {
+            fn selected_file(&self) -> Option<Rc<InnerFile>>;
+            fn select(&mut self, idx: usize) -> bool;
+            fn move_select(&mut self, delta: i32) -> bool;
+            fn select_by_name(&mut self, name: &str) -> bool;
+            fn select_first(&mut self) -> bool;
+            fn select_last(&mut self) -> bool;
+        }
     }
 }
 
 impl MarkerTrait for FileList {
-    fn mark(&mut self, idx: usize) {
-        self.marker.borrow_mut().mark(idx)
-    }
-
-    fn unmark(&mut self, idx: usize) {
-        self.marker.borrow_mut().unmark(idx)
-    }
-
-    fn is_marked(&self, idx: usize) -> bool {
-        self.marker.borrow_mut().is_marked(idx)
-    }
-
-    fn toggle_mark(&mut self, idx: usize) {
-        self.marker.borrow_mut().toggle_mark(idx)
-    }
-
-    fn clear_mark(&mut self) {
-        self.marker.borrow_mut().clear_mark()
-    }
-
-    fn toggle_mark_all(&mut self) {
-        self.marker.borrow_mut().toggle_mark_all()
+    delegate! {
+        to self.marker.borrow_mut() {
+            fn mark(&mut self, idx: usize);
+            fn unmark(&mut self, idx: usize);
+            fn is_marked(&self, idx: usize) -> bool;
+            fn toggle_mark(&mut self, idx: usize);
+            fn clear_mark(&mut self);
+            fn toggle_mark_all(&mut self);
+        }
     }
 }
