@@ -3,7 +3,7 @@ use crossterm::style::{Color, Colors, Print, ResetColor, SetColors};
 use crossterm::QueueableCommand;
 
 use std::cmp::max;
-use std::io::{stdout};
+use std::io::stdout;
 use std::iter::FromIterator;
 use std::ops::{Add, AddAssign, Sub};
 

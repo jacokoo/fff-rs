@@ -230,7 +230,6 @@ dependencies = [
  "delegate",
  "dirs 3.0.1",
  "fff-macros",
- "num-integer",
  "thrussh",
  "tokio",
  "toml",

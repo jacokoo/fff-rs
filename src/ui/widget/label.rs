@@ -1,7 +1,7 @@
 use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
-use crossterm::style::{Colors, Print, SetColors};
+use crossterm::style::{Color, Colors, Print, ResetColor, SetColors};
 use crossterm::QueueableCommand;
 use delegate::delegate;
 
@@ -16,16 +16,17 @@ pub struct Label {
 }
 
 impl Label {
-    pub fn new(txt: String) -> Self {
+    pub fn from(txt: String) -> Self {
         Label {
             drawable: Drawable::new(),
             text_width: Label::width(&txt),
             text: txt,
-            colors: Colors {
-                foreground: None,
-                background: None,
-            },
+            colors: Colors::new(Color::Reset, Color::Reset),
         }
+    }
+
+    pub fn new(txt: &str) -> Self {
+        Label::from(txt.to_string())
     }
 
     pub fn set_text(&mut self, txt: String) {
@@ -35,6 +36,10 @@ impl Label {
 
     pub fn set_color(&mut self, colors: Colors) {
         self.colors = colors;
+    }
+
+    pub fn reset_color(&mut self) {
+        self.colors = Colors::new(Color::Reset, Color::Reset)
     }
 
     fn char_width(c: char) -> u16 {

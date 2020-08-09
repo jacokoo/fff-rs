@@ -28,21 +28,29 @@ impl Flex {
         }
     }
 
-    pub fn add_flex<T: Draw + 'static>(&mut self, widget: Mrc<T>, flex: u16) {
+    pub fn add_flex<T: Draw + 'static>(mut self, widget: Mrc<T>, flex: u16) -> Self {
         self.flex_count += &flex;
         self.children.push(widget);
         self.flex_children.insert(self.children.len() - 1, flex);
+        self
     }
 
-    pub fn add<T: Draw + 'static>(&mut self, widget: Mrc<T>) {
-        self.children.push(widget)
+    pub fn add<T: Draw + 'static>(mut self, widget: Mrc<T>) -> Self {
+        self.children.push(widget);
+        self
     }
 
-    fn calc_self_size(&self, min: &Size, max: &Size, child_max: &Size) -> Size {
+    fn calc_self_size(&self, min: &Size, max: &Size, child_max: &Size, child_sum: &Size) -> Size {
         if self.vertical {
-            max.new_width(cmp::max(min.width, child_max.width))
+            Size::new(
+                cmp::max(min.width, child_max.width),
+                cmp::max(min.height, child_sum.height),
+            )
         } else {
-            max.new_height(cmp::max(min.height, child_max.height))
+            Size::new(
+                cmp::max(min.width, child_sum.width),
+                cmp::max(min.height, child_max.height),
+            )
         }
     }
 
@@ -113,7 +121,7 @@ impl Draw for Flex {
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let (mut cmax, mut csum) = self.ensure_non_flex(min, max);
         if self.flex_count == 0 {
-            let size = self.calc_self_size(min, max, &cmax);
+            let size = self.calc_self_size(min, max, &cmax, &csum);
             self.drawable.set_size(&size);
             return size;
         }
@@ -137,7 +145,7 @@ impl Draw for Flex {
             cmax.keep_max(&si);
         });
 
-        let size = self.calc_self_size(min, max, &cmax);
+        let size = self.calc_self_size(min, max, &cmax, &csum);
         self.drawable.set_size(&size);
         return size;
     }
