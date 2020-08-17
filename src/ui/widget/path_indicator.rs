@@ -3,7 +3,7 @@ use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::flex::Flex;
 use crate::ui::widget::label::Label;
-use crate::ui::{Mrc, ToMrc};
+use crate::ui::{Functional, Mrc, ToMrc};
 use crossterm::style::{Color, Colors, Print, SetColors};
 use crossterm::QueueableCommand;
 use delegate::delegate;
@@ -19,10 +19,11 @@ impl PathIndicator {
         let label = Label::new(str).mrc();
         PathIndicator {
             path: str.to_string(),
-            flex: Flex::new(false)
-                .add(Label::new("[").mrc())
-                .add(label.clone())
-                .add(Label::new("]").mrc()),
+            flex: Flex::new(false).also_mut(|it| {
+                it.add(Label::new("[").mrc());
+                it.add(label.clone());
+                it.add(Label::new("]").mrc());
+            }),
             label,
         }
     }

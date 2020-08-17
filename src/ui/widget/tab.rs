@@ -3,7 +3,7 @@ use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::flex::Flex;
 use crate::ui::widget::label::Label;
-use crate::ui::{Mrc, ToMrc};
+use crate::ui::{Functional, Mrc, ToMrc};
 use crossterm::style::{Color, Colors, Print, SetColors};
 use crossterm::QueueableCommand;
 use delegate::delegate;
@@ -64,11 +64,13 @@ impl Tab {
         let items: Vec<_> = strs.into_iter().map(|it| TabItem::new(it).mrc()).collect();
         items[current].borrow_mut().set_active(true);
 
-        let mut flex = Flex::new(false).add(Label::new("[").mrc());
-        for item in &items {
-            flex = flex.add(item.clone());
-        }
-        flex = flex.add(Label::new("]").mrc());
+        let flex = Flex::new(false).also_mut(|it| {
+            it.add(Label::new("[").mrc());
+            for item in &items {
+                it.add(item.clone());
+            }
+            it.add(Label::new("]").mrc());
+        });
 
         Tab {
             items,

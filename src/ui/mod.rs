@@ -8,8 +8,12 @@ use crossterm::style::{Color, Colors, Print};
 use crossterm::terminal::size;
 use crossterm::{event, execute, queue};
 
+use crate::ui::layout::background::Background;
+use crate::ui::layout::center::Center;
 use crate::ui::layout::padding::Padding;
 use crate::ui::layout::sized::SizedBox;
+use crate::ui::widget::file_label::FileLabel;
+use crate::ui::widget::file_list::FileList;
 use crate::ui::widget::line::{DoubleLine, Line};
 use crate::ui::widget::path_indicator::PathIndicator;
 use crate::ui::widget::tab::Tab;
@@ -31,6 +35,37 @@ pub trait ToMrc: Sized {
 
 impl<T: Sized + Draw> ToMrc for T {}
 
+pub trait Functional: Sized {
+    fn also<F: FnOnce(&Self)>(self, mut f: F) -> Self {
+        f(&self);
+        self
+    }
+
+    fn also_mut<F: FnMut(&mut Self)>(mut self, mut f: F) -> Self {
+        f(&mut self);
+        self
+    }
+
+    fn map_to<T, F: FnOnce(Self) -> T>(self, f: F) -> T {
+        return f(self);
+    }
+}
+
+impl<T: Sized> Functional for T {}
+
+fn create_file(txt: &str, dir: bool) -> Mrc<FileLabel> {
+    FileLabel::new(txt)
+        .also_mut(|it| {
+            it.set_marked_color(Colors::new(Color::Yellow, Color::Black));
+            if dir {
+                it.set_color(Colors::new(Color::Cyan, Color::Black));
+            } else {
+                it.set_color(Colors::new(Color::White, Color::Black));
+            }
+        })
+        .mrc()
+}
+
 pub fn demo() {
     let (width, height) = size().unwrap();
     let tab = Tab::new(
@@ -47,21 +82,82 @@ pub fn demo() {
     let path = PathIndicator::new("/Users/guyong/ws/rust/fff").mrc();
 
     let top = Flex::new(false)
-        .add(tab.clone())
-        .add(path.clone())
-        .add_flex(Space::new().mrc(), 1)
-        .add(Label::new("[?]").mrc())
+        .also_mut(|it| {
+            it.add(tab.clone());
+            it.add(path.clone());
+            it.add_flex(Space::new().mrc(), 1);
+            it.add(Label::new("[?]").mrc());
+        })
+        .mrc();
+
+    let status_bar = Background::new(
+        Flex::new(false)
+            .also_mut(|it| {
+                it.add(
+                    Label::new("status bar")
+                        .also_mut(|it| it.set_color(Colors::new(Color::Black, Color::Cyan)))
+                        .mrc(),
+                );
+                it.add_flex(Space::new().mrc(), 1);
+                it.add(Label::new("status bar end").mrc());
+            })
+            .mrc(),
+        Color::Cyan,
+    )
+    .mrc();
+
+    let bookmark = Flex::new(true)
+        .also_mut(|it| {
+            it.set_stretch();
+            it.add(
+                Padding::new(Center::new(Label::new("BOOKMARK").mrc()).mrc())
+                    .top_bottom(1)
+                    .left_right(2)
+                    .mrc(),
+            );
+            it.add(SizedBox::new(Line::new(false).mrc()).mrc());
+            it.add(Label::new("hello").mrc());
+            it.add(Label::new("hello hello hello").mrc());
+        })
+        .mrc();
+
+    let cols = Flex::new(false)
+        .also_mut(|it| {
+            it.set_stretch();
+            it.add(bookmark.clone());
+            it.add(DoubleLine::new(true).mrc());
+            it.add(
+                SizedBox::new(
+                    FileList::new()
+                        .also_mut(|it| {
+                            it.set_files(vec![
+                                create_file("hello", true),
+                                create_file("hello", false),
+                                create_file("hello world", false),
+                            ]);
+                            it.set_selected(Some(1));
+                            it.set_marked(vec![0, 1]);
+                        })
+                        .mrc(),
+                )
+                .width(30)
+                .max_height()
+                .mrc(),
+            );
+            it.add(Line::new(true).mrc());
+        })
         .mrc();
 
     let mut root = Container::new(
-        SizedBox::new(
-            Flex::new(true)
-                .add(Padding::new(top).top_bottom(1).mrc())
-                .add(SizedBox::new(Line::new(false).mrc()).max_width().mrc())
-                .mrc(),
-        )
-        .max_width()
-        .mrc(),
+        Flex::new(true)
+            .also_mut(|it| {
+                it.add(Padding::new(top.clone()).top_bottom(1).mrc());
+                it.add(SizedBox::new(Line::new(false).mrc()).max_width().mrc());
+                it.add_flex(cols.clone(), 1);
+                it.add(SizedBox::new(status_bar.clone()).max_width().mrc());
+                it.add(SizedBox::new(Space::new().mrc()).height(1).mrc());
+            })
+            .mrc(),
     );
 
     // let mut root = Container::new(tab.clone());
@@ -84,16 +180,18 @@ pub fn demo1() {
     let pad = Padding::new(label2).left(2).mrc();
 
     let mut row = Flex::new(false)
-        .add(Padding::new(label.clone()).top_bottom(2).mrc())
-        .add(SizedBox::new(line.clone()).max_height().mrc())
-        .add(Padding::new(Label::new("padding top").mrc()).top(2).mrc())
-        .add_flex(Space::new_with_width(10).mrc(), 3)
-        .add(SizedBox::new(label3.clone()).width(20).mrc())
-        .add_flex(Space::new().mrc(), 2)
-        .add(pad.clone());
+        .also_mut(|it| {
+            it.add(Padding::new(label.clone()).top_bottom(2).mrc());
+            it.add(SizedBox::new(line.clone()).max_height().mrc());
+            it.add(Padding::new(Label::new("padding top").mrc()).top(2).mrc());
+            it.add_flex(Space::new_with_width(10).mrc(), 3);
+            it.add(SizedBox::new(label3.clone()).width(20).mrc());
+            it.add_flex(Space::new().mrc(), 2);
+            it.add(pad.clone());
+        })
+        .mrc();
 
-    let mr = row.mrc();
-    let mut c = Container::new(mr.clone());
+    let mut c = Container::new(row.clone());
     let size = Size::new(width - 2, height);
     c.ensure(&size, &size);
     c.move_to(&Point::new(2, 0));

@@ -1,7 +1,7 @@
 use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
-use crossterm::style::{Colors, Print, SetColors};
+use crossterm::style::{Color, Colors, Print, SetColors};
 use crossterm::QueueableCommand;
 use delegate::delegate;
 
@@ -13,11 +13,25 @@ pub struct Line {
     vertical: bool,
     vchar: char,
     hchar: char,
+    colors: Colors,
 }
 
 impl Line {
     pub fn new(vertical: bool) -> Self {
         Line::new_with_char(vertical, '│', '─')
+    }
+
+    pub fn new_vertical(char: char) -> Self {
+        Line::new_with_char(true, char, ' ')
+    }
+
+    pub fn new_horizontal(char: char) -> Self {
+        Line::new_with_char(false, ' ', char)
+    }
+
+    pub fn set_color(mut self, colors: Colors) -> Self {
+        self.colors = colors;
+        self
     }
 
     fn new_with_char(vertical: bool, vchar: char, hchar: char) -> Self {
@@ -26,6 +40,7 @@ impl Line {
             vertical,
             vchar,
             hchar,
+            colors: Colors::new(Color::Reset, Color::Reset),
         }
     }
 }
@@ -54,6 +69,8 @@ impl Draw for Line {
             let mut io = stdout();
             let p = self.get_rect().top_left();
 
+            io.queue(SetColors(self.colors)).unwrap();
+
             for i in 0..self.get_rect().get_height() {
                 io.queue((&p + (0, i)).move_to())
                     .unwrap()
@@ -68,6 +85,8 @@ impl Draw for Line {
 
             stdout()
                 .queue(self.get_rect().top_left().move_to())
+                .unwrap()
+                .queue(SetColors(self.colors))
                 .unwrap()
                 .queue(Print(s))
                 .unwrap();

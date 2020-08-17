@@ -1,6 +1,6 @@
 use crossterm::cursor::MoveTo;
 use crossterm::style::{Color, Colors, Print, ResetColor, SetColors};
-use crossterm::QueueableCommand;
+use crossterm::{Command, QueueableCommand};
 
 use std::cmp::max;
 use std::io::stdout;
@@ -170,11 +170,19 @@ impl Rect {
     }
 
     pub fn clear(&self) {
+        self.clear_with_color(None);
+    }
+
+    pub fn clear_with_color(&self, color: Option<Color>) {
         let tl = self.top_left();
         let br = self.bottom_right();
         let mut out = stdout();
 
-        out.queue(ResetColor).unwrap();
+        if let Some(v) = color {
+            out.queue(SetColors(Colors::new(Color::Reset, v)));
+        } else {
+            out.queue(ResetColor).unwrap();
+        }
         (tl.y..=br.y).enumerate().for_each(|(i, _)| {
             let cc = (tl.x..=br.x).map(|_| ' ').collect::<Vec<char>>();
             out.queue((&tl + (0i16, i as i16)).move_to()).unwrap();

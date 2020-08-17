@@ -4,21 +4,20 @@ use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
 use delegate::delegate;
 use std::borrow::BorrowMut;
+use std::cell::{Ref, RefMut};
 use std::cmp;
 use std::ops::Deref;
 
 pub struct SizedBox {
     inner: Size,
     drawable: Drawable,
-    child: Mrc<dyn Draw>,
 }
 
 impl SizedBox {
     pub fn new(child: Mrc<dyn Draw>) -> Self {
         SizedBox {
             inner: Size::new(0, 0),
-            drawable: Drawable::new(),
-            child,
+            drawable: Drawable::new_with_child(child),
         }
     }
 
@@ -30,6 +29,10 @@ impl SizedBox {
     pub fn height(mut self, v: u16) -> Self {
         self.inner.height = v;
         self
+    }
+
+    pub fn size(self, w: u16, h: u16) -> Self {
+        self.width(w).height(h)
     }
 
     pub fn max_width(mut self) -> Self {
@@ -44,10 +47,6 @@ impl SizedBox {
 
     pub fn max(self) -> Self {
         self.max_height().max_width()
-    }
-
-    pub fn size(self, w: u16, h: u16) -> Self {
-        self.width(w).height(h)
     }
 }
 
@@ -64,7 +63,7 @@ impl Draw for SizedBox {
             cmp::min(max.width, cmp::max(min.width, self.inner.width)),
             cmp::min(max.height, cmp::max(min.height, self.inner.height)),
         );
-        let si = self.child.deref().borrow_mut().ensure(&s, &s);
+        let si = self.drawable.mut_child().ensure(&s, &s);
         s.keep_max(&si);
         self.drawable.set_size(&s);
         s
@@ -72,10 +71,10 @@ impl Draw for SizedBox {
 
     fn move_to(&mut self, point: &Point) {
         self.drawable.move_to(point);
-        self.child.deref().borrow_mut().move_to(point);
+        self.drawable.mut_child().move_to(point);
     }
 
     fn do_draw(&mut self) {
-        self.child.deref().borrow_mut().draw();
+        self.drawable.mut_child().draw();
     }
 }

@@ -6,7 +6,10 @@ use crossterm::QueueableCommand;
 use delegate::delegate;
 use std::any::Any;
 
+use crate::ui::Mrc;
+use std::cell::{Ref, RefMut};
 use std::io::stdout;
+use std::ops::Deref;
 
 pub trait Draw: Any {
     fn get_rect(&self) -> &Rect;
@@ -20,7 +23,6 @@ pub trait Draw: Any {
     }
 
     fn draw(&mut self) {
-        self.clear();
         self.do_draw();
         stdout().queue(ResetColor).unwrap();
     }
@@ -28,6 +30,7 @@ pub trait Draw: Any {
 
 pub struct Drawable {
     pub rect: Rect,
+    pub children: Vec<Mrc<dyn Draw>>,
 }
 
 impl Drawable {
@@ -43,7 +46,17 @@ impl Drawable {
     }
 
     pub fn new() -> Self {
-        Drawable { rect: Rect::new() }
+        Drawable {
+            rect: Rect::new(),
+            children: Vec::new(),
+        }
+    }
+
+    pub fn new_with_child(child: Mrc<dyn Draw>) -> Self {
+        Drawable {
+            rect: Rect::new(),
+            children: vec![child],
+        }
     }
 
     pub fn get_rect(&self) -> &Rect {
@@ -56,5 +69,33 @@ impl Drawable {
 
     pub fn move_to(&mut self, point: &Point) {
         self.rect.set_position(point);
+    }
+
+    pub fn mut_child(&mut self) -> RefMut<dyn Draw> {
+        self.children[0].deref().borrow_mut()
+    }
+
+    pub fn child(&self) -> Ref<dyn Draw> {
+        self.children[0].deref().borrow()
+    }
+
+    pub fn for_each<F: FnMut(RefMut<dyn Draw>)>(&self, mut f: F) {
+        self.children
+            .iter()
+            .for_each(|it| f(it.deref().borrow_mut()));
+    }
+
+    pub fn for_each_indexed<F: FnMut(usize, RefMut<dyn Draw>)>(&self, mut f: F) {
+        self.children
+            .iter()
+            .enumerate()
+            .for_each(|(idx, it)| f(idx, it.deref().borrow_mut()));
+    }
+
+    pub fn fold<T, F: FnMut(T, RefMut<dyn Draw>) -> T>(&self, init: T, mut f: F) -> T {
+        return self
+            .children
+            .iter()
+            .fold(init, |acc, it| f(acc, it.deref().borrow_mut()));
     }
 }

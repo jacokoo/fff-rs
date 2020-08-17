@@ -11,33 +11,42 @@ use std::ops::Deref;
 
 pub struct Flex {
     drawable: Drawable,
-    children: Vec<Mrc<dyn Draw>>,
     flex_count: u16,
     flex_children: HashMap<usize, u16>,
     vertical: bool,
+    stretch: bool,
 }
 
 impl Flex {
     pub fn new(vertical: bool) -> Self {
         Flex {
             drawable: Drawable::new(),
-            children: Vec::new(),
             flex_count: 0,
             flex_children: HashMap::new(),
             vertical,
+            stretch: false,
         }
     }
 
-    pub fn add_flex<T: Draw + 'static>(mut self, widget: Mrc<T>, flex: u16) -> Self {
+    pub fn add_flex<T: Draw + 'static>(&mut self, widget: Mrc<T>, flex: u16) {
         self.flex_count += &flex;
-        self.children.push(widget);
-        self.flex_children.insert(self.children.len() - 1, flex);
-        self
+        self.drawable.children.push(widget);
+        self.flex_children
+            .insert(self.drawable.children.len() - 1, flex);
     }
 
-    pub fn add<T: Draw + 'static>(mut self, widget: Mrc<T>) -> Self {
-        self.children.push(widget);
-        self
+    pub fn add<T: Draw + 'static>(&mut self, widget: Mrc<T>) {
+        self.drawable.children.push(widget);
+    }
+
+    pub fn empty_it(&mut self) {
+        self.drawable.children.clear();
+        self.flex_children.clear();
+        self.flex_count = 0;
+    }
+
+    pub fn set_stretch(&mut self) {
+        self.stretch = true;
     }
 
     fn calc_self_size(&self, min: &Size, max: &Size, child_max: &Size, child_sum: &Size) -> Size {
@@ -52,6 +61,36 @@ impl Flex {
                 cmp::max(min.height, child_max.height),
             )
         }
+    }
+
+    fn before_end_ensure(
+        &mut self,
+        min: &Size,
+        max: &Size,
+        child_max: &Size,
+        child_sum: &Size,
+    ) -> Size {
+        let size = self.calc_self_size(min, max, child_max, child_sum);
+        self.drawable.set_size(&size);
+        if !self.stretch {
+            return size;
+        }
+
+        self.drawable.for_each(|mut it| {
+            if self.vertical {
+                if it.get_rect().get_width() < size.width {
+                    let s = size.new_height(it.get_rect().get_height());
+                    it.ensure(&s, &s);
+                }
+            } else {
+                if it.get_rect().get_height() < size.height {
+                    let s = size.new_width(it.get_rect().get_width());
+                    it.ensure(&s, &s);
+                }
+            }
+        });
+
+        return size;
     }
 
     fn calc_unit(&self, max: &Size, csum: &Size) -> (u16, u16) {
@@ -93,15 +132,12 @@ impl Flex {
         let mut cmax = Size::zero();
         let mut csum = Size::zero();
 
-        self.children.iter().enumerate().for_each(|(idx, widget)| {
+        self.drawable.for_each_indexed(|idx, mut widget| {
             if self.flex_children.contains_key(&idx) {
                 return;
             }
 
-            let si = widget
-                .deref()
-                .borrow_mut()
-                .ensure(&mi, &self.calc_remain_size(max, &csum));
+            let si = widget.ensure(&mi, &self.calc_remain_size(max, &csum));
             csum += &si;
             cmax.keep_max(&si);
         });
@@ -121,9 +157,7 @@ impl Draw for Flex {
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let (mut cmax, mut csum) = self.ensure_non_flex(min, max);
         if self.flex_count == 0 {
-            let size = self.calc_self_size(min, max, &cmax, &csum);
-            self.drawable.set_size(&size);
-            return size;
+            return self.before_end_ensure(min, max, &cmax, &csum);
         }
 
         let (unit, remain) = self.calc_unit(max, &csum);
@@ -131,7 +165,7 @@ impl Draw for Flex {
         let mut x: Vec<_> = self
             .flex_children
             .iter()
-            .map(|(idx, flex)| (&self.children[idx.clone()], unit * flex))
+            .map(|(idx, flex)| (&self.drawable.children[idx.clone()], unit * flex))
             .collect();
 
         if let Some(v) = x.last_mut() {
@@ -145,26 +179,22 @@ impl Draw for Flex {
             cmax.keep_max(&si);
         });
 
-        let size = self.calc_self_size(min, max, &cmax, &csum);
-        self.drawable.set_size(&size);
-        return size;
+        return self.before_end_ensure(min, max, &cmax, &csum);
     }
 
     fn move_to(&mut self, point: &Point) {
         self.drawable.move_to(point);
-        self.children.iter().fold(None, |x, y| {
+        self.drawable.fold(None, |x, mut y| {
             if let Some(p) = x {
-                y.deref().borrow_mut().move_to(&p);
+                y.move_to(&p);
             } else {
-                y.deref().borrow_mut().move_to(point);
+                y.move_to(point);
             }
-            return Some(self.calc_next_point(y.deref().borrow().get_rect()));
+            return Some(self.calc_next_point(y.get_rect()));
         });
     }
 
     fn do_draw(&mut self) {
-        self.children
-            .iter()
-            .for_each(|w| w.deref().borrow_mut().draw())
+        self.drawable.for_each(|mut it| it.draw());
     }
 }

@@ -8,7 +8,9 @@ use crate::model::result::Res;
 use crossterm::cursor::{Hide, Show};
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 
-use crossterm::terminal::{disable_raw_mode, enable_raw_mode, Clear, ClearType};
+use crossterm::terminal::{
+    disable_raw_mode, enable_raw_mode, Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen,
+};
 use crossterm::{event, execute};
 use std::env::current_dir;
 use std::io::{stdout, Write};
@@ -41,25 +43,34 @@ async fn main() -> Res<()> {
 
     enable_raw_mode().unwrap();
 
-    execute!(stdout(), Clear(ClearType::All), Hide, EnableMouseCapture).unwrap();
+    execute!(
+        stdout(),
+        EnterAlternateScreen,
+        Clear(ClearType::All),
+        Hide,
+        EnableMouseCapture
+    )
+    .unwrap();
 
     ui::demo();
     stdout().flush().unwrap();
 
     loop {
         if let Ok(ev) = event::read() {
-            if let event::Event::Key(ke) = ev {
-                match ke.code {
+            match ev {
+                event::Event::Key(ke) => match ke.code {
                     event::KeyCode::Char('q') => break,
                     _ => continue,
-                }
+                },
+                event::Event::Mouse(me) => {}
+                _ => {}
             }
         } else {
             break;
         }
     }
 
-    execute!(stdout(), Show, DisableMouseCapture).unwrap();
+    execute!(stdout(), DisableMouseCapture, Show, LeaveAlternateScreen).unwrap();
 
     disable_raw_mode().unwrap();
 

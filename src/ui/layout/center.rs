@@ -1,24 +1,24 @@
 use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
-use crate::ui::Mrc;
+use crate::ui::{Functional, Mrc};
 use delegate::delegate;
 use std::borrow::BorrowMut;
-use std::ops::Deref;
+use std::ops::{Deref, Div};
 
-pub struct Container {
+pub struct Center {
     drawable: Drawable,
 }
 
-impl Container {
+impl Center {
     pub fn new<T: Draw + 'static>(child: Mrc<T>) -> Self {
-        Container {
+        Center {
             drawable: Drawable::new_with_child(child),
         }
     }
 }
 
-impl Draw for Container {
+impl Draw for Center {
     delegate! {
         to self.drawable {
             fn get_rect(&self) -> &Rect;
@@ -26,16 +26,21 @@ impl Draw for Container {
         }
     }
 
-    fn ensure(&mut self, _: &Size, max: &Size) -> Size {
-        let s = Size::new(max.width, max.height);
+    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+        let mut s = self.drawable.mut_child().ensure(&Size::new(0, 0), max);
+        s.keep_max(min);
         self.drawable.set_size(&s);
-        self.drawable.mut_child().ensure(&Size::new(0, 0), &s);
         s
     }
 
     fn move_to(&mut self, point: &Point) {
         self.drawable.move_to(point);
-        self.drawable.mut_child().move_to(point);
+        let mut cw = self.drawable.child().get_rect().get_width();
+        let mut ch = self.drawable.child().get_rect().get_height();
+        cw = (self.get_rect().get_width() - cw) / 2;
+        ch = (self.get_rect().get_height() - ch) / 2;
+
+        self.drawable.mut_child().move_to(&(point + (cw, ch)));
     }
 
     fn do_draw(&mut self) {
