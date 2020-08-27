@@ -3,6 +3,7 @@ use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::flex::Flex;
 use crate::ui::widget::label::Label;
+use crate::ui::widget::quoted::Quoted;
 use crate::ui::{Functional, Mrc, ToMrc};
 use crossterm::style::{Color, Colors, Print, SetColors};
 use crossterm::QueueableCommand;
@@ -11,7 +12,7 @@ use delegate::delegate;
 pub struct PathIndicator {
     path: String,
     label: Mrc<Label>,
-    flex: Flex,
+    main: Quoted,
 }
 
 impl PathIndicator {
@@ -19,11 +20,7 @@ impl PathIndicator {
         let label = Label::new(str).mrc();
         PathIndicator {
             path: str.to_string(),
-            flex: Flex::row().also_mut(|it| {
-                it.add(Label::new("[").mrc());
-                it.add(label.clone());
-                it.add(Label::new("]").mrc());
-            }),
+            main: Quoted::new(label.clone()),
             label,
         }
     }
@@ -37,7 +34,7 @@ impl PathIndicator {
 
 impl Draw for PathIndicator {
     delegate! {
-        to self.flex {
+        to self.main {
             fn get_rect(&self) -> &Rect;
             fn move_to(&mut self, point: &Point);
             fn ensure(&mut self, min: &Size, max: &Size) -> Size;

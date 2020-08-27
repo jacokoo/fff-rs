@@ -18,3 +18,27 @@
 //     }
 //     print!("{}", cursor::Show);
 // }
+
+use crate::ui::layout::flex::Flex;
+use crate::ui::widget::label::Label;
+use crate::ui::widget::quoted::Quoted;
+use crate::ui::{Functional, Mrc, ToMrc};
+use std::str::Chars;
+
+const CHARS: &'static str = "▁▃▄▅▆▇█▇▆▅▄▃▁";
+const OK: &'static str = "☑";
+
+pub struct Spinner {
+    label: Mrc<Label>,
+    main: Quoted,
+}
+
+impl Spinner {
+    pub fn new() -> Self {
+        let label = Label::new(OK).mrc();
+        Spinner {
+            main: Quoted::new(label.clone()),
+            label,
+        }
+    }
+}

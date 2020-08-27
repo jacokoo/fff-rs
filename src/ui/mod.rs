@@ -1,3 +1,5 @@
+mod ui;
+
 use crate::ui::base::draw::Draw;
 use crate::ui::base::shape::{Point, Size};
 use crate::ui::layout::container::Container;
@@ -6,7 +8,7 @@ use crate::ui::layout::space::Space;
 use crate::ui::widget::label::Label;
 use crossterm::style::{Color, Colors, Print};
 use crossterm::terminal::size;
-use crossterm::{event, execute, queue};
+use crossterm::{execute, queue};
 
 use crate::ui::layout::background::Background;
 use crate::ui::layout::center::Center;
@@ -23,6 +25,7 @@ use std::io::{stdout, Write};
 use std::rc::Rc;
 
 mod base;
+mod event;
 mod layout;
 mod widget;
 
@@ -162,42 +165,4 @@ pub fn demo() {
     root.draw();
 
     // println!("{:?}", tab.borrow().get_rect());
-}
-
-pub fn demo1() {
-    let (width, height) = size().unwrap();
-    let label = Label::new("hello").mrc();
-    let label2 = Label::new("world").mrc();
-    let label3 = Label::new("middle").mrc();
-    let line = DoubleLine::new(true).mrc();
-
-    let pad = Padding::new(label2).left(2).mrc();
-
-    let mut row = Flex::row()
-        .also_mut(|it| {
-            it.add(Padding::new(label.clone()).top_bottom(2).mrc());
-            it.add(SizedBox::new(line.clone()).max_height().mrc());
-            it.add(Padding::new(Label::new("padding top").mrc()).top(2).mrc());
-            it.add_flex(Space::new_with_width(10).mrc(), 3);
-            it.add(SizedBox::new(label3.clone()).width(20).mrc());
-            it.add_flex(Space::new().mrc(), 2);
-            it.add(pad.clone());
-        })
-        .mrc();
-
-    let mut c = Container::new(row.clone());
-    let size = Size::new(width - 2, height);
-    c.ensure(&size, &size);
-    c.move_to(&Point::new(2, 0));
-    c.draw();
-
-    for i in 0..56 {
-        execute!(
-            stdout(),
-            Point::new(0, i).move_to(),
-            Print(format!("{}", i))
-        )
-        .unwrap();
-    }
-    execute!(stdout(), Point::new(0, 54).move_to()).unwrap();
 }

@@ -67,23 +67,18 @@ impl FileList {
         }
         self.flex.add_flex(Space::new().mrc(), 1);
         self.flex.add(
-            SizedBox::new(
-                UseMin::new(
-                    Flex::row()
-                        .also_mut(|it| {
-                            it.add_flex(Space::new().mrc(), 1);
-                            if let Some(idx) = self.select_index {
-                                it.add(
-                                    Label::from(format!("{}/{}  ", idx + 1, self.files.len()))
-                                        .mrc(),
-                                );
-                            }
-                        })
-                        .mrc(),
-                )
-                .mrc(),
+            UseMin::width(
+                Flex::row()
+                    .also_mut(|it| {
+                        it.add_flex(Space::new().mrc(), 1);
+                        if let Some(idx) = self.select_index {
+                            it.add(
+                                Label::from(format!("{}/{}  ", idx + 1, self.files.len())).mrc(),
+                            );
+                        }
+                    })
+                    .mrc(),
             )
-            .height(1)
             .mrc(),
         );
     }

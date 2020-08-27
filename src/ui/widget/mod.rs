@@ -6,5 +6,7 @@ pub mod file_list;
 pub mod label;
 pub mod line;
 pub mod path_indicator;
-pub mod spin;
+pub mod quoted;
+pub mod spinner;
+pub mod statusbar;
 pub mod tab;

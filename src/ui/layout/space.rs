@@ -1,7 +1,7 @@
 use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
-use delegate::delegate;
+use fff_macros::draw_to;
 use std::cmp;
 
 pub struct Space {
@@ -41,14 +41,8 @@ impl Space {
     }
 }
 
-impl Draw for Space {
-    delegate! {
-        to self.drawable {
-            fn get_rect(&self) -> &Rect;
-            fn move_to(&mut self, point: &Point);
-            fn clear(&mut self);
-        }
-    }
+draw_to! {
+    Space.drawable
 
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let s = Size::new(

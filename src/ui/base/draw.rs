@@ -4,14 +4,13 @@ use crate::ui::base::shape::{Point, Rect, Size};
 use crossterm::style::ResetColor;
 use crossterm::QueueableCommand;
 use delegate::delegate;
-use std::any::Any;
 
 use crate::ui::Mrc;
 use std::cell::{Ref, RefMut};
 use std::io::stdout;
 use std::ops::Deref;
 
-pub trait Draw: Any {
+pub trait Draw {
     fn get_rect(&self) -> &Rect;
     fn move_to(&mut self, point: &Point);
     fn ensure(&mut self, min: &Size, max: &Size) -> Size;

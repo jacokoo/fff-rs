@@ -15,6 +15,7 @@ pub struct Flex {
     flex_children: HashMap<usize, u16>,
     vertical: bool,
     stretch: bool,
+    expanded: bool,
 }
 
 impl Flex {
@@ -33,6 +34,7 @@ impl Flex {
             flex_children: HashMap::new(),
             vertical,
             stretch: false,
+            expanded: true,
         }
     }
 
@@ -129,9 +131,9 @@ impl Flex {
 
     fn calc_next_point(&self, prev: &Rect) -> Point {
         if self.vertical {
-            &prev.bottom_left() + (0i16, 1i16)
+            &prev.bottom_left() + (0, 1)
         } else {
-            &prev.top_right() + (1i16, 0i16)
+            &prev.top_right() + (1, 0)
         }
     }
 

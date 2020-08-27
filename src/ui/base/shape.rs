@@ -22,11 +22,21 @@ pub struct Size {
 #[derive(Debug)]
 pub struct Rect(Point, Size);
 
-impl Add<(i16, i16)> for &Point {
+impl Point {
+    pub fn new(x: i16, y: i16) -> Self {
+        Point { x, y }
+    }
+
+    pub fn move_to(&self) -> MoveTo {
+        MoveTo(self.x as u16, self.y as u16)
+    }
+}
+
+impl Add<(i32, i32)> for &Point {
     type Output = Point;
 
-    fn add(self, rhs: (i16, i16)) -> Self::Output {
-        Point::new(self.x + rhs.0, self.y + rhs.1)
+    fn add(self, rhs: (i32, i32)) -> Self::Output {
+        Point::new(self.x + rhs.0 as i16, self.y + rhs.1 as i16)
     }
 }
 
@@ -35,16 +45,6 @@ impl Add<(u16, u16)> for &Point {
 
     fn add(self, rhs: (u16, u16)) -> Self::Output {
         Point::new(self.x + (rhs.0 as i16), self.y + (rhs.1 as i16))
-    }
-}
-
-impl Point {
-    pub fn new(x: i16, y: i16) -> Self {
-        Point { x, y }
-    }
-
-    pub fn move_to(&self) -> MoveTo {
-        MoveTo(self.x as u16, self.y as u16)
     }
 }
 
@@ -185,7 +185,7 @@ impl Rect {
         }
         (tl.y..=br.y).enumerate().for_each(|(i, _)| {
             let cc = (tl.x..=br.x).map(|_| ' ').collect::<Vec<char>>();
-            out.queue((&tl + (0i16, i as i16)).move_to()).unwrap();
+            out.queue((&tl + (0, i as i32)).move_to()).unwrap();
             out.queue(Print(String::from_iter(cc))).unwrap();
         })
     }

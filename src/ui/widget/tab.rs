@@ -3,6 +3,7 @@ use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::flex::Flex;
 use crate::ui::widget::label::Label;
+use crate::ui::widget::quoted::Quoted;
 use crate::ui::{Functional, Mrc, ToMrc};
 use crossterm::style::{Color, Colors, Print, SetColors};
 use crossterm::QueueableCommand;
@@ -56,7 +57,7 @@ impl Draw for TabItem {
 pub struct Tab {
     items: Vec<Mrc<TabItem>>,
     current: usize,
-    flex: Flex,
+    main: Quoted,
 }
 
 impl Tab {
@@ -65,17 +66,15 @@ impl Tab {
         items[current].borrow_mut().set_active(true);
 
         let flex = Flex::row().also_mut(|it| {
-            it.add(Label::new("[").mrc());
             for item in &items {
                 it.add(item.clone());
             }
-            it.add(Label::new("]").mrc());
         });
 
         Tab {
             items,
             current,
-            flex,
+            main: Quoted::new(flex.mrc()),
         }
     }
 
@@ -91,7 +90,7 @@ impl Tab {
 
 impl Draw for Tab {
     delegate! {
-        to self.flex {
+        to self.main {
             fn get_rect(&self) -> &Rect;
             fn move_to(&mut self, point: &Point);
             fn ensure(&mut self, min: &Size, max: &Size) -> Size;
