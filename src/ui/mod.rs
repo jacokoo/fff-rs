@@ -12,6 +12,7 @@ use crate::ui::layout::background::Background;
 use crate::ui::layout::center::Center;
 use crate::ui::layout::padding::Padding;
 use crate::ui::layout::sized::SizedBox;
+use crate::ui::widget::board::Board;
 use crate::ui::widget::file_label::FileLabel;
 use crate::ui::widget::file_list::FileList;
 use crate::ui::widget::line::{DoubleLine, Line};
@@ -81,7 +82,7 @@ pub fn demo() {
 
     let path = PathIndicator::new("/Users/guyong/ws/rust/fff").mrc();
 
-    let top = Flex::new(false)
+    let top = Flex::row()
         .also_mut(|it| {
             it.add(tab.clone());
             it.add(path.clone());
@@ -91,7 +92,7 @@ pub fn demo() {
         .mrc();
 
     let status_bar = Background::new(
-        Flex::new(false)
+        Flex::row()
             .also_mut(|it| {
                 it.add(
                     Label::new("status bar")
@@ -106,7 +107,7 @@ pub fn demo() {
     )
     .mrc();
 
-    let bookmark = Flex::new(true)
+    let bookmark = Flex::column()
         .also_mut(|it| {
             it.set_stretch();
             it.add(
@@ -121,39 +122,32 @@ pub fn demo() {
         })
         .mrc();
 
-    let cols = Flex::new(false)
+    let board = Board::new()
         .also_mut(|it| {
-            it.set_stretch();
-            it.add(bookmark.clone());
-            it.add(DoubleLine::new(true).mrc());
-            it.add(
-                SizedBox::new(
-                    FileList::new()
-                        .also_mut(|it| {
-                            it.set_files(vec![
-                                create_file("hello", true),
-                                create_file("hello", false),
-                                create_file("hello world", false),
-                            ]);
-                            it.set_selected(Some(1));
-                            it.set_marked(vec![0, 1]);
-                        })
-                        .mrc(),
-                )
-                .width(30)
-                .max_height()
-                .mrc(),
+            it.add_file_list(
+                FileList::new()
+                    .also_mut(|it| {
+                        it.set_files(vec![
+                            create_file("hello", true),
+                            create_file("hello", false),
+                            create_file("hello world", false),
+                        ]);
+                        it.set_selected(Some(1));
+                        it.set_marked(vec![0, 1]);
+                    })
+                    .mrc(),
             );
-            it.add(Line::new(true).mrc());
+
+            it.add_bookmark("Home".to_string());
+            it.add_bookmark("Root".to_string());
         })
         .mrc();
 
     let mut root = Container::new(
-        Flex::new(true)
+        Flex::column()
             .also_mut(|it| {
                 it.add(Padding::new(top.clone()).top_bottom(1).mrc());
-                it.add(SizedBox::new(Line::new(false).mrc()).max_width().mrc());
-                it.add_flex(cols.clone(), 1);
+                it.add_flex(SizedBox::new(board.clone()).max().mrc(), 1);
                 it.add(SizedBox::new(status_bar.clone()).max_width().mrc());
                 it.add(SizedBox::new(Space::new().mrc()).height(1).mrc());
             })
@@ -179,7 +173,7 @@ pub fn demo1() {
 
     let pad = Padding::new(label2).left(2).mrc();
 
-    let mut row = Flex::new(false)
+    let mut row = Flex::row()
         .also_mut(|it| {
             it.add(Padding::new(label.clone()).top_bottom(2).mrc());
             it.add(SizedBox::new(line.clone()).max_height().mrc());

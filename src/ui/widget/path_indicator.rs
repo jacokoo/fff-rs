@@ -19,7 +19,7 @@ impl PathIndicator {
         let label = Label::new(str).mrc();
         PathIndicator {
             path: str.to_string(),
-            flex: Flex::new(false).also_mut(|it| {
+            flex: Flex::row().also_mut(|it| {
                 it.add(Label::new("[").mrc());
                 it.add(label.clone());
                 it.add(Label::new("]").mrc());

@@ -64,7 +64,7 @@ impl Tab {
         let items: Vec<_> = strs.into_iter().map(|it| TabItem::new(it).mrc()).collect();
         items[current].borrow_mut().set_active(true);
 
-        let flex = Flex::new(false).also_mut(|it| {
+        let flex = Flex::row().also_mut(|it| {
             it.add(Label::new("[").mrc());
             for item in &items {
                 it.add(item.clone());

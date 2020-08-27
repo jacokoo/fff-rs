@@ -11,6 +11,8 @@ use std::ops::Deref;
 pub struct SizedBox {
     inner: Size,
     drawable: Drawable,
+    have_width: bool,
+    have_height: bool,
 }
 
 impl SizedBox {
@@ -18,16 +20,20 @@ impl SizedBox {
         SizedBox {
             inner: Size::new(0, 0),
             drawable: Drawable::new_with_child(child),
+            have_width: false,
+            have_height: false,
         }
     }
 
     pub fn width(mut self, v: u16) -> Self {
         self.inner.width = v;
+        self.have_width = true;
         self
     }
 
     pub fn height(mut self, v: u16) -> Self {
         self.inner.height = v;
+        self.have_height = true;
         self
     }
 
@@ -36,13 +42,11 @@ impl SizedBox {
     }
 
     pub fn max_width(mut self) -> Self {
-        self.inner.width = u16::max_value();
-        self
+        self.width(u16::max_value())
     }
 
     pub fn max_height(mut self) -> Self {
-        self.inner.height = u16::max_value();
-        self
+        self.height(u16::max_value())
     }
 
     pub fn max(self) -> Self {
@@ -59,12 +63,23 @@ impl Draw for SizedBox {
     }
 
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
-        let mut s = Size::new(
-            cmp::min(max.width, cmp::max(min.width, self.inner.width)),
-            cmp::min(max.height, cmp::max(min.height, self.inner.height)),
-        );
-        let si = self.drawable.mut_child().ensure(&s, &s);
-        s.keep_max(&si);
+        let h = cmp::min(max.height, self.inner.height);
+        let w = cmp::min(max.width, self.inner.width);
+
+        let s = if !self.have_width && !self.have_height {
+            self.drawable.mut_child().ensure(min, max)
+        } else if !self.have_width {
+            self.drawable
+                .mut_child()
+                .ensure(&min.new_height(h), &max.new_height(h))
+        } else if !self.have_height {
+            self.drawable
+                .mut_child()
+                .ensure(&min.new_width(w), &max.new_width(w))
+        } else {
+            let mm = Size::new(w, h);
+            self.drawable.mut_child().ensure(&mm, &mm)
+        };
         self.drawable.set_size(&s);
         s
     }

@@ -18,7 +18,15 @@ pub struct Flex {
 }
 
 impl Flex {
-    pub fn new(vertical: bool) -> Self {
+    pub fn row() -> Self {
+        Self::new(false)
+    }
+
+    pub fn column() -> Self {
+        Self::new(true)
+    }
+
+    fn new(vertical: bool) -> Self {
         Flex {
             drawable: Drawable::new(),
             flex_count: 0,

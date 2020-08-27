@@ -179,7 +179,7 @@ impl Rect {
         let mut out = stdout();
 
         if let Some(v) = color {
-            out.queue(SetColors(Colors::new(Color::Reset, v)));
+            out.queue(SetColors(Colors::new(Color::Reset, v))).unwrap();
         } else {
             out.queue(ResetColor).unwrap();
         }
