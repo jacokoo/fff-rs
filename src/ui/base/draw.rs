@@ -17,7 +17,7 @@ pub trait Draw {
     fn do_draw(&mut self);
     fn clear(&mut self);
 
-    fn collect(&self, tp: JumpType) -> Option<Vec<JumpPoint>> {
+    fn collect(&self, _tp: JumpType) -> Option<Vec<JumpPoint>> {
         None
     }
 

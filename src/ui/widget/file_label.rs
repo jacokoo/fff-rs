@@ -1,5 +1,5 @@
-use crate::ui::base::draw::{Draw, Drawable};
-use crate::ui::base::jump::{JumpPoint, JumpType};
+use crate::ui::base::draw::{Draw};
+
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::background::Background;
 use crate::ui::widget::label::Label;

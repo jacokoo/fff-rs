@@ -19,11 +19,11 @@
 //     print!("{}", cursor::Show);
 // }
 
-use crate::ui::layout::flex::Flex;
+
 use crate::ui::widget::label::Label;
 use crate::ui::widget::quoted::Quoted;
-use crate::ui::{Functional, Mrc, ToMrc};
-use std::str::Chars;
+use crate::ui::{Mrc, ToMrc};
+
 
 const CHARS: &'static str = "▁▃▄▅▆▇█▇▆▅▄▃▁";
 const OK: &'static str = "☑";

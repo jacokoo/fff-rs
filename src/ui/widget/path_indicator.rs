@@ -1,13 +1,13 @@
-use crate::ui::base::draw::{Draw, Drawable};
-use crate::ui::base::jump::{JumpPoint, JumpType};
+use crate::ui::base::draw::{Draw};
+
 use crate::ui::base::shape::{Point, Rect, Size};
-use crate::ui::layout::flex::Flex;
+
 use crate::ui::widget::label::Label;
 use crate::ui::widget::quoted::Quoted;
-use crate::ui::{Functional, Mrc, ToMrc};
-use crossterm::style::{Color, Colors, Print, SetColors};
-use crossterm::QueueableCommand;
-use delegate::delegate;
+use crate::ui::{Mrc, ToMrc};
+
+
+
 
 pub struct PathIndicator {
     path: String,

@@ -1,6 +1,6 @@
 use crossterm::cursor::MoveTo;
 use crossterm::style::{Color, Colors, Print, ResetColor, SetColors};
-use crossterm::{Command, QueueableCommand};
+use crossterm::{QueueableCommand};
 
 use std::cmp::max;
 use std::io::stdout;

@@ -1,10 +1,10 @@
 use crate::ui::base::draw::{Draw, Drawable};
-use crate::ui::base::jump::{JumpPoint, JumpType};
+
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
-use std::cell::{Ref, RefMut};
 
-use std::ops::Deref;
+
+
 
 pub struct Padding {
     padding: (u16, u16, u16, u16),

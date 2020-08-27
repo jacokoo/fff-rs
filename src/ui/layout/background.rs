@@ -1,10 +1,10 @@
 use crate::ui::base::draw::{Draw, Drawable};
-use crate::ui::base::jump::{JumpPoint, JumpType};
+
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
 use crossterm::style::{Color, Colors};
-use std::borrow::BorrowMut;
-use std::ops::Deref;
+
+
 
 pub struct Background {
     drawable: Drawable,

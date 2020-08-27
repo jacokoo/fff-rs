@@ -1,5 +1,5 @@
-use proc_macro::{TokenStream, TokenTree};
-use quote::{quote, ToTokens, TokenStreamExt};
+use proc_macro::TokenStream;
+use quote::quote;
 use syn::parse::*;
 use syn::parse_macro_input;
 use syn::*;
@@ -55,7 +55,6 @@ impl Parse for Data {
 
 #[proc_macro]
 pub fn draw_to(input: TokenStream) -> TokenStream {
-    println!("{:?}", input);
     let data = parse_macro_input!(input as Data);
     let name = data.name;
     let target = data.target;
@@ -114,8 +113,6 @@ pub fn draw_to(input: TokenStream) -> TokenStream {
             }
         })
     }
-
-    println!("{:?}", &used);
 
     let mut ss = proc_macro2::TokenStream::new();
     ss.extend(ms);

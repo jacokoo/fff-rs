@@ -1,5 +1,5 @@
 use crate::ui::base::draw::{Draw, Drawable};
-use crate::ui::base::jump::{JumpPoint, JumpType};
+
 use crate::ui::base::shape::{Point, Rect, Size};
 use fff_macros::draw_to;
 use std::cmp;

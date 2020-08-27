@@ -62,7 +62,7 @@ async fn main() -> Res<()> {
                     event::KeyCode::Char('q') => break,
                     _ => continue,
                 },
-                event::Event::Mouse(me) => {}
+                event::Event::Mouse(_me) => {}
                 _ => {}
             }
         } else {

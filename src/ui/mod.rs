@@ -6,9 +6,9 @@ use crate::ui::layout::container::Container;
 use crate::ui::layout::flex::Flex;
 use crate::ui::layout::space::Space;
 use crate::ui::widget::label::Label;
-use crossterm::style::{Color, Colors, Print};
+use crossterm::style::{Color, Colors};
 use crossterm::terminal::size;
-use crossterm::{execute, queue};
+
 
 use crate::ui::layout::background::Background;
 use crate::ui::layout::center::Center;
@@ -17,11 +17,11 @@ use crate::ui::layout::sized::SizedBox;
 use crate::ui::widget::board::Board;
 use crate::ui::widget::file_label::FileLabel;
 use crate::ui::widget::file_list::FileList;
-use crate::ui::widget::line::{DoubleLine, Line};
+use crate::ui::widget::line::{Line};
 use crate::ui::widget::path_indicator::PathIndicator;
 use crate::ui::widget::tab::Tab;
 use std::cell::RefCell;
-use std::io::{stdout, Write};
+
 use std::rc::Rc;
 
 mod base;
@@ -40,7 +40,7 @@ pub trait ToMrc: Sized {
 impl<T: Sized + Draw> ToMrc for T {}
 
 pub trait Functional: Sized {
-    fn also<F: FnOnce(&Self)>(self, mut f: F) -> Self {
+    fn also<F: FnOnce(&Self)>(self, f: F) -> Self {
         f(&self);
         self
     }
@@ -110,7 +110,7 @@ pub fn demo() {
     )
     .mrc();
 
-    let bookmark = Flex::column()
+    let _bookmark = Flex::column()
         .also_mut(|it| {
             it.set_stretch();
             it.add(

@@ -1,11 +1,11 @@
 use crate::ui::base::draw::{Draw, Drawable};
-use crate::ui::base::jump::{JumpPoint, JumpType};
+
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
-use std::borrow::BorrowMut;
-use std::cell::{Ref, RefMut};
+
+
 use std::cmp;
-use std::ops::Deref;
+
 
 pub struct SizedBox {
     inner: Size,
@@ -40,11 +40,11 @@ impl SizedBox {
         self.width(w).height(h)
     }
 
-    pub fn max_width(mut self) -> Self {
+    pub fn max_width(self) -> Self {
         self.width(u16::max_value())
     }
 
-    pub fn max_height(mut self) -> Self {
+    pub fn max_height(self) -> Self {
         self.height(u16::max_value())
     }
 

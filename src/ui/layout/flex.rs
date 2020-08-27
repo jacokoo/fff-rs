@@ -1,9 +1,9 @@
 use crate::ui::base::draw::{Draw, Drawable};
-use crate::ui::base::jump::{JumpPoint, JumpType};
+
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
 
-use std::borrow::{Borrow, BorrowMut};
+use std::borrow::{BorrowMut};
 use std::cmp;
 use std::collections::HashMap;
 use std::ops::Deref;
@@ -58,7 +58,7 @@ impl Flex {
         self.stretch = true;
     }
 
-    fn calc_self_size(&self, min: &Size, max: &Size, child_max: &Size, child_sum: &Size) -> Size {
+    fn calc_self_size(&self, min: &Size, _max: &Size, child_max: &Size, child_sum: &Size) -> Size {
         if self.vertical {
             Size::new(
                 cmp::max(min.width, child_max.width),

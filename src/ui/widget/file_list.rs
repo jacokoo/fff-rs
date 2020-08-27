@@ -1,15 +1,15 @@
-use crate::ui::base::draw::{Draw, Drawable};
-use crate::ui::base::jump::{JumpPoint, JumpType};
+use crate::ui::base::draw::{Draw};
+
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::container::UseMin;
 use crate::ui::layout::flex::Flex;
-use crate::ui::layout::sized::SizedBox;
+
 use crate::ui::layout::space::Space;
 use crate::ui::widget::file_label::FileLabel;
 use crate::ui::widget::label::Label;
 use crate::ui::{Functional, Mrc, ToMrc};
-use delegate::delegate;
-use std::ops::Deref;
+
+
 
 pub struct FileList {
     files: Vec<Mrc<FileLabel>>,
