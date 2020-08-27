@@ -7,7 +7,6 @@ use crate::ui::widget::file_list::FileList;
 use crate::ui::widget::label::Label;
 use crate::ui::widget::line::Line;
 use crate::ui::{Mrc, ToMrc};
-use delegate::delegate;
 use std::cell::RefMut;
 use std::ops::Deref;
 
@@ -29,12 +28,8 @@ impl CornerLine {
     }
 }
 
-impl Draw for CornerLine {
-    delegate! {
-        to self.line {
-            fn get_rect(&self) -> &Rect;
-        }
-    }
+draw_to! {
+    CornerLine.line
 
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         self.label.ensure(min, max);
@@ -114,14 +109,6 @@ impl FileColumn {
     }
 }
 
-impl Draw for FileColumn {
-    delegate! {
-        to self.flex {
-            fn get_rect(&self) -> &Rect;
-            fn move_to(&mut self, point: &Point);
-            fn ensure(&mut self, min: &Size, max: &Size) -> Size;
-            fn do_draw(&mut self);
-            fn clear(&mut self);
-        }
-    }
+draw_to! {
+    FileColumn.flex
 }

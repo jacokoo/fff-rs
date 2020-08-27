@@ -3,7 +3,6 @@ use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
 use crossterm::style::{Color, Colors};
-use delegate::delegate;
 use std::borrow::BorrowMut;
 use std::ops::Deref;
 
@@ -25,12 +24,8 @@ impl Background {
     }
 }
 
-impl Draw for Background {
-    delegate! {
-        to self.drawable {
-            fn get_rect(&self) -> &Rect;
-        }
-    }
+draw_to! {
+    Background.drawable
 
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let s = self.drawable.mut_child().ensure(min, max);

@@ -45,14 +45,8 @@ impl Line {
     }
 }
 
-impl Draw for Line {
-    delegate! {
-        to self.drawable {
-            fn get_rect(&self) -> &Rect;
-            fn move_to(&mut self, point: &Point);
-            fn clear(&mut self);
-        }
-    }
+draw_to! {
+    Line.drawable
 
     fn ensure(&mut self, min: &Size, _max: &Size) -> Size {
         let s = if self.vertical {

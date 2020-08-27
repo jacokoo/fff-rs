@@ -8,7 +8,6 @@ use crate::ui::widget::file_column::{CornerLine, FileColumn};
 use crate::ui::widget::file_list::FileList;
 use crate::ui::widget::line::Line;
 use crate::ui::{Functional, Mrc, ToMrc};
-use delegate::delegate;
 
 pub struct Board {
     main: Flex,
@@ -50,14 +49,6 @@ impl Board {
     }
 }
 
-impl Draw for Board {
-    delegate! {
-        to self.main {
-            fn get_rect(&self) -> &Rect;
-            fn move_to(&mut self, point: &Point);
-            fn clear(&mut self);
-            fn do_draw(&mut self);
-            fn ensure(&mut self, min: &Size, max: &Size) -> Size;
-        }
-    }
+draw_to! {
+    Board.main
 }

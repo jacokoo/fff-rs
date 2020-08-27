@@ -42,16 +42,8 @@ impl TabItem {
     }
 }
 
-impl Draw for TabItem {
-    delegate! {
-        to self.label {
-            fn get_rect(&self) -> &Rect;
-            fn move_to(&mut self, point: &Point);
-            fn ensure(&mut self, min: &Size, max: &Size) -> Size;
-            fn do_draw(&mut self);
-            fn clear(&mut self);
-        }
-    }
+draw_to! {
+    TabItem.label
 }
 
 pub struct Tab {
@@ -88,14 +80,6 @@ impl Tab {
     }
 }
 
-impl Draw for Tab {
-    delegate! {
-        to self.main {
-            fn get_rect(&self) -> &Rect;
-            fn move_to(&mut self, point: &Point);
-            fn ensure(&mut self, min: &Size, max: &Size) -> Size;
-            fn do_draw(&mut self);
-            fn clear(&mut self);
-        }
-    }
+draw_to! {
+    Tab.main
 }

@@ -55,15 +55,8 @@ impl Bookmark {
     }
 }
 
-impl Draw for Bookmark {
-    delegate! {
-        to self.main {
-            fn get_rect(&self) -> &Rect;
-            fn move_to(&mut self, point: &Point);
-            fn clear(&mut self);
-            fn do_draw(&mut self);
-        }
-    }
+draw_to! {
+    Bookmark.main
 
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         self.prepare_ensure(max.height);

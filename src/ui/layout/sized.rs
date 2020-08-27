@@ -2,7 +2,6 @@ use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
-use delegate::delegate;
 use std::borrow::BorrowMut;
 use std::cell::{Ref, RefMut};
 use std::cmp;
@@ -54,13 +53,8 @@ impl SizedBox {
     }
 }
 
-impl Draw for SizedBox {
-    delegate! {
-        to self.drawable {
-            fn get_rect(&self) -> &Rect;
-            fn clear(&mut self);
-        }
-    }
+draw_to! {
+    SizedBox.drawable
 
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let h = cmp::min(max.height, self.inner.height);

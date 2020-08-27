@@ -2,7 +2,6 @@ use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
-use delegate::delegate;
 
 use std::borrow::{Borrow, BorrowMut};
 use std::cmp;
@@ -156,13 +155,8 @@ impl Flex {
     }
 }
 
-impl Draw for Flex {
-    delegate! {
-        to self.drawable {
-            fn get_rect(&self) -> &Rect;
-            fn clear(&mut self);
-        }
-    }
+draw_to! {
+    Flex.drawable
 
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let (mut cmax, mut csum) = self.ensure_non_flex(min, max);

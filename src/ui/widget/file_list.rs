@@ -84,15 +84,8 @@ impl FileList {
     }
 }
 
-impl Draw for FileList {
-    delegate! {
-        to self.flex {
-            fn get_rect(&self) -> &Rect;
-            fn move_to(&mut self, point: &Point);
-            fn clear(&mut self);
-            fn do_draw(&mut self);
-        }
-    }
+draw_to! {
+    FileList.flex
 
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         self.prepare_ensure(max.height as usize);

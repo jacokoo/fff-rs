@@ -2,7 +2,6 @@ use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
-use delegate::delegate;
 use std::borrow::BorrowMut;
 use std::ops::Deref;
 
@@ -18,13 +17,8 @@ impl Container {
     }
 }
 
-impl Draw for Container {
-    delegate! {
-        to self.drawable {
-            fn get_rect(&self) -> &Rect;
-            fn clear(&mut self);
-        }
-    }
+draw_to! {
+    Container.drawable
 
     fn ensure(&mut self, _: &Size, max: &Size) -> Size {
         let s = Size::new(max.width, max.height);
@@ -67,13 +61,8 @@ impl UseMin {
     }
 }
 
-impl Draw for UseMin {
-    delegate! {
-        to self.drawable {
-            fn get_rect(&self) -> &Rect;
-            fn clear(&mut self);
-        }
-    }
+draw_to! {
+    UseMin.drawable
 
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let mi = min.clone();

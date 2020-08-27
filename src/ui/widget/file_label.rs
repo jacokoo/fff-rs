@@ -5,7 +5,6 @@ use crate::ui::layout::background::Background;
 use crate::ui::widget::label::Label;
 use crate::ui::{Functional, Mrc, ToMrc};
 use crossterm::style::{Color, Colors};
-use delegate::delegate;
 use std::borrow::BorrowMut;
 use std::ops::Deref;
 
@@ -91,14 +90,8 @@ impl FileLabel {
     }
 }
 
-impl Draw for FileLabel {
-    delegate! {
-        to self.background {
-            fn get_rect(&self) -> &Rect;
-            fn move_to(&mut self, point: &Point);
-            fn clear(&mut self);
-        }
-    }
+draw_to! {
+    FileLabel.background
 
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         self.marker.ensure(min, max);

@@ -2,7 +2,6 @@ use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
-use delegate::delegate;
 use std::cell::{Ref, RefMut};
 
 use std::ops::Deref;
@@ -53,13 +52,8 @@ impl Padding {
     }
 }
 
-impl Draw for Padding {
-    delegate! {
-        to self.drawable {
-            fn get_rect(&self) -> &Rect;
-            fn clear(&mut self);
-        }
-    }
+draw_to! {
+    Padding.drawable
 
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let (t, b, l, r) = self.padding;

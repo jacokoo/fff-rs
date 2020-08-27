@@ -81,15 +81,8 @@ impl Label {
         re
     }
 }
-
-impl Draw for Label {
-    delegate! {
-        to self.drawable {
-            fn get_rect(&self) -> &Rect;
-            fn move_to(&mut self, point: &Point);
-            fn clear(&mut self);
-        }
-    }
+draw_to! {
+    Label.drawable
 
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let s = Size::new(
