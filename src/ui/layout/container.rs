@@ -3,8 +3,6 @@ use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
 
-
-
 pub struct Container {
     drawable: Drawable,
 }
@@ -17,9 +15,8 @@ impl Container {
     }
 }
 
-draw_to! {
-    Container.drawable
-
+#[draw_to(drawable)]
+impl Draw for Container {
     fn ensure(&mut self, _: &Size, max: &Size) -> Size {
         let s = Size::new(max.width, max.height);
         self.drawable.set_size(&s);
@@ -61,9 +58,8 @@ impl UseMin {
     }
 }
 
-draw_to! {
-    UseMin.drawable
-
+#[draw_to(drawable)]
+impl Draw for UseMin {
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let mi = min.clone();
         let mut ma = max.clone();

@@ -89,9 +89,8 @@ impl FileLabel {
     }
 }
 
-draw_to! {
-    FileLabel.background
-
+#[draw_to(background)]
+impl Draw for FileLabel {
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         self.marker.ensure(min, max);
         self.background.ensure(min, max)

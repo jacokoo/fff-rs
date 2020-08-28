@@ -46,9 +46,8 @@ impl Line {
     }
 }
 
-draw_to! {
-    Line.drawable
-
+#[draw_to(drawable)]
+impl Draw for Line {
     fn ensure(&mut self, min: &Size, _max: &Size) -> Size {
         let s = if self.vertical {
             min.new_width(cmp::max(min.width, 1))
@@ -101,14 +100,5 @@ impl DoubleLine {
     }
 }
 
-impl Draw for DoubleLine {
-    delegate! {
-        to self.line {
-            fn get_rect(&self) -> &Rect;
-            fn move_to(&mut self, point: &Point);
-            fn clear(&mut self);
-            fn do_draw(&mut self);
-            fn ensure(&mut self, min: &Size, max: &Size) -> Size;
-        }
-    }
-}
+#[draw_to(line)]
+impl Draw for DoubleLine {}

@@ -81,9 +81,9 @@ impl Label {
         re
     }
 }
-draw_to! {
-    Label.drawable
 
+#[draw_to(drawable)]
+impl Draw for Label {
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let s = Size::new(
             if self.text_width > max.width {

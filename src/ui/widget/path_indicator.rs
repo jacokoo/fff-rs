@@ -1,13 +1,10 @@
-use crate::ui::base::draw::{Draw};
+use crate::ui::base::draw::Draw;
 
 use crate::ui::base::shape::{Point, Rect, Size};
 
 use crate::ui::widget::label::Label;
 use crate::ui::widget::quoted::Quoted;
 use crate::ui::{Mrc, ToMrc};
-
-
-
 
 pub struct PathIndicator {
     path: String,
@@ -32,6 +29,5 @@ impl PathIndicator {
     }
 }
 
-draw_to! {
-    PathIndicator.main
-}
+#[draw_to(main)]
+impl Draw for PathIndicator {}

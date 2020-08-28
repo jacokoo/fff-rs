@@ -4,8 +4,6 @@ use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
 use crossterm::style::{Color, Colors};
 
-
-
 pub struct Background {
     drawable: Drawable,
     color: Color,
@@ -24,9 +22,8 @@ impl Background {
     }
 }
 
-draw_to! {
-    Background.drawable
-
+#[draw_to(drawable)]
+impl Draw for Background {
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let s = self.drawable.mut_child().ensure(min, max);
         self.drawable.set_size(&s);

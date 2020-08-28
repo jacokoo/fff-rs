@@ -41,9 +41,8 @@ impl Space {
     }
 }
 
-draw_to! {
-    Space.drawable
-
+#[draw_to(drawable)]
+impl Draw for Space {
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let s = Size::new(
             cmp::min(max.width, cmp::max(min.width, self.width)),

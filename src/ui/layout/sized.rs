@@ -3,9 +3,7 @@ use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
 
-
 use std::cmp;
-
 
 pub struct SizedBox {
     inner: Size,
@@ -53,9 +51,8 @@ impl SizedBox {
     }
 }
 
-draw_to! {
-    SizedBox.drawable
-
+#[draw_to(drawable)]
+impl Draw for SizedBox {
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let h = cmp::min(max.height, self.inner.height);
         let w = cmp::min(max.width, self.inner.width);

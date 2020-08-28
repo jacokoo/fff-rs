@@ -80,6 +80,5 @@ impl Spinner {
     }
 }
 
-draw_to! {
-    Spinner.main
-}
+#[draw_to(main)]
+impl Draw for Spinner {}

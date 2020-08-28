@@ -1,4 +1,4 @@
-use crate::ui::base::draw::{Draw};
+use crate::ui::base::draw::Draw;
 
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::flex::Flex;
@@ -49,6 +49,5 @@ impl Board {
     }
 }
 
-draw_to! {
-    Board.main
-}
+#[draw_to(main)]
+impl Draw for Board {}

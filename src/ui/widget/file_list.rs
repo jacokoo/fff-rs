@@ -1,4 +1,4 @@
-use crate::ui::base::draw::{Draw};
+use crate::ui::base::draw::Draw;
 
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::container::UseMin;
@@ -8,8 +8,6 @@ use crate::ui::layout::space::Space;
 use crate::ui::widget::file_label::FileLabel;
 use crate::ui::widget::label::Label;
 use crate::ui::{Functional, Mrc, ToMrc};
-
-
 
 pub struct FileList {
     files: Vec<Mrc<FileLabel>>,
@@ -84,9 +82,8 @@ impl FileList {
     }
 }
 
-draw_to! {
-    FileList.flex
-
+#[draw_to(flex)]
+impl Draw for FileList {
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         self.prepare_ensure(max.height as usize);
         let s = self.flex.ensure(min, max);

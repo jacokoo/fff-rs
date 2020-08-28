@@ -3,9 +3,6 @@ use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
 
-
-
-
 pub struct Padding {
     padding: (u16, u16, u16, u16),
     drawable: Drawable,
@@ -52,9 +49,8 @@ impl Padding {
     }
 }
 
-draw_to! {
-    Padding.drawable
-
+#[draw_to(drawable)]
+impl Draw for Padding {
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let (t, b, l, r) = self.padding;
         let s = (l + r, t + b);

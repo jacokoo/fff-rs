@@ -1,9 +1,7 @@
 use crate::ui::base::draw::{Draw, Drawable};
 
 use crate::ui::base::shape::{Point, Rect, Size};
-use crate::ui::{Mrc};
-
-
+use crate::ui::Mrc;
 
 pub struct Center {
     drawable: Drawable,
@@ -17,9 +15,8 @@ impl Center {
     }
 }
 
-draw_to! {
-    Center.drawable
-
+#[draw_to(drawable)]
+impl Draw for Center {
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let mut s = self.drawable.mut_child().ensure(&Size::new(0, 0), max);
         s.keep_max(min);

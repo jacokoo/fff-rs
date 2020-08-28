@@ -40,9 +40,8 @@ impl TabItem {
     }
 }
 
-draw_to! {
-    TabItem.label
-}
+#[draw_to(label)]
+impl Draw for TabItem {}
 
 pub struct Tab {
     items: Vec<Mrc<TabItem>>,
@@ -78,6 +77,5 @@ impl Tab {
     }
 }
 
-draw_to! {
-    Tab.main
-}
+#[draw_to(main)]
+impl Draw for Tab {}

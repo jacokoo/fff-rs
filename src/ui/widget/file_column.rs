@@ -1,4 +1,4 @@
-use crate::ui::base::draw::{Draw};
+use crate::ui::base::draw::Draw;
 
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::flex::Flex;
@@ -28,9 +28,8 @@ impl CornerLine {
     }
 }
 
-draw_to! {
-    CornerLine.line
-
+#[draw_to(line)]
+impl Draw for CornerLine {
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         self.label.ensure(min, max);
         return self.line.ensure(min, max);
@@ -109,6 +108,5 @@ impl FileColumn {
     }
 }
 
-draw_to! {
-    FileColumn.flex
-}
+#[draw_to(flex)]
+impl Draw for FileColumn {}
