@@ -2,9 +2,9 @@ use crate::ui::base::draw::{Draw, Drawable};
 
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::ColorNone;
-use crossterm::style::{Color, Colors, Print, SetColors};
+use crossterm::style::{Colors, Print, SetColors};
 use crossterm::QueueableCommand;
-use delegate::delegate;
+
 
 use std::cmp;
 use std::io::stdout;

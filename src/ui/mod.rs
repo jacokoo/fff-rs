@@ -10,13 +10,13 @@ use crossterm::style::{Color, Colors};
 use crossterm::terminal::size;
 
 use crate::ui::layout::background::Background;
-use crate::ui::layout::center::Center;
+
 use crate::ui::layout::padding::Padding;
 use crate::ui::layout::sized::SizedBox;
 use crate::ui::widget::board::Board;
 use crate::ui::widget::file_label::FileLabel;
 use crate::ui::widget::file_list::FileList;
-use crate::ui::widget::line::Line;
+
 use crate::ui::widget::path_indicator::PathIndicator;
 use crate::ui::widget::tab::Tab;
 use std::cell::RefCell;
