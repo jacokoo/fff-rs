@@ -1,6 +1,7 @@
 use crate::ui::base::draw::{Draw, Drawable};
 
 use crate::ui::base::shape::{Point, Rect, Size};
+use crate::ui::ColorNone;
 use crossterm::style::{Color, Colors, Print, SetColors};
 use crossterm::QueueableCommand;
 use delegate::delegate;
@@ -40,7 +41,7 @@ impl Line {
             vertical,
             vchar,
             hchar,
-            colors: Colors::new(Color::Reset, Color::Reset),
+            colors: Colors::none(),
         }
     }
 }

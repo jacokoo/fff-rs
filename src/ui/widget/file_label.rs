@@ -1,11 +1,10 @@
-use crate::ui::base::draw::{Draw};
+use crate::ui::base::draw::Draw;
 
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::background::Background;
 use crate::ui::widget::label::Label;
-use crate::ui::{Functional, Mrc, ToMrc};
+use crate::ui::{ColorNone, Functional, Mrc, ToMrc};
 use crossterm::style::{Color, Colors};
-use std::borrow::BorrowMut;
 use std::ops::Deref;
 
 trait InverseColor {
@@ -33,7 +32,7 @@ pub struct FileLabel {
 
 impl FileLabel {
     pub fn from(txt: String) -> Self {
-        Colors::new(Color::Reset, Color::Reset).map_to(|c| {
+        Colors::none().map_to(|c| {
             let label = Label::from(format!("  {}  ", txt))
                 .also_mut(|it| it.set_color(c.clone()))
                 .mrc();

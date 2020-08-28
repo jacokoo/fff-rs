@@ -1,9 +1,9 @@
 use crate::ui::base::draw::{Draw, Drawable};
 
 use crate::ui::base::shape::{Point, Rect, Size};
+use crate::ui::ColorNone;
 use crossterm::style::{Color, Colors, Print, SetColors};
 use crossterm::QueueableCommand;
-
 
 use std::cmp;
 use std::io::stdout;
@@ -21,7 +21,7 @@ impl Label {
             drawable: Drawable::new(),
             text_width: Label::width(&txt),
             text: txt,
-            colors: Colors::new(Color::Reset, Color::Reset),
+            colors: Colors::none(),
         }
     }
 
@@ -39,7 +39,7 @@ impl Label {
     }
 
     pub fn reset_color(&mut self) {
-        self.colors = Colors::new(Color::Reset, Color::Reset)
+        self.colors = Colors::none();
     }
 
     fn char_width(c: char) -> u16 {

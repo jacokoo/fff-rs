@@ -9,7 +9,6 @@ use crate::ui::widget::label::Label;
 use crossterm::style::{Color, Colors};
 use crossterm::terminal::size;
 
-
 use crate::ui::layout::background::Background;
 use crate::ui::layout::center::Center;
 use crate::ui::layout::padding::Padding;
@@ -17,11 +16,12 @@ use crate::ui::layout::sized::SizedBox;
 use crate::ui::widget::board::Board;
 use crate::ui::widget::file_label::FileLabel;
 use crate::ui::widget::file_list::FileList;
-use crate::ui::widget::line::{Line};
+use crate::ui::widget::line::Line;
 use crate::ui::widget::path_indicator::PathIndicator;
 use crate::ui::widget::tab::Tab;
 use std::cell::RefCell;
 
+use crate::ui::widget::spinner::Spinner;
 use std::rc::Rc;
 
 mod base;
@@ -56,6 +56,16 @@ pub trait Functional: Sized {
 }
 
 impl<T: Sized> Functional for T {}
+
+pub trait ColorNone {
+    fn none() -> Self;
+}
+
+impl ColorNone for Colors {
+    fn none() -> Self {
+        Colors::new(Color::Reset, Color::Reset)
+    }
+}
 
 fn create_file(txt: &str, dir: bool) -> Mrc<FileLabel> {
     FileLabel::new(txt)
@@ -103,27 +113,12 @@ pub fn demo() {
                         .mrc(),
                 );
                 it.add_flex(Space::new().mrc(), 1);
-                it.add(Label::new("status bar end").mrc());
+                it.add(Spinner::new().mrc());
             })
             .mrc(),
         Color::Cyan,
     )
     .mrc();
-
-    let _bookmark = Flex::column()
-        .also_mut(|it| {
-            it.set_stretch();
-            it.add(
-                Padding::new(Center::new(Label::new("BOOKMARK").mrc()).mrc())
-                    .top_bottom(1)
-                    .left_right(2)
-                    .mrc(),
-            );
-            it.add(SizedBox::new(Line::new(false).mrc()).mrc());
-            it.add(Label::new("hello").mrc());
-            it.add(Label::new("hello hello hello").mrc());
-        })
-        .mrc();
 
     let board = Board::new()
         .also_mut(|it| {
