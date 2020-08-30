@@ -9,7 +9,7 @@ use std::cmp;
 use std::io::stdout;
 
 pub struct Label {
-    drawable: Drawable,
+    rect: Rect,
     text: String,
     text_width: u16,
     colors: Colors,
@@ -18,7 +18,7 @@ pub struct Label {
 impl Label {
     pub fn from(txt: String) -> Self {
         Label {
-            drawable: Drawable::new(),
+            rect: Rect::new(),
             text_width: Label::width(&txt),
             text: txt,
             colors: Colors::none(),
@@ -82,8 +82,15 @@ impl Label {
     }
 }
 
-#[draw_to(drawable)]
 impl Draw for Label {
+    fn get_rect(&self) -> &Rect {
+        &self.rect
+    }
+
+    fn move_to(&mut self, point: &Point) {
+        self.rect.set_position(point);
+    }
+
     fn ensure(&mut self, min: &Size, max: &Size) -> Size {
         let s = Size::new(
             if self.text_width > max.width {
@@ -93,7 +100,7 @@ impl Draw for Label {
             },
             cmp::max(min.height, 1),
         );
-        self.drawable.set_size(&s);
+        self.rect.set_size(&s);
         s
     }
 
@@ -112,5 +119,9 @@ impl Draw for Label {
             .unwrap()
             .queue(print)
             .unwrap();
+    }
+
+    fn clear(&mut self) {
+        self.rect.clear()
     }
 }

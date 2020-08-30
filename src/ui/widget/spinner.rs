@@ -1,84 +1,101 @@
-use std::{thread, time};
-// use termion::{clear, color, cursor};
-//
-// pub fn spin() {
-//     let chars: Vec<char> = "▁▃▄▅▆▇█▇▆▅▄▃▁".chars().collect();
-//     let mut i = 0;
-//     print!("{}", cursor::Hide);
-//     while i < 100 {
-//         println!(
-//             "{}{}{}{}",
-//             cursor::Goto(1, 1),
-//             clear::AfterCursor,
-//             color::Fg(color::Red),
-//             chars[i % chars.len()]
-//         );
-//         thread::sleep(time::Duration::from_millis(200));
-//         i += 1;
-//     }
-//     print!("{}", cursor::Show);
-// }
-
 use crate::ui::base::draw::Draw;
 use crate::ui::base::shape::{Point, Rect, Size};
-
+use crate::ui::layout::space::Space;
 use crate::ui::widget::label::Label;
 use crate::ui::widget::quoted::Quoted;
 use crate::ui::{Functional, Mrc, ToMrc};
+use crossbeam_channel::bounded;
+use crossterm::style::Colors;
 use std::borrow::BorrowMut;
 use std::io::{stdout, Write};
 use std::ops::Deref;
+use std::sync::{Arc, Mutex, RwLock};
+use std::{thread, time};
 
 const OK: &'static str = "✓";
 
 pub struct Spinner {
-    label: Mrc<Label>,
+    label: Arc<Mutex<Label>>,
     main: Quoted,
-    started: bool,
+    started: Arc<RwLock<bool>>,
     chars: Vec<char>,
 }
 
 impl Spinner {
     pub fn new() -> Self {
-        let label = Label::new(OK).mrc();
+        let label = Arc::new(Mutex::new(Label::new(OK)));
         Spinner {
-            main: Quoted::new(label.clone()),
+            main: Quoted::new(Space::new().also_mut(|it| it.set(1, 1)).mrc()),
             label,
-            started: false,
-            chars: "▁▃▄▅▆▇█▇▆▅▄▃▁".chars().collect(),
+            started: Arc::new(RwLock::new(false)),
+            // chars: "▁▃▄▅▆▇█▇▆▅▄▃▁".chars().collect(),
+            chars: "◐◓◑◒".chars().collect(),
         }
+    }
+
+    pub fn set_color(&mut self, color: Colors) {
+        self.main.set_color(color.clone());
+        self.label.lock().unwrap().set_color(color);
     }
 
     pub fn start(&mut self) {
-        if self.started {
+        if *self.started.read().unwrap() {
             return;
         }
 
-        self.started = true;
-        let mut i = 0usize;
-        let len = self.chars.len();
-        while self.started {
-            i += 1;
-            i = i % len;
-            self.label.deref().borrow_mut().also_mut(|it| {
-                it.set_text(self.chars[i].to_string());
-                // it.clear();
-                it.draw();
-                stdout().flush().unwrap();
-            });
-            thread::sleep(time::Duration::from_millis(200));
+        {
+            let mut s = self.started.write().unwrap();
+            *s = true;
         }
+
+        let lock = self.started.clone();
+        let len = self.chars.len();
+        let chars = self.chars.clone();
+        let label = self.label.clone();
+        thread::spawn(move || {
+            let mut i = 0usize;
+            while *lock.read().unwrap() {
+                i += 1;
+                i = i % len;
+
+                Spinner::update_char(&label, chars[i].to_string());
+                thread::sleep(time::Duration::from_millis(100));
+            }
+            Spinner::update_char(&label, OK.to_string());
+        });
     }
 
     pub fn end(&mut self) {
-        self.started = false;
-        self.label.deref().borrow_mut().also_mut(|it| {
-            it.set_text(OK.to_string());
-            it.clear();
-            it.draw();
-        });
+        let mut s = self.started.write().unwrap();
+        *s = false;
+    }
+
+    fn update_char(label: &Arc<Mutex<Label>>, c: String) {
+        let mut it = label.lock().unwrap();
+        it.set_text(c);
+        it.clear();
+        it.draw();
+        stdout().flush().unwrap();
     }
 }
 
 #[draw_to(main)]
-impl Draw for Spinner {}
+impl Draw for Spinner {
+    fn move_to(&mut self, point: &Point) {
+        self.main.move_to(point);
+        let mut l = self.label.lock().unwrap();
+        l.move_to(&(point + (1, 0)));
+    }
+
+    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+        let mut l = self.label.lock().unwrap();
+        l.ensure(min, max);
+        self.main.ensure(min, max)
+    }
+
+    fn do_draw(&mut self) {
+        self.main.draw();
+        let mut l = self.label.lock().unwrap();
+        l.draw();
+    }
+}
