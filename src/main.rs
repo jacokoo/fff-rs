@@ -1,9 +1,8 @@
 #[macro_use]
 extern crate fff_macros;
 
-use crate::kbd::key_event_code;
-use crate::model::config::enums::BindingType;
-use crate::model::config::Config;
+use crate::config::enums::BindingType;
+use crate::config::Config;
 use crate::model::file::{make, InnerFile};
 use crate::model::result::Res;
 use crate::ui::event::{UIEvent, UIEventSender};
@@ -16,6 +15,9 @@ use crossterm::terminal::{
 use crossterm::{event, execute};
 use std::env::current_dir;
 use std::io::{stdout, Write};
+
+#[macro_use]
+mod config;
 
 mod kbd;
 mod model;

@@ -1,7 +1,7 @@
 #[macro_use]
 pub mod enums;
 
-use crate::model::config::enums::{BindingType, ColorType};
+use crate::config::enums::{BindingType, ColorType};
 use crossterm::style::Color;
 use std::borrow::Borrow;
 use std::collections::HashMap;
