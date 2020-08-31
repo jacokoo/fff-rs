@@ -1,3 +1,4 @@
+use crate::common::Functional;
 use crate::ui::base::draw::Draw;
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::event::EventBody;
@@ -12,7 +13,7 @@ use crate::ui::widget::label::Label;
 use crate::ui::widget::path_indicator::PathIndicator;
 use crate::ui::widget::statusbar::Statusbar;
 use crate::ui::widget::tab::Tab;
-use crate::ui::{Functional, Mrc, ToMrc};
+use crate::ui::{Mrc, ToMrc};
 use crossbeam_channel::Receiver;
 
 pub struct UI {

@@ -1,5 +1,6 @@
 use crate::ui::base::draw::Draw;
 
+use crate::common::Functional;
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::flex::Flex;
 use crate::ui::layout::sized::SizedBox;
@@ -7,7 +8,7 @@ use crate::ui::widget::bookmark::Bookmark;
 use crate::ui::widget::file_column::{CornerLine, FileColumn};
 use crate::ui::widget::file_list::FileList;
 use crate::ui::widget::line::Line;
-use crate::ui::{Functional, Mrc, ToMrc};
+use crate::ui::{Mrc, ToMrc};
 
 pub struct Board {
     main: Flex,

@@ -1,3 +1,4 @@
+use crate::common::Functional;
 use crate::ui::base::draw::Draw;
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::background::Background;
@@ -5,7 +6,7 @@ use crate::ui::layout::flex::Flex;
 use crate::ui::layout::sized::SizedBox;
 use crate::ui::widget::label::Label;
 use crate::ui::widget::spinner::Spinner;
-use crate::ui::{Functional, Mrc, ToMrc};
+use crate::ui::{Mrc, ToMrc};
 use crossterm::style::{Color, Colors};
 
 pub struct Statusbar {

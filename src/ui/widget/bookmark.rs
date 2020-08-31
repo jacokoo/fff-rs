@@ -1,5 +1,6 @@
 use crate::ui::base::draw::Draw;
 
+use crate::common::Functional;
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::center::Center;
 use crate::ui::layout::flex::Flex;
@@ -7,7 +8,7 @@ use crate::ui::layout::padding::Padding;
 use crate::ui::layout::sized::SizedBox;
 use crate::ui::widget::label::Label;
 use crate::ui::widget::line::Line;
-use crate::ui::{Functional, Mrc, ToMrc};
+use crate::ui::{Mrc, ToMrc};
 
 pub struct Bookmark {
     items: Vec<Mrc<Label>>,

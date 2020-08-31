@@ -1,9 +1,10 @@
+use crate::common::Functional;
 use crate::ui::base::draw::Draw;
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::space::Space;
 use crate::ui::widget::label::Label;
 use crate::ui::widget::quoted::Quoted;
-use crate::ui::{Functional, Mrc, ToMrc};
+use crate::ui::{Mrc, ToMrc};
 use crossbeam_channel::bounded;
 use crossterm::style::Colors;
 use std::borrow::BorrowMut;

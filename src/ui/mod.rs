@@ -1,11 +1,12 @@
+use crate::common::Functional;
 use crate::ui::base::draw::Draw;
 use crate::ui::base::shape::{Point, Size};
-use crossterm::style::{Color, Colors};
-use crossterm::terminal::size;
-use std::cell::RefCell;
 use crate::ui::event::UIEventSender;
 use crate::ui::main::event_handle::handle;
+use crossterm::style::{Color, Colors};
+use crossterm::terminal::size;
 use main::ui::UI;
+use std::cell::RefCell;
 use std::io::{stdout, Write};
 use std::rc::Rc;
 use std::thread;
@@ -25,24 +26,6 @@ pub trait ToMrc: Sized {
 }
 
 impl<T: Sized + Draw> ToMrc for T {}
-
-pub trait Functional: Sized {
-    fn also<F: FnOnce(&Self)>(self, f: F) -> Self {
-        f(&self);
-        self
-    }
-
-    fn also_mut<F: FnMut(&mut Self)>(mut self, mut f: F) -> Self {
-        f(&mut self);
-        self
-    }
-
-    fn map_to<T, F: FnOnce(Self) -> T>(self, f: F) -> T {
-        return f(self);
-    }
-}
-
-impl<T: Sized> Functional for T {}
 
 pub trait ColorNone {
     fn none() -> Self;

@@ -19,6 +19,7 @@ use std::io::{stdout, Write};
 #[macro_use]
 mod config;
 
+mod common;
 mod kbd;
 mod model;
 mod ui;
@@ -42,14 +43,7 @@ async fn main() -> Res<()> {
 
     enable_raw_mode().unwrap();
 
-    execute!(
-        stdout(),
-        EnterAlternateScreen,
-        Clear(ClearType::All),
-        Hide,
-        EnableMouseCapture
-    )
-    .unwrap();
+    execute!(stdout(), EnterAlternateScreen, Clear(ClearType::All), Hide).unwrap();
 
     let mut sender = ui::init_ui(4);
 
@@ -91,7 +85,7 @@ async fn main() -> Res<()> {
         }
     }
 
-    execute!(stdout(), DisableMouseCapture, Show, LeaveAlternateScreen).unwrap();
+    execute!(stdout(), Show, LeaveAlternateScreen).unwrap();
 
     disable_raw_mode().unwrap();
 

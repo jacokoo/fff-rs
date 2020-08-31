@@ -1,10 +1,11 @@
 use crate::ui::base::draw::Draw;
 
+use crate::common::Functional;
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::flex::Flex;
 use crate::ui::widget::label::Label;
 use crate::ui::widget::quoted::Quoted;
-use crate::ui::{Functional, Mrc, ToMrc};
+use crate::ui::{Mrc, ToMrc};
 use crossterm::style::{Color, Colors};
 
 struct TabItem {

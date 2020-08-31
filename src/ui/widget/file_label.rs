@@ -1,9 +1,10 @@
 use crate::ui::base::draw::Draw;
 
+use crate::common::Functional;
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::background::Background;
 use crate::ui::widget::label::Label;
-use crate::ui::{ColorNone, Functional, Mrc, ToMrc};
+use crate::ui::{ColorNone, Mrc, ToMrc};
 use crossterm::style::{Color, Colors};
 use std::ops::Deref;
 
