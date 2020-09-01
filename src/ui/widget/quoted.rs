@@ -3,7 +3,7 @@ use crate::ui::base::draw::Draw;
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::flex::Flex;
 use crate::ui::widget::label::Label;
-use crate::ui::{ColorNone, Mrc, ToMrc};
+use crate::ui::{Mrc, ToMrc};
 use crossterm::style::Colors;
 
 pub struct Quoted {

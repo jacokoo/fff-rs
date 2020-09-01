@@ -3,7 +3,7 @@ use crate::ui::main::ui::UI;
 use crossbeam_channel::{Receiver, Sender};
 use std::io::{stdout, Write};
 
-pub fn handle(mut ui: UI, mut rx: Receiver<EventBody>) {
+pub fn handle(mut ui: UI, rx: Receiver<EventBody>) {
     while let Ok(ev) = rx.recv() {
         match ev {
             EventBody::Single(data, tx) => {

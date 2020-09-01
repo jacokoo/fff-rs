@@ -4,7 +4,7 @@ use crate::kbd::mode::{KeyEventHandler, Mode};
 use crate::ui::event::UIEventSender;
 use crossbeam_channel::Sender;
 use crossterm::event::KeyEvent;
-use std::rc::Rc;
+
 
 pub(super) struct IgnoreItHandler();
 

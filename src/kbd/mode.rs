@@ -1,11 +1,11 @@
-use crate::config::enums::BindingType;
-use crate::config::{Action, Bindings, Config};
+
+use crate::config::{Action, Bindings};
 use crate::kbd::code::key_event_code;
 use crate::ui::event::{UIEvent, UIEventSender};
-use crossbeam_channel::{bounded, Receiver, Sender};
+use crossbeam_channel::{Sender};
 use crossterm::event::KeyEvent;
 use std::collections::HashMap;
-use std::rc::Rc;
+
 
 pub trait KeyEventHandler {
     fn handle(&mut self, ev: KeyEvent);

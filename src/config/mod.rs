@@ -7,7 +7,7 @@ use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::path::PathBuf;
-use std::rc::Rc;
+
 use toml::Value;
 
 #[derive(Debug, Clone)]

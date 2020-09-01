@@ -1,5 +1,5 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use std::borrow::Borrow;
+
 
 pub fn key_event_code(ev: &KeyEvent) -> String {
     let mut parts: Vec<String> = Vec::new();

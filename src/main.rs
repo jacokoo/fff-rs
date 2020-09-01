@@ -1,21 +1,21 @@
 #[macro_use]
 extern crate fff_macros;
 
-use crate::config::enums::BindingType;
+
 use crate::config::Config;
 use crate::model::file::{make, InnerFile};
 use crate::model::result::Res;
-use crate::ui::event::{UIEvent, UIEventSender};
-use crossbeam_channel::bounded;
+
+
 use crossterm::cursor::{Hide, Show};
-use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
+
 use crossterm::terminal::{
     disable_raw_mode, enable_raw_mode, Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen,
 };
-use crossterm::{event, execute};
+use crossterm::{execute};
 use std::env::current_dir;
 use std::io::{stdout, Write};
-use std::rc::Rc;
+
 
 #[macro_use]
 mod config;
@@ -46,8 +46,8 @@ async fn main() -> Res<()> {
 
     execute!(stdout(), EnterAlternateScreen, Clear(ClearType::All), Hide).unwrap();
 
-    let mut sender = ui::init_ui(4);
-    let (kbd, ac) = kbd::init_kbd(&c, sender.clone());
+    let sender = ui::init_ui(4);
+    let (kbd, _ac) = kbd::init_kbd(&c, sender.clone());
     kbd.start().await;
 
     execute!(stdout(), Show, LeaveAlternateScreen).unwrap();

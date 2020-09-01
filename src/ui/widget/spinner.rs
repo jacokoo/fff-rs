@@ -4,12 +4,12 @@ use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::layout::space::Space;
 use crate::ui::widget::label::Label;
 use crate::ui::widget::quoted::Quoted;
-use crate::ui::{Mrc, ToMrc};
-use crossbeam_channel::bounded;
+use crate::ui::{ToMrc};
+
 use crossterm::style::Colors;
-use std::borrow::BorrowMut;
+
 use std::io::{stdout, Write};
-use std::ops::Deref;
+
 use std::sync::{Arc, Mutex, RwLock};
 use std::{thread, time};
 
