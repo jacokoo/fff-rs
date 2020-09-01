@@ -7,9 +7,10 @@ use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::path::PathBuf;
+use std::rc::Rc;
 use toml::Value;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Action {
     Normal(String),
     Prefixed(HashMap<String, String>),
@@ -19,7 +20,7 @@ pub type Bindings = HashMap<String, Action>;
 
 #[derive(Debug)]
 pub struct Config {
-    pub bindings: HashMap<BindingType, Bindings>,
+    bindings: HashMap<BindingType, Bindings>,
     pub color: HashMap<ColorType, Color>,
     pub editor: String,
     pub shell: String,
@@ -53,14 +54,19 @@ impl Config {
         return c;
     }
 
-    pub fn get_action(&self, bt: &BindingType, key: &str) -> Option<&Action> {
-        let bs = self.bindings.get(bt).unwrap();
-        if bs.contains_key(key) {
-            return bs.get(key);
+    pub fn bindings(&self, bt: &BindingType) -> Bindings {
+        let mut bs: Bindings = self
+            .bindings
+            .get(&BindingType::All)
+            .map_or_else(|| HashMap::new(), |v| v.clone());
+
+        if let Some(v) = self.bindings.get(bt) {
+            v.iter().for_each(|(k, vv)| {
+                bs.insert(k.clone(), vv.clone());
+            });
         }
 
-        let bs = self.bindings.get(&BindingType::All).unwrap();
-        return bs.get(key);
+        bs
     }
 }
 
@@ -105,17 +111,11 @@ fn read_binding_type(map: &mut Bindings, value: &Value, key: &str) {
                     map.insert(k.to_owned(), Action::Normal(v.to_owned()));
                 }
                 Value::Table(tt) => {
-                    if let Some(Action::Normal(_)) = map.get(k) {
-                        map.insert(k.clone(), Action::Prefixed(HashMap::new()));
+                    let mut mp: HashMap<String, String> = HashMap::new();
+                    for (kk, vv) in tt.iter() {
+                        mp.insert(kk.to_owned(), read_str(vv, kk.borrow()));
                     }
-                    let ac = map
-                        .entry(k.to_owned())
-                        .or_insert_with(|| Action::Prefixed(HashMap::new()));
-                    if let Action::Prefixed(mm) = ac {
-                        for (kk, vv) in tt.iter() {
-                            mm.insert(kk.to_owned(), read_str(vv, kk.borrow()));
-                        }
-                    }
+                    map.insert(k.to_owned(), Action::Prefixed(mp));
                 }
                 _ => panic!("in valid action binding"),
             }

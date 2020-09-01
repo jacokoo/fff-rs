@@ -29,8 +29,7 @@ impl Spinner {
             main: Quoted::new(Space::new().also_mut(|it| it.set(1, 1)).mrc()),
             label,
             started: Arc::new(RwLock::new(false)),
-            // chars: "▁▃▄▅▆▇█▇▆▅▄▃▁".chars().collect(),
-            chars: "◐◓◑◒".chars().collect(),
+            chars: "-\\|/".chars().collect(),
         }
     }
 

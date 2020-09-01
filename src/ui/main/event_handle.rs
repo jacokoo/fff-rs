@@ -7,10 +7,12 @@ pub fn handle(mut ui: UI, mut rx: Receiver<EventBody>) {
     while let Ok(ev) = rx.recv() {
         match ev {
             EventBody::Single(data, tx) => {
+                ui.stop_loading();
                 handle_single(&mut ui, data);
                 ack(tx);
             }
             EventBody::Batch(data, tx) => {
+                ui.stop_loading();
                 data.into_iter().for_each(|it| handle_single(&mut ui, it));
                 ack(tx);
             }
@@ -22,7 +24,7 @@ pub fn handle(mut ui: UI, mut rx: Receiver<EventBody>) {
 fn handle_single(ui: &mut UI, ev: UIEvent) {
     match ev {
         UIEvent::SwitchTab(idx) => ui.switch_tab(idx),
-        UIEvent::Loading(loading) => ui.set_loading(loading),
+        UIEvent::StartLoading => ui.start_loading(),
         _ => println!("event: {:?}", ev),
     }
 }

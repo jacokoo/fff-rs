@@ -10,13 +10,14 @@ pub struct FileItem {
 
 #[derive(Debug)]
 pub enum UIEvent {
-    Loading(bool),
+    StartLoading,
     Message(String),
 
     SwitchTab(usize),
     SetPath(String),
     SetBookmark(Vec<String>),
     AddColumn(Vec<FileItem>),
+    ShowKeyNav(Vec<(String, String)>),
 }
 
 #[derive(Debug)]
@@ -25,30 +26,19 @@ pub enum EventBody {
     Batch(Vec<UIEvent>, Option<Sender<bool>>),
 }
 
-pub struct UIEventSender(Sender<EventBody>, bool);
+pub struct UIEventSender(Sender<EventBody>);
 
 impl UIEventSender {
     pub fn new() -> (Self, Receiver<EventBody>) {
-        let (tx, rx) = bounded(1);
-        (UIEventSender(tx, false), rx)
+        let (tx, rx) = bounded(10);
+        (UIEventSender(tx), rx)
     }
 
-    pub fn loading(&mut self) -> Result<(), SendError<EventBody>> {
-        if self.1 {
-            return Ok(());
-        }
-
-        self.1 = true;
-        self.send_async(UIEvent::Loading(true))?;
-        Ok(())
+    pub fn start_loading(&mut self) -> Result<(), SendError<EventBody>> {
+        self.send_async(UIEvent::StartLoading)
     }
 
     pub fn send_sync(&mut self, event: UIEvent) -> Result<(), SendError<EventBody>> {
-        if self.1 {
-            self.1 = false;
-            return self.batch_send_sync(vec![UIEvent::Loading(false), event]);
-        }
-
         let (tx, rx) = bounded(0);
         self.0.send(EventBody::Single(event, Some(tx)))?;
         rx.recv().unwrap();
@@ -56,38 +46,23 @@ impl UIEventSender {
     }
 
     pub fn send_async(&mut self, event: UIEvent) -> Result<(), SendError<EventBody>> {
-        if self.1 {
-            self.1 = false;
-            return self.batch_send_async(vec![UIEvent::Loading(false), event]);
-        }
-        self.0.send(EventBody::Single(event, None))?;
-        Ok(())
+        self.0.send(EventBody::Single(event, None))
     }
 
-    pub fn batch_send_sync(
-        &mut self,
-        mut events: Vec<UIEvent>,
-    ) -> Result<(), SendError<EventBody>> {
-        if self.1 {
-            self.1 = false;
-            events.insert(0, UIEvent::Loading(false));
-        }
+    pub fn batch_send_sync(&mut self, events: Vec<UIEvent>) -> Result<(), SendError<EventBody>> {
         let (tx, rx) = bounded(0);
         self.0.send(EventBody::Batch(events, Some(tx)))?;
         rx.recv().unwrap();
         Ok(())
     }
 
-    pub fn batch_send_async(
-        &mut self,
-        mut events: Vec<UIEvent>,
-    ) -> Result<(), SendError<EventBody>> {
-        if self.1 {
-            self.1 = false;
-            events.insert(0, UIEvent::Loading(false));
-        }
+    pub fn batch_send_async(&mut self, events: Vec<UIEvent>) -> Result<(), SendError<EventBody>> {
+        self.0.send(EventBody::Batch(events, None))
+    }
+}
 
-        self.0.send(EventBody::Batch(events, None))?;
-        Ok(())
+impl Clone for UIEventSender {
+    fn clone(&self) -> Self {
+        UIEventSender(self.0.clone())
     }
 }

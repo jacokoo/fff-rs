@@ -23,6 +23,7 @@ pub struct UI {
     statusbar: Mrc<Statusbar>,
     message: Mrc<SizedBox>,
     main: Container,
+    loading: bool,
 }
 
 impl UI {
@@ -64,6 +65,7 @@ impl UI {
             statusbar,
             message,
             main,
+            loading: false,
         }
     }
 
@@ -71,8 +73,22 @@ impl UI {
         self.tab.borrow_mut().set_active(current);
     }
 
-    pub fn set_loading(&mut self, loading: bool) {
-        self.statusbar.borrow_mut().set_spin(loading);
+    pub fn start_loading(&mut self) {
+        if self.loading {
+            return;
+        }
+
+        self.loading = true;
+        self.statusbar.borrow_mut().set_spin(true);
+    }
+
+    pub fn stop_loading(&mut self) {
+        if !self.loading {
+            return;
+        }
+
+        self.loading = false;
+        self.statusbar.borrow_mut().set_spin(false);
     }
 }
 

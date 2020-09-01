@@ -15,10 +15,12 @@ use crossterm::terminal::{
 use crossterm::{event, execute};
 use std::env::current_dir;
 use std::io::{stdout, Write};
+use std::rc::Rc;
 
 #[macro_use]
 mod config;
 
+mod action;
 mod common;
 mod kbd;
 mod model;
@@ -39,51 +41,14 @@ async fn main() -> Res<()> {
     }
 
     let c = Config::new(dirs::home_dir().unwrap());
-    println!("{:?}", c.get_action(&BindingType::Normal, "ctrl-q"));
 
     enable_raw_mode().unwrap();
 
     execute!(stdout(), EnterAlternateScreen, Clear(ClearType::All), Hide).unwrap();
 
     let mut sender = ui::init_ui(4);
-
-    loop {
-        if let Ok(ev) = event::read() {
-            match ev {
-                event::Event::Key(ke) => match ke.code {
-                    event::KeyCode::Char('q') => {
-                        drop(sender);
-                        break;
-                    }
-                    event::KeyCode::Char('1') => {
-                        sender.send_async(UIEvent::SwitchTab(0)).unwrap();
-                    }
-                    event::KeyCode::Char('2') => {
-                        sender.send_async(UIEvent::SwitchTab(1)).unwrap();
-                    }
-                    event::KeyCode::Char('3') => {
-                        sender.send_async(UIEvent::SwitchTab(2)).unwrap();
-                    }
-                    event::KeyCode::Char('4') => {
-                        sender.send_async(UIEvent::SwitchTab(3)).unwrap();
-                    }
-                    event::KeyCode::Char('a') => {
-                        sender.loading().unwrap();
-                    }
-                    event::KeyCode::Char('A') => {
-                        sender.send_async(UIEvent::Loading(false)).unwrap();
-                    }
-                    _ => {
-                        continue;
-                    }
-                },
-                event::Event::Mouse(_me) => {}
-                _ => {}
-            }
-        } else {
-            break;
-        }
-    }
+    let (kbd, ac) = kbd::init_kbd(&c, sender.clone());
+    kbd.start().await;
 
     execute!(stdout(), Show, LeaveAlternateScreen).unwrap();
 
