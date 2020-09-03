@@ -1,5 +1,5 @@
-use crate::model::state::publisher::Publisher;
-use crate::model::state::{FileVec, MarkerTrait};
+use crate::common::Publisher;
+use crate::model::state::list::{FileVec, MarkerTrait};
 use std::cell::RefCell;
 
 pub struct FileMarker {

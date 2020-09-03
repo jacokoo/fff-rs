@@ -5,7 +5,6 @@ use crate::ui::event::UIEventSender;
 use crossbeam_channel::Sender;
 use crossterm::event::KeyEvent;
 
-
 pub(super) struct IgnoreItHandler();
 
 impl KeyEventHandler for IgnoreItHandler {
@@ -22,5 +21,9 @@ impl NormalMode {
 
     pub(super) fn mode_mut(&mut self) -> &mut Mode<IgnoreItHandler> {
         &mut self.0
+    }
+
+    pub(super) fn mode(&self) -> &Mode<IgnoreItHandler> {
+        &self.0
     }
 }

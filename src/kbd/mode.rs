@@ -1,11 +1,11 @@
-
 use crate::config::{Action, Bindings};
 use crate::kbd::code::key_event_code;
 use crate::ui::event::{UIEvent, UIEventSender};
-use crossbeam_channel::{Sender};
+use crossbeam_channel::Sender;
 use crossterm::event::KeyEvent;
 use std::collections::HashMap;
 
+const QUIT_ACTION: &'static str = "ActionQuit";
 
 pub trait KeyEventHandler {
     fn handle(&mut self, ev: KeyEvent);
@@ -38,13 +38,19 @@ impl<T: Sized + KeyEventHandler> Mode<T> {
         }
     }
 
-    fn set_subs(&mut self, subs: HashMap<String, String>) {
-        let c: Vec<_> = subs
-            .iter()
-            .map(|(k, v)| (k.to_string(), v.to_string()))
-            .collect();
-        self.ui_event.send_async(UIEvent::ShowKeyNav(c)).unwrap();
-        self.subs = Some(subs);
+    pub(super) fn is_quit(&self, ev: &KeyEvent) -> bool {
+        let code = key_event_code(ev);
+        if let Some(v) = &self.subs {
+            return match v.get(&code) {
+                Some(v) if v == QUIT_ACTION => true,
+                _ => false,
+            };
+        }
+
+        self.bindings.iter().any(|(_, v)| match v {
+            Action::Normal(v) if v == QUIT_ACTION => true,
+            _ => false,
+        })
     }
 }
 
@@ -53,7 +59,9 @@ impl<T: Sized + KeyEventHandler> KeyEventHandler for Mode<T> {
         let code = key_event_code(&ev);
         if let Some(sub) = &self.subs {
             if sub.contains_key(&code) {
-                self.sender.send(sub.get(&code).unwrap().to_string());
+                self.sender
+                    .send(sub.get(&code).unwrap().to_string())
+                    .unwrap();
             } else {
                 self.data.handle(ev);
             }
@@ -65,7 +73,14 @@ impl<T: Sized + KeyEventHandler> KeyEventHandler for Mode<T> {
         match action {
             Some(a) => match a {
                 Action::Normal(s) => self.sender.send(s.to_string()).unwrap(),
-                Action::Prefixed(m) => self.set_subs(m.clone()),
+                Action::Prefixed(m) => {
+                    let c: Vec<_> = m
+                        .iter()
+                        .map(|(k, v)| (k.to_string(), v.to_string()))
+                        .collect();
+                    self.ui_event.send_async(UIEvent::ShowKeyNav(c)).unwrap();
+                    self.subs = Some(m.clone());
+                }
             },
             None => self.data.handle(ev),
         };

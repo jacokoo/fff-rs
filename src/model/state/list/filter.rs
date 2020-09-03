@@ -1,11 +1,10 @@
+use crate::common::Publisher;
 use crate::model::file::FileInfo;
 use crate::model::result::{Error, Res, Void};
-use crate::model::state::publisher::Publisher;
-use crate::model::state::{FileHolder, FileVec, FilterTrait};
+use crate::model::state::list::{FileHolder, FileVec, FilterTrait};
 use std::cell::RefCell;
 use std::convert::TryFrom;
 use std::ops::Sub;
-
 use std::time::SystemTime;
 use tokio::time::Duration;
 
@@ -13,7 +12,7 @@ pub struct FileFilter {
     files: FileVec,
     filtered: FileVec,
     filter: Filter,
-    show_detail: bool,
+    show_hidden: bool,
     publisher: RefCell<Publisher<FileVec>>,
 }
 
@@ -33,7 +32,7 @@ impl FileFilter {
             files: Vec::new(),
             filtered: Vec::new(),
             filter: Filter::new(false),
-            show_detail: false,
+            show_hidden: false,
             publisher: RefCell::new(Publisher::new()),
         }
     }
@@ -55,8 +54,8 @@ impl FileFilter {
 }
 
 impl FilterTrait for FileFilter {
-    fn is_show_detail(&self) -> bool {
-        self.show_detail
+    fn is_show_hidden(&self) -> bool {
+        self.show_hidden
     }
 
     fn set_filter(&mut self, filter: String) -> Void {
@@ -66,16 +65,16 @@ impl FilterTrait for FileFilter {
         Ok(())
     }
 
-    fn toggle_show_detail(&mut self) {
-        self.set_show_detail(!self.is_show_detail())
+    fn toggle_show_hidden(&mut self) {
+        self.set_show_hidden(!self.is_show_hidden())
     }
 
-    fn set_show_detail(&mut self, show: bool) {
-        let old = self.show_detail;
-        self.show_detail = show;
+    fn set_show_hidden(&mut self, show: bool) {
+        let old = self.show_hidden;
+        self.show_hidden = show;
 
-        if old != self.show_detail {
-            self.filter.show_hidden(self.show_detail);
+        if old != self.show_hidden {
+            self.filter.show_hidden(self.show_hidden);
             self.do_filter();
         }
     }

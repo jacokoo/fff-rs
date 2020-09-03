@@ -4,9 +4,8 @@ use crate::kbd::normal_mode::NormalMode;
 use crate::ui::event::UIEventSender;
 use crossbeam_channel::{bounded, Receiver, Sender};
 use crossterm::event::{read, Event, KeyEvent};
-
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
-
 
 mod code;
 mod input_mode;
@@ -29,45 +28,58 @@ impl ModeEnum {
             ModeEnum::Normal(n) => n.mode_mut().name.clone(),
         }
     }
+
+    fn is_quit(&self, ev: &KeyEvent) -> bool {
+        match self {
+            ModeEnum::Normal(n) => n.mode().is_quit(ev),
+            _ => false,
+        }
+    }
 }
 
 pub struct Kbd {
     mode: Arc<Mutex<ModeEnum>>,
-    uiEvent: UIEventSender,
+    ui_event: UIEventSender,
     sender: Sender<String>,
 }
 
 impl Kbd {
-    pub async fn start(&self) {
+    pub async fn start(&self) -> i32 {
         let mode = self.mode.clone();
         tokio::spawn(async move {
-            while let Ok(ev) = read() {
-                let mut lock = mode.lock().unwrap();
-                match ev {
-                    Event::Key(ke) => lock.handle(ke),
-                    _ => (),
+            loop {
+                match read() {
+                    Ok(ev) => {
+                        let mut lock = mode.lock().unwrap();
+                        match ev {
+                            Event::Key(ke) if lock.is_quit(&ke) => break 1,
+                            Event::Key(ke) => lock.handle(ke),
+                            _ => (),
+                        };
+                    }
+                    _ => break 0,
                 }
             }
         })
         .await
-        .unwrap();
+        .unwrap()
     }
 }
 
 pub struct ActionReceiver(Receiver<String>);
 
-pub fn init_kbd(config: &Config, uiEvent: UIEventSender) -> (Kbd, ActionReceiver) {
+pub fn init_kbd(config: &Config, ui_event: UIEventSender) -> (Kbd, ActionReceiver) {
     let (tx, rx) = bounded(10);
     let ar = ActionReceiver(rx);
     let mode = Arc::new(Mutex::new(ModeEnum::Normal(NormalMode::new(
         &config,
         tx.clone(),
-        uiEvent.clone(),
+        ui_event.clone(),
     ))));
 
     let kbd = Kbd {
         mode: mode.clone(),
-        uiEvent,
+        ui_event,
         sender: tx,
     };
 

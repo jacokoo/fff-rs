@@ -1,5 +1,5 @@
-use crate::model::state::publisher::Publisher;
-use crate::model::state::{FileHolder, FileSortBy, FileVec, SorterTrait};
+use crate::common::Publisher;
+use crate::model::state::list::{FileHolder, FileSortBy, FileVec, SorterTrait};
 use std::cell::RefCell;
 use std::cmp::Ordering;
 

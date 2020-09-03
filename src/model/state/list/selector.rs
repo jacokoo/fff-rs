@@ -1,6 +1,6 @@
+use crate::common::Publisher;
 use crate::model::file::InnerFile;
-use crate::model::state::publisher::Publisher;
-use crate::model::state::{FileVec, SelectorTrait};
+use crate::model::state::list::{FileVec, SelectorTrait};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -57,11 +57,14 @@ impl SelectorTrait for FileSelector {
     }
 
     fn move_select(&mut self, delta: i32) -> bool {
-        if delta.is_negative() {
-            self.select(self.selected - delta.wrapping_abs() as usize)
-        } else {
-            self.select(self.selected + delta as usize)
-        }
+        let s = (self.selected as i32) + delta;
+        let idx = match s {
+            a if a.is_negative() => self.files.len() - (a.wrapping_abs() as usize),
+            a if (a as usize) >= self.files.len() => (a as usize) - self.files.len(),
+            a => a as usize,
+        };
+
+        self.select(idx)
     }
 
     fn select_by_name(&mut self, name: &str) -> bool {

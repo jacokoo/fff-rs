@@ -1,11 +1,11 @@
 use crate::model::file::path::InnerPath;
 use crate::model::file::InnerFile;
 use crate::model::result::{Error, Void};
-use crate::model::state::filter::FileFilter;
-use crate::model::state::marker::FileMarker;
-use crate::model::state::selector::FileSelector;
-use crate::model::state::sorter::FileSorter;
-use crate::model::state::{
+use crate::model::state::list::filter::FileFilter;
+use crate::model::state::list::marker::FileMarker;
+use crate::model::state::list::selector::FileSelector;
+use crate::model::state::list::sorter::FileSorter;
+use crate::model::state::list::{
     FileHolder, FileSortBy, FileVec, FilterTrait, MarkerTrait, SelectorTrait, SorterTrait,
 };
 use delegate::delegate;
@@ -14,7 +14,7 @@ use std::convert::TryFrom;
 use std::rc::Rc;
 
 pub struct FileList {
-    file: Option<InnerFile>,
+    dir: Option<InnerFile>,
     filter: FileFilter,
     sorter: Rc<RefCell<FileSorter>>,
     selector: Rc<RefCell<FileSelector>>,
@@ -44,7 +44,7 @@ impl FileList {
         });
 
         FileList {
-            file: None,
+            dir: None,
             filter,
             sorter,
             selector,
@@ -63,7 +63,7 @@ impl FileList {
                 .into_iter()
                 .map(|it| Rc::new(it))
                 .collect();
-            self.file = Some(file);
+            self.dir = Some(file);
             self.filter.set_files(&fs);
         }
         return Err(Error::DirIsRequired(path.to_string()));
@@ -85,10 +85,10 @@ impl FileList {
 impl FilterTrait for FileList {
     delegate! {
         to self.filter {
-            fn is_show_detail(&self) -> bool;
+            fn is_show_hidden(&self) -> bool;
             fn set_filter(&mut self, str: String) -> Void;
-            fn toggle_show_detail(&mut self);
-            fn set_show_detail(&mut self, show: bool);
+            fn toggle_show_hidden(&mut self);
+            fn set_show_hidden(&mut self, show: bool);
         }
     }
 }
