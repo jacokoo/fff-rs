@@ -13,7 +13,7 @@ pub trait KeyEventHandler {
 
 pub struct Mode<T: Sized + KeyEventHandler> {
     pub name: String,
-    subs: Option<HashMap<String, String>>,
+    subs: Option<HashMap<String, (String, String)>>,
     bindings: Bindings,
     sender: Sender<String>,
     ui_event: UIEventSender,
@@ -42,7 +42,7 @@ impl<T: Sized + KeyEventHandler> Mode<T> {
         let code = key_event_code(ev);
         if let Some(v) = &self.subs {
             return match v.get(&code) {
-                Some(v) if v == QUIT_ACTION => true,
+                Some((v, _)) if v == QUIT_ACTION => true,
                 _ => false,
             };
         }
@@ -63,9 +63,8 @@ impl<T: Sized + KeyEventHandler> KeyEventHandler for Mode<T> {
         let code = key_event_code(&ev);
         if let Some(sub) = &self.subs {
             if sub.contains_key(&code) {
-                self.sender
-                    .send(sub.get(&code).unwrap().to_string())
-                    .unwrap();
+                let x = sub.get(&code).unwrap();
+                self.sender.send(x.0.to_string()).unwrap();
             } else {
                 self.data.handle(ev);
             }
@@ -80,7 +79,7 @@ impl<T: Sized + KeyEventHandler> KeyEventHandler for Mode<T> {
                 Action::Prefixed(m) => {
                     let c: Vec<_> = m
                         .iter()
-                        .map(|(k, v)| (k.to_string(), v.to_string()))
+                        .map(|(k, v)| (k.to_string(), v.1.to_string()))
                         .collect();
                     self.ui_event.send(UIEvent::ShowKeyNav(c)).unwrap();
                     self.subs = Some(m.clone());

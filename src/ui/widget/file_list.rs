@@ -98,9 +98,4 @@ impl Draw for FileList {
         let s = self.flex.ensure(min, max);
         return s;
     }
-
-    fn move_to(&mut self, point: &Point) {
-        log::debug!("file list move to {:?}", point);
-        self.flex.move_to(point);
-    }
 }

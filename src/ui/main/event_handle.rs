@@ -46,7 +46,7 @@ fn handle_single(ui: &mut UI, ev: UIEvent) {
         InitColumn(fs) => ui.board_mut().init_files(fs),
         InitSelect(ss) => ui.board_mut().init_selected(ss),
         InitMark(ms) => ui.board_mut().init_marked(ms),
-        a => log::debug!("{:?}", a),
+        a => log::debug!("unhandled event: {:?}", a),
     }
 }
 

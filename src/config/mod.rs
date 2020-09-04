@@ -13,7 +13,7 @@ use toml::Value;
 #[derive(Debug, Clone)]
 pub enum Action {
     Normal(String),
-    Prefixed(HashMap<String, String>),
+    Prefixed(HashMap<String, (String, String)>),
 }
 
 pub type Bindings = HashMap<String, Action>;
@@ -111,9 +111,18 @@ fn read_binding_type(map: &mut Bindings, value: &Value, key: &str) {
                     map.insert(k.to_owned(), Action::Normal(v.to_owned()));
                 }
                 Value::Table(tt) => {
-                    let mut mp: HashMap<String, String> = HashMap::new();
+                    let mut mp: HashMap<String, (String, String)> = HashMap::new();
                     for (kk, vv) in tt.iter() {
-                        mp.insert(kk.to_owned(), read_str(vv, kk.borrow()));
+                        let s = read_str(vv, kk.borrow());
+                        log::debug!("key {} {:?} {}", s, vv, kk);
+                        let ss: Vec<_> = s.split("#").collect();
+                        if ss.len() != 2 {
+                            panic!("prefixed action should have description");
+                        }
+                        mp.insert(
+                            kk.to_owned(),
+                            (ss[0].trim().to_string(), ss[1].trim().to_string()),
+                        );
                     }
                     map.insert(k.to_owned(), Action::Prefixed(mp));
                 }

@@ -5,9 +5,9 @@ editor = "vi"
 ctrl-q = "ActionQuit"                  # quit fff
 
 [binding.normal]
-s.n = "ActionSortByName"               # Sort By Name
-s.m = "ActionSortByMtime"              # Sort By MTime
-s.s = "ActionSortBySize"               # Sort By Size
+s.n = "ActionSortByName                # Sort By Name"
+s.m = "ActionSortByMtime               # Sort By MTime"
+s.s = "ActionSortBySize                # Sort By Size"
 "." = "ActionToggleHidden"             # Toggle show hidden files
 d = "ActionToggleDetail"               # Toggle show file details
 j = "ActionMoveDown"                   # Move down
@@ -17,12 +17,12 @@ h = "ActionCloseFolderRight"           # Go to parent folder
 enter = "ActionOpenFile"               # Open file
 K = "ActionMoveToFirst"                # Move to first item
 J = "ActionMoveToLast"                 # Move to last item
-b.b = "ActionToggleBookmark"           # Toggle show bookmark
-b.n = "ActionAddBookmark"              # Bookmark current dir
-b.d = "ActionDeleteBookmarkOnce"       # Delete bookmark
-b.D = "ActionDeleteBookmark"           # Delete multiple bookmark
-b.w = "ActionJumpBookmarkOnce"         # Jump Once
-b.W = "ActionJumpBookmark"             # Jump
+b.b = "ActionToggleBookmark            # Toggle show bookmark"
+b.n = "ActionAddBookmark               # Bookmark current dir"
+b.d = "ActionDeleteBookmarkOnce        # Delete bookmark"
+b.D = "ActionDeleteBookmark            # Delete multiple bookmark"
+b.w = "ActionJumpBookmarkOnce          # Jump Once"
+b.W = "ActionJumpBookmark              # Jump"
 "1" = "ActionChangeGroup0"             # Change group to 1
 "2" = "ActionChangeGroup1"             # Change group to 2
 "3" = "ActionChangeGroup2"             # Change group to 3
@@ -54,10 +54,10 @@ e = "ActionEdit"                       # Run editor
 v = "ActionView"                       # Run pager
 "?" = "ActionShowHelp"                 # Show help
 - = "ActionGoBack"                     # Go back to previous dir
-t.c = "ActionShowClipDetail"           # Show clip detail
-t.t = "ActionShowTaskDetail"           # Show task detail
-t.d = "ActionCloseTaskDetail"          # Close task detail
-t.f = "ActionFakeTask"                 # Fake task
+t.c = "ActionShowClipDetail            # Show clip detail"
+t.t = "ActionShowTaskDetail            # Show task detail"
+t.d = "ActionCloseTaskDetail           # Close task detail"
+t.f = "ActionFakeTask                  # Fake task"
 
 # bindings for jump mode
 [binding.jump]

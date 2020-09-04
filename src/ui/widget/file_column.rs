@@ -158,9 +158,4 @@ impl Draw for FileColumn {
         self.prepare_ensure();
         self.flex.ensure(min, max)
     }
-
-    fn move_to(&mut self, point: &Point) {
-        log::debug!("file column move to {:?}", point);
-        self.flex.move_to(point);
-    }
 }
