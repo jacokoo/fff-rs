@@ -1,6 +1,6 @@
 use crate::model::file::InnerFile;
 use crate::model::result::Void;
-use crate::ui::event::FileItem;
+
 use std::rc::Rc;
 
 mod filter;

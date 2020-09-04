@@ -1,9 +1,9 @@
-use crate::model::file::path::InnerPath;
+
 use crate::model::state::list::list::FileList;
 use crate::model::state::list::{MarkerTrait, SelectorTrait};
 use crate::ui::event::UIEvent::*;
 use crate::ui::event::{UIEventResult, UIEventSender};
-use std::path::PathBuf;
+
 
 pub struct Group {
     file_list: Vec<FileList>,

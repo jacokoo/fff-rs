@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::fs::{read_to_string, File, OpenOptions};
-use std::io::{Read, Write};
+use std::io::{Write};
 use std::path::PathBuf;
 
 pub struct Bookmark {
