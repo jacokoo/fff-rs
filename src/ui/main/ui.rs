@@ -14,7 +14,8 @@ use crate::ui::widget::path_indicator::PathIndicator;
 use crate::ui::widget::statusbar::Statusbar;
 use crate::ui::widget::tab::Tab;
 use crate::ui::{Mrc, ToMrc};
-
+use std::cell::RefMut;
+use std::io::{stdout, Write};
 
 pub struct UI {
     tab: Mrc<Tab>,
@@ -89,6 +90,25 @@ impl UI {
 
         self.loading = false;
         self.statusbar.borrow_mut().set_spin(false);
+    }
+
+    pub fn board_mut(&mut self) -> RefMut<Board> {
+        self.board.borrow_mut()
+    }
+
+    pub fn path_mut(&mut self) -> RefMut<PathIndicator> {
+        self.path.borrow_mut()
+    }
+
+    pub fn flush(&mut self) {
+        self.clear();
+        let size = self
+            .get_rect()
+            .map_to(|it| Size::new(it.get_width(), it.get_height()));
+        self.ensure(&size, &size);
+        self.move_to(&self.get_rect().top_left());
+        self.draw();
+        stdout().flush().unwrap();
     }
 }
 

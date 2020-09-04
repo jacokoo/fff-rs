@@ -66,6 +66,7 @@ impl FileList {
                 .collect();
             self.dir = Some(file);
             self.filter.set_files(&fs);
+            return Ok(());
         }
         return Err(Error::DirIsRequired(path.to_string()));
     }
@@ -83,7 +84,8 @@ impl FileList {
     }
 
     pub fn file_items(&self) -> Vec<FileItem> {
-        self.filter
+        self.sorter
+            .borrow_mut()
             .get_files()
             .iter()
             .map(|f| {

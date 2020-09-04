@@ -2,7 +2,11 @@ use crate::ui::base::draw::Draw;
 
 use crate::common::Functional;
 use crate::ui::base::shape::{Point, Rect, Size};
+use crate::ui::event::FileItem;
 use crate::ui::layout::background::Background;
+use crate::ui::layout::flex::Flex;
+use crate::ui::layout::sized::SizedBox;
+use crate::ui::layout::space::Space;
 use crate::ui::widget::label::Label;
 use crate::ui::{ColorNone, Mrc, ToMrc};
 use crossterm::style::{Color, Colors};
@@ -22,35 +26,39 @@ impl InverseColor for Colors {
 }
 
 pub struct FileLabel {
-    label: Mrc<Label>,
+    labels: Vec<Mrc<Label>>,
     selected: bool,
     marked: bool,
     color: Colors,
     marked_color: Colors,
     marker: Label,
     background: Background,
+    item: FileItem,
+    pub show_detail: bool,
+    max: usize,
 }
 
 impl FileLabel {
-    pub fn from(txt: String) -> Self {
-        Colors::none().map_to(|c| {
-            let label = Label::from(format!("  {}  ", txt))
-                .also_mut(|it| it.set_color(c.clone()))
-                .mrc();
-            return FileLabel {
-                selected: false,
-                marked: false,
-                color: c,
-                marked_color: c.clone(),
-                marker: Label::new("*"),
-                background: Background::new(label.clone(), Color::Reset),
-                label,
-            };
-        })
-    }
+    pub fn new(item: FileItem, max: usize) -> Self {
+        let c = if item.is_dir {
+            Colors::new(Color::Cyan, Color::Black)
+        } else {
+            Colors::new(Color::White, Color::Black)
+        };
 
-    pub fn new(txt: &str) -> Self {
-        Self::from(txt.to_string())
+        let (labels, body) = FileLabel::create_body(false, max, &item);
+        FileLabel {
+            selected: false,
+            marked: false,
+            color: c,
+            marked_color: Colors::new(Color::Yellow, Color::Black),
+            marker: Label::new("*"),
+            background: Background::new(body, c.background.unwrap()),
+            item,
+            labels,
+            show_detail: false,
+            max,
+        }
     }
 
     pub fn set_color(&mut self, c: Colors) {
@@ -73,6 +81,14 @@ impl FileLabel {
         self.ensure_color();
     }
 
+    pub fn set_show_detail(&mut self, show: bool) {
+        self.show_detail = show;
+        let (labels, flex) = FileLabel::create_body(show, self.max, &self.item);
+        self.labels = labels;
+        self.background.set_child(flex);
+        self.ensure_color();
+    }
+
     fn ensure_color(&mut self) {
         let mut used_color = if self.marked {
             self.marked_color
@@ -84,9 +100,46 @@ impl FileLabel {
             used_color = used_color.inverse();
         }
 
-        self.label.deref().borrow_mut().set_color(used_color);
+        self.labels.iter().for_each(|it| {
+            it.deref().borrow_mut().set_color(used_color.clone());
+        });
         self.marker.set_color(used_color.clone());
         self.background.set_color(used_color);
+    }
+
+    fn create_body(show_detail: bool, max: usize, item: &FileItem) -> (Vec<Mrc<Label>>, Mrc<Flex>) {
+        let mut ls = Vec::new();
+        let mut flex = Flex::row();
+        flex = if !show_detail {
+            flex.also_mut(|it| {
+                let l = Label::new(&item.name).mrc();
+                let l2 = Label::new(&item.size).mrc();
+
+                ls.push(l.clone());
+                ls.push(l2.clone());
+
+                it.add(Space::new_with_width(2).mrc());
+                it.add(l);
+                it.add_flex(Space::new_with_width(2).mrc(), 1);
+                it.add(l2);
+                it.add(Space::new_with_width(2).mrc());
+            })
+        } else {
+            flex.also_mut(|it| {
+                let l1 = Label::from(format!(
+                    "{0} {1} {2:>3$} {4}",
+                    &item.modify_time, &item.mode_str, &item.size, max, &item.name
+                ))
+                .mrc();
+
+                ls.push(l1.clone());
+
+                it.add(Space::new_with_width(2).mrc());
+                it.add(l1);
+                it.add(Space::new_with_width(2).mrc());
+            })
+        };
+        (ls, flex.mrc())
     }
 }
 
@@ -101,7 +154,7 @@ impl Draw for FileLabel {
         self.background.draw();
         if self.marked {
             self.marker
-                .move_to(&(&self.background.get_rect().top_left() + (1u16, 0u16)));
+                .move_to(&(&self.background.get_rect().top_left() + (1, 0)));
             self.marker.draw()
         }
     }

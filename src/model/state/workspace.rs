@@ -2,9 +2,8 @@ use crate::model::file::path::InnerPath;
 use crate::model::result::Void;
 use crate::model::state::bookmark::Bookmark;
 use crate::model::state::group::Group;
-
-
-use crate::ui::event::{UIEventSender};
+use crate::ui::event::UIEvent::SetBookmark;
+use crate::ui::event::UIEventSender;
 use std::convert::TryFrom;
 use std::path::PathBuf;
 
@@ -41,13 +40,14 @@ impl Workspace {
         }
     }
 
-    pub async fn init_groups(&mut self) -> Void {
-        self.ui_event.start_loading()?;
+    pub async fn init(&mut self) -> Void {
         for _ in 0..MAX_GROUP_COUNT {
             let mut g = Group::new();
             g.current_mut().update(&self.enter_path).await?;
             self.groups.push(g)
         }
+        self.ui_event
+            .queue(SetBookmark(self.bookmark.keys().clone()))?;
         Ok(())
     }
 

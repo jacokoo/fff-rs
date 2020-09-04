@@ -47,10 +47,14 @@ impl<T: Sized + KeyEventHandler> Mode<T> {
             };
         }
 
-        self.bindings.iter().any(|(_, v)| match v {
-            Action::Normal(v) if v == QUIT_ACTION => true,
-            _ => false,
-        })
+        if let Some(v) = self.bindings.get(&code) {
+            return match v {
+                Action::Normal(v) if v == QUIT_ACTION => true,
+                _ => false,
+            };
+        }
+
+        return false;
     }
 }
 

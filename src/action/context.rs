@@ -1,5 +1,3 @@
-
-
 pub enum Answer {
     Yes,
     No,

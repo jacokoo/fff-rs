@@ -5,6 +5,7 @@ use crate::ui::layout::container::UseMin;
 use crate::ui::layout::flex::Flex;
 
 use crate::common::Functional;
+use crate::ui::event::FileItem;
 use crate::ui::layout::space::Space;
 use crate::ui::widget::file_label::FileLabel;
 use crate::ui::widget::label::Label;
@@ -27,10 +28,17 @@ impl FileList {
         }
     }
 
-    pub fn set_files(&mut self, fs: Vec<Mrc<FileLabel>>) {
-        self.files = fs;
-        self.set_selected(None);
+    pub fn set_files(&mut self, list: Vec<FileItem>) {
+        let max = list
+            .iter()
+            .fold(0usize, |acc, it| std::cmp::max(acc, it.size.len()));
+        let files: Vec<_> = list
+            .into_iter()
+            .map(|it| FileLabel::new(it, max).mrc())
+            .collect();
+        self.files = files;
         self.set_marked(Vec::new());
+        self.set_selected(None);
     }
 
     pub fn set_selected(&mut self, selected: Option<usize>) {
@@ -89,5 +97,10 @@ impl Draw for FileList {
         self.prepare_ensure(max.height as usize);
         let s = self.flex.ensure(min, max);
         return s;
+    }
+
+    fn move_to(&mut self, point: &Point) {
+        log::debug!("file list move to {:?}", point);
+        self.flex.move_to(point);
     }
 }

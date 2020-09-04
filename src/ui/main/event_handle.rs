@@ -1,3 +1,4 @@
+use crate::ui::event::UIEvent::*;
 use crate::ui::event::{EventBody, UIEvent};
 use crate::ui::main::ui::UI;
 use crossbeam_channel::{Receiver, Sender};
@@ -10,20 +11,21 @@ pub fn handle(mut ui: UI, rx: Receiver<EventBody>) {
                 ui.stop_loading();
                 handle_single(&mut ui, data);
                 ack(tx);
-                stdout().flush().unwrap();
+                ui.flush();
             }
             EventBody::Batch(data, tx) => {
                 ui.stop_loading();
                 data.into_iter().for_each(|it| handle_single(&mut ui, it));
                 ack(tx);
-                stdout().flush().unwrap();
+                ui.flush();
             }
             EventBody::Queue(data, tx) => {
                 ui.start_loading();
                 match data {
-                    UIEvent::EndQueue => {
+                    EndQueue => {
                         ui.stop_loading();
-                        stdout().flush().unwrap();
+                        ui.flush();
+                        ui.flush();
                     }
                     a => {
                         handle_single(&mut ui, a);
@@ -37,9 +39,14 @@ pub fn handle(mut ui: UI, rx: Receiver<EventBody>) {
 
 fn handle_single(ui: &mut UI, ev: UIEvent) {
     match ev {
-        UIEvent::SwitchTab(idx) => ui.switch_tab(idx),
-        UIEvent::StartLoading => ui.start_loading(),
-        _ => println!("event: {:?}", ev),
+        SwitchTab(idx) => ui.switch_tab(idx),
+        StartLoading => ui.start_loading(),
+        SetBookmark(bs) => ui.board_mut().set_bookmark(bs),
+        SetPath(p) => ui.path_mut().set_path(&p),
+        InitColumn(fs) => ui.board_mut().init_files(fs),
+        InitSelect(ss) => ui.board_mut().init_selected(ss),
+        InitMark(ms) => ui.board_mut().init_marked(ms),
+        a => log::debug!("{:?}", a),
     }
 }
 

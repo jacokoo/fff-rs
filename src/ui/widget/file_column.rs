@@ -1,7 +1,9 @@
 use crate::ui::base::draw::Draw;
 
 use crate::ui::base::shape::{Point, Rect, Size};
+use crate::ui::event::FileItem;
 use crate::ui::layout::flex::Flex;
+use crate::ui::layout::padding::Padding;
 use crate::ui::layout::sized::SizedBox;
 use crate::ui::widget::file_list::FileList;
 use crate::ui::widget::label::Label;
@@ -68,9 +70,46 @@ impl FileColumn {
         }
     }
 
+    pub fn clear(&mut self) {
+        self.lines.clear();
+        self.columns.clear();
+        self.flex.empty_it();
+    }
+
+    pub fn init_file_list(&mut self, lists: Vec<Vec<FileItem>>) {
+        if self.columns.len() > lists.len() {
+            for _ in 0..(self.columns.len() - lists.len()) {
+                self.columns.pop();
+                self.lines.pop();
+            }
+        }
+
+        if self.columns.len() < lists.len() {
+            for _ in 0..(lists.len() - self.columns.len()) {
+                self.columns.push(FileList::new().mrc());
+                self.add_line();
+            }
+        }
+
+        for (idx, it) in lists.into_iter().enumerate() {
+            self.columns[idx].borrow_mut().set_files(it);
+        }
+    }
+
+    pub fn init_selected(&mut self, selected: Vec<Option<usize>>) {
+        for (idx, it) in self.columns.iter().enumerate() {
+            it.borrow_mut().set_selected(selected[idx]);
+        }
+    }
+
+    pub fn init_marked(&mut self, marks: Vec<Vec<usize>>) {
+        for (idx, it) in marks.into_iter().enumerate() {
+            self.columns[idx].borrow_mut().set_marked(it);
+        }
+    }
+
     pub fn add_file_list(&mut self, list: Mrc<FileList>) {
         self.columns.push(list.clone());
-        self.flex.add(list);
         self.add_line();
     }
 
@@ -84,10 +123,8 @@ impl FileColumn {
 
             self.lines.clear();
             self.columns.clear();
-            self.columns.push(lc.clone());
-            self.lines.push(ll.clone());
-            self.flex.add(lc);
-            self.flex.add(ll);
+            self.columns.push(lc);
+            self.lines.push(ll);
         }
     }
 
@@ -104,9 +141,26 @@ impl FileColumn {
             .max_height()
             .mrc();
         self.lines.push(line.clone());
-        self.flex.add(line);
+    }
+
+    fn prepare_ensure(&mut self) {
+        self.flex.empty_it();
+        for (idx, it) in self.columns.iter().enumerate() {
+            self.flex.add(SizedBox::new(it.clone()).width(30).mrc());
+            self.flex.add(self.lines[idx].clone());
+        }
     }
 }
 
 #[draw_to(flex)]
-impl Draw for FileColumn {}
+impl Draw for FileColumn {
+    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+        self.prepare_ensure();
+        self.flex.ensure(min, max)
+    }
+
+    fn move_to(&mut self, point: &Point) {
+        log::debug!("file column move to {:?}", point);
+        self.flex.move_to(point);
+    }
+}

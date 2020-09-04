@@ -6,6 +6,7 @@ use crate::ui::layout::center::Center;
 use crate::ui::layout::flex::Flex;
 use crate::ui::layout::padding::Padding;
 use crate::ui::layout::sized::SizedBox;
+use crate::ui::layout::space::Space;
 use crate::ui::widget::label::Label;
 use crate::ui::widget::line::Line;
 use crate::ui::{Mrc, ToMrc};
@@ -34,7 +35,8 @@ impl Bookmark {
                         .mrc(),
                 );
                 it.add(SizedBox::new(Line::new(false).mrc()).mrc());
-                it.add_flex(Padding::new(list.clone()).left_right(2).mrc(), 1);
+                it.add(Padding::new(list.clone()).left_right(2).mrc());
+                it.add_flex(Space::new().mrc(), 1);
             }),
             list,
         }
@@ -44,8 +46,13 @@ impl Bookmark {
         self.items.push(Label::from(txt).mrc());
     }
 
+    pub fn reset_items(&mut self, bs: Vec<String>) {
+        self.items.clear();
+        bs.into_iter().for_each(|b| self.add_item(b));
+    }
+
     fn prepare_ensure(&mut self, height: u16) {
-        self.list.borrow_mut().clear();
+        self.list.borrow_mut().empty_it();
         for (idx, item) in self.items.iter().enumerate() {
             if idx >= height as usize {
                 break;

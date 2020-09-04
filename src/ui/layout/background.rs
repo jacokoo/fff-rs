@@ -20,6 +20,10 @@ impl Background {
     pub fn set_color(&mut self, color: Colors) {
         self.color = color.background.unwrap_or(Color::Reset);
     }
+
+    pub fn set_child<T: Draw + 'static>(&mut self, child: Mrc<T>) {
+        self.drawable = Drawable::new_with_child(child);
+    }
 }
 
 #[draw_to(drawable)]

@@ -48,7 +48,7 @@ impl FileSorter {
             }
 
             return match order {
-                FileSortBy::NAME => b.info().name.cmp(&a.info().name),
+                FileSortBy::NAME => a.info().name.cmp(&b.info().name),
                 FileSortBy::SIZE => b.info().size.cmp(&a.info().size),
                 FileSortBy::MTIME => b.info().modified.cmp(&a.info().modified),
             };

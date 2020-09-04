@@ -2,6 +2,7 @@ use crate::ui::base::draw::Draw;
 
 use crate::common::Functional;
 use crate::ui::base::shape::{Point, Rect, Size};
+use crate::ui::event::FileItem;
 use crate::ui::layout::flex::Flex;
 use crate::ui::layout::sized::SizedBox;
 use crate::ui::widget::bookmark::Bookmark;
@@ -41,12 +42,24 @@ impl Board {
         }
     }
 
+    pub fn set_bookmark(&mut self, bs: Vec<String>) {
+        self.bookmark.borrow_mut().reset_items(bs);
+    }
+
     pub fn add_bookmark(&mut self, txt: String) {
         self.bookmark.borrow_mut().add_item(txt);
     }
 
-    pub fn add_file_list(&mut self, list: Mrc<FileList>) {
-        self.column.borrow_mut().add_file_list(list);
+    pub fn init_files(&mut self, files: Vec<Vec<FileItem>>) {
+        self.column.borrow_mut().init_file_list(files);
+    }
+
+    pub fn init_selected(&mut self, selected: Vec<Option<usize>>) {
+        self.column.borrow_mut().init_selected(selected);
+    }
+
+    pub fn init_marked(&mut self, marks: Vec<Vec<usize>>) {
+        self.column.borrow_mut().init_marked(marks);
     }
 }
 
