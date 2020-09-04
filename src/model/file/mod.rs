@@ -9,6 +9,8 @@ pub use local::make;
 
 use crate::model::file::path::InnerPath;
 use crate::model::result::{Error, Res, Void};
+use chrono::{DateTime, Local};
+use std::fmt::Debug;
 
 pub mod path;
 
@@ -68,6 +70,47 @@ impl InnerFile {
     pub fn is_file(&self) -> bool {
         return !self.is_dir();
     }
+
+    pub fn path_str(&self) -> String {
+        self.info().path.clone()
+    }
+
+    pub fn readable_size(&self) -> String {
+        let info = self.info();
+        let mut unit = "B";
+        let base = 1024f64;
+        let mut size = info.size as f64;
+
+        if size > base {
+            unit = "K";
+            size = size / base;
+        } else {
+            return format!("{}{}", info.size, unit);
+        }
+
+        if size > base {
+            unit = "M";
+            size = size / base;
+        }
+
+        if size > base {
+            unit = "G";
+            size = size / base;
+        }
+
+        return format!("{0:.2}{1}", size, unit);
+    }
+
+    pub fn modify_time_str(&self) -> String {
+        let info = self.info();
+        match &info.modified {
+            Some(v) => {
+                let dt: DateTime<Local> = v.clone().into();
+                dt.format("%Y-%m-%d %H:%M:%S").to_string()
+            }
+            None => format!("{0:^19}", "-"),
+        }
+    }
 }
 
 impl TryFrom<&InnerPath> for InnerFile {
@@ -118,7 +161,6 @@ mod test {
 
     use crate::model::file::local::make;
     use crate::model::file::{FileInfo, InnerFile};
-    
 
     #[test]
     fn test_make() {

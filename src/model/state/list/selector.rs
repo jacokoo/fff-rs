@@ -29,12 +29,16 @@ impl FileSelector {
 }
 
 impl SelectorTrait for FileSelector {
-    fn selected_file(&self) -> Option<Rc<InnerFile>> {
+    fn selected(&self) -> Option<usize> {
         if self.files.is_empty() {
             None
         } else {
-            Some(self.files[self.selected].clone())
+            Some(self.selected)
         }
+    }
+
+    fn selected_file(&self) -> Option<Rc<InnerFile>> {
+        self.selected().map(|it| self.files[it].clone())
     }
 
     fn select(&mut self, idx: usize) -> bool {

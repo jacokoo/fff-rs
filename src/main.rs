@@ -1,21 +1,18 @@
 #[macro_use]
 extern crate fff_macros;
 
-
 use crate::config::Config;
 use crate::model::file::{make, InnerFile};
 use crate::model::result::Res;
 
-
 use crossterm::cursor::{Hide, Show};
 
+use crossterm::execute;
 use crossterm::terminal::{
     disable_raw_mode, enable_raw_mode, Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen,
 };
-use crossterm::{execute};
 use std::env::current_dir;
 use std::io::{stdout, Write};
-
 
 #[macro_use]
 mod config;
@@ -29,6 +26,7 @@ mod ui;
 #[tokio::main]
 async fn main() -> Res<()> {
     let wd = current_dir()?;
+    let home = dirs::home_dir().unwrap();
 
     if let InnerFile::Dir(dir) = make(&wd)? {
         for item in dir.list().await? {
@@ -40,7 +38,7 @@ async fn main() -> Res<()> {
         }
     }
 
-    let c = Config::new(dirs::home_dir().unwrap());
+    let c = Config::new(&home);
 
     enable_raw_mode().unwrap();
 

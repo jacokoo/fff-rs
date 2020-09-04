@@ -78,7 +78,7 @@ impl<T: Sized + KeyEventHandler> KeyEventHandler for Mode<T> {
                         .iter()
                         .map(|(k, v)| (k.to_string(), v.to_string()))
                         .collect();
-                    self.ui_event.send_async(UIEvent::ShowKeyNav(c)).unwrap();
+                    self.ui_event.send(UIEvent::ShowKeyNav(c)).unwrap();
                     self.subs = Some(m.clone());
                 }
             },

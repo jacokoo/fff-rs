@@ -28,7 +28,7 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new(home: PathBuf) -> Config {
+    pub fn new(home: &PathBuf) -> Config {
         let mut c = Config {
             bindings: HashMap::new(),
             color: HashMap::new(),

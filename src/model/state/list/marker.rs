@@ -31,6 +31,10 @@ impl FileMarker {
 }
 
 impl MarkerTrait for FileMarker {
+    fn marked(&self) -> Vec<usize> {
+        self.marks.clone()
+    }
+
     fn mark(&mut self, idx: usize) {
         if !self.marks.contains(&idx) {
             self.marks.push(idx);

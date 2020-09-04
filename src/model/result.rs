@@ -1,3 +1,6 @@
+use crate::ui::event::EventBody;
+use crossbeam_channel::SendError;
+
 #[derive(Debug)]
 pub enum Error {
     Io(std::io::ErrorKind),
@@ -12,6 +15,7 @@ pub enum Error {
     InvalidEnumValue(String),
     InvalidFilter(String),
     DirIsRequired(String),
+    SendError(EventBody),
 }
 
 pub type Res<T> = std::result::Result<T, Error>;
@@ -34,5 +38,11 @@ impl Error {
 impl From<std::io::Error> for Error {
     fn from(e: std::io::Error) -> Self {
         return Error::Io(e.kind());
+    }
+}
+
+impl From<crossbeam_channel::SendError<EventBody>> for Error {
+    fn from(e: SendError<EventBody>) -> Self {
+        Self::SendError(e.0)
     }
 }

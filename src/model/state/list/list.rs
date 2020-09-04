@@ -8,13 +8,14 @@ use crate::model::state::list::sorter::FileSorter;
 use crate::model::state::list::{
     FileHolder, FileSortBy, FileVec, FilterTrait, MarkerTrait, SelectorTrait, SorterTrait,
 };
+use crate::ui::event::FileItem;
 use delegate::delegate;
 use std::cell::RefCell;
 use std::convert::TryFrom;
 use std::rc::Rc;
 
 pub struct FileList {
-    dir: Option<InnerFile>,
+    pub dir: Option<InnerFile>,
     filter: FileFilter,
     sorter: Rc<RefCell<FileSorter>>,
     selector: Rc<RefCell<FileSelector>>,
@@ -54,8 +55,8 @@ impl FileList {
 }
 
 impl FileList {
-    pub async fn update(&mut self, path: InnerPath) -> Void {
-        let file = InnerFile::try_from(&path)?;
+    pub async fn update(&mut self, path: &InnerPath) -> Void {
+        let file = InnerFile::try_from(path)?;
         if let InnerFile::Dir(dir) = &file {
             let fs: Vec<_> = dir
                 .list()
@@ -79,6 +80,23 @@ impl FileList {
 
     pub fn subscribe_mark_change<F: Fn(&Vec<usize>) + 'static>(&self, f: F) {
         self.marker.borrow_mut().subscribe_change(f);
+    }
+
+    pub fn file_items(&self) -> Vec<FileItem> {
+        self.filter
+            .get_files()
+            .iter()
+            .map(|f| {
+                let info = f.info();
+                FileItem {
+                    name: info.name.clone(),
+                    modify_time: f.modify_time_str(),
+                    mode_str: info.mode.clone(),
+                    size: f.readable_size(),
+                    is_dir: f.is_dir(),
+                }
+            })
+            .collect()
     }
 }
 
@@ -105,6 +123,7 @@ impl SorterTrait for FileList {
 impl SelectorTrait for FileList {
     delegate! {
         to self.selector.borrow_mut() {
+            fn selected(&self) -> Option<usize>;
             fn selected_file(&self) -> Option<Rc<InnerFile>>;
             fn select(&mut self, idx: usize) -> bool;
             fn move_select(&mut self, delta: i32) -> bool;
@@ -118,6 +137,7 @@ impl SelectorTrait for FileList {
 impl MarkerTrait for FileList {
     delegate! {
         to self.marker.borrow_mut() {
+            fn marked(&self) -> Vec<usize>;
             fn mark(&mut self, idx: usize);
             fn unmark(&mut self, idx: usize);
             fn is_marked(&self, idx: usize) -> bool;

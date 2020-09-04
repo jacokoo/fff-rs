@@ -10,14 +10,28 @@ pub fn handle(mut ui: UI, rx: Receiver<EventBody>) {
                 ui.stop_loading();
                 handle_single(&mut ui, data);
                 ack(tx);
+                stdout().flush().unwrap();
             }
             EventBody::Batch(data, tx) => {
                 ui.stop_loading();
                 data.into_iter().for_each(|it| handle_single(&mut ui, it));
                 ack(tx);
+                stdout().flush().unwrap();
+            }
+            EventBody::Queue(data, tx) => {
+                ui.start_loading();
+                match data {
+                    UIEvent::EndQueue => {
+                        ui.stop_loading();
+                        stdout().flush().unwrap();
+                    }
+                    a => {
+                        handle_single(&mut ui, a);
+                    }
+                }
+                ack(tx);
             }
         }
-        stdout().flush().unwrap();
     }
 }
 
