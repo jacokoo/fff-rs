@@ -1,5 +1,6 @@
 use crate::ui::event::EventBody;
 use crossbeam_channel::SendError;
+use tokio::task::JoinError;
 
 #[derive(Debug)]
 pub enum Error {
@@ -16,6 +17,7 @@ pub enum Error {
     InvalidFilter(String),
     DirIsRequired(String),
     SendError(EventBody),
+    JoinError(JoinError),
 }
 
 pub type Res<T> = std::result::Result<T, Error>;
@@ -44,5 +46,11 @@ impl From<std::io::Error> for Error {
 impl From<crossbeam_channel::SendError<EventBody>> for Error {
     fn from(e: SendError<EventBody>) -> Self {
         Self::SendError(e.0)
+    }
+}
+
+impl From<JoinError> for Error {
+    fn from(e: JoinError) -> Self {
+        Self::JoinError(e)
     }
 }

@@ -88,16 +88,7 @@ impl FileList {
             .borrow_mut()
             .get_files()
             .iter()
-            .map(|f| {
-                let info = f.info();
-                FileItem {
-                    name: info.name.clone(),
-                    modify_time: f.modify_time_str(),
-                    mode_str: info.mode.clone(),
-                    size: f.readable_size(),
-                    is_dir: f.is_dir(),
-                }
-            })
+            .map(|f| FileItem::from(f.as_ref()))
             .collect()
     }
 }

@@ -22,9 +22,10 @@ pub struct UI {
     path: Mrc<PathIndicator>,
     board: Mrc<Board>,
     statusbar: Mrc<Statusbar>,
-    message: Mrc<SizedBox>,
+    message: Mrc<Flex>,
     main: Container,
     loading: bool,
+    show_message: u8,
 }
 
 impl UI {
@@ -34,10 +35,8 @@ impl UI {
         let path = PathIndicator::new("").mrc();
         let board = Board::new().mrc();
         let statusbar = Statusbar::new().mrc();
-        let message = SizedBox::new(Space::new().mrc())
-            .max_width()
-            .height(1)
-            .mrc();
+        let message = Flex::row().mrc();
+        let bottom = SizedBox::new(message.clone()).max_width().height(1).mrc();
 
         let top = Flex::row()
             .also_mut(|it| {
@@ -54,7 +53,7 @@ impl UI {
                     it.add(Padding::new(top.clone()).top_bottom(1).mrc());
                     it.add_flex(SizedBox::new(board.clone()).max().mrc(), 1);
                     it.add(statusbar.clone());
-                    it.add(message.clone());
+                    it.add(bottom.clone());
                 })
                 .mrc(),
         );
@@ -67,6 +66,7 @@ impl UI {
             message,
             main,
             loading: false,
+            show_message: 0,
         }
     }
 
@@ -100,7 +100,23 @@ impl UI {
         self.path.borrow_mut()
     }
 
+    pub fn show_key_nav(&mut self, navs: Vec<(String, String)>) {
+        self.show_message = 1;
+        self.message.borrow_mut().empty_it();
+        navs.into_iter().for_each(|(key, msg)| {
+            self.message
+                .borrow_mut()
+                .add_flex(Label::from(format!("[{}] {}", key, msg)).mrc(), 1);
+        });
+    }
+
     pub fn flush(&mut self) {
+        if self.show_message == 1 {
+            self.show_message = 0
+        } else {
+            self.message.borrow_mut().empty_it();
+        }
+
         self.clear();
         let size = self
             .get_rect()

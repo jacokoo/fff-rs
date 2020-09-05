@@ -2,6 +2,8 @@ use crate::model::file::path::InnerPath;
 use crate::model::result::Void;
 use crate::model::state::bookmark::Bookmark;
 use crate::model::state::group::Group;
+use crate::model::state::list::list::FileList;
+use crate::model::state::list::SelectorTrait;
 use crate::ui::event::UIEvent::SetBookmark;
 use crate::ui::event::UIEventSender;
 use std::convert::TryFrom;
@@ -58,9 +60,38 @@ impl Workspace {
             tab
         };
 
+        self.current_group = t;
         let current = &self.groups[t];
         current.sync_to_ui(&self.ui_event)?;
         self.ui_event.end_queue()?;
         Ok(())
+    }
+
+    pub fn current(&self) -> &Group {
+        &self.groups[self.current_group]
+    }
+
+    pub fn current_mut(&mut self) -> &mut Group {
+        &mut self.groups[self.current_group]
+    }
+
+    pub fn current_list(&self) -> &FileList {
+        self.current().current()
+    }
+
+    pub fn current_list_mut(&mut self) -> &mut FileList {
+        self.current_mut().current_mut()
+    }
+
+    pub fn select(&mut self, delta: i32) {
+        self.current_list_mut().move_select(delta);
+    }
+
+    fn bind_list(&self, list: &mut FileList) {
+        list.subscribe_file_change(|fs| {});
+
+        list.subscribe_mark_change(|m| {});
+
+        list.subscribe_select_change(|s| {});
     }
 }

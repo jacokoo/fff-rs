@@ -3,11 +3,10 @@ extern crate fff_macros;
 
 use crate::config::Config;
 use crate::model::file::{make, InnerFile};
+use crate::model::init_state;
 use crate::model::result::Res;
-
-use crossterm::cursor::{Hide, Show};
-
 use crate::model::state::workspace::Workspace;
+use crossterm::cursor::{Hide, Show};
 use crossterm::execute;
 use crossterm::terminal::{
     disable_raw_mode, enable_raw_mode, Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen,
@@ -60,12 +59,10 @@ async fn main() -> Res<()> {
     }));
 
     let sender = ui::init_ui(4);
-    let (kbd, _ac) = kbd::init_kbd(&c, sender.clone());
-    let mut workspace = Workspace::new(&wd, &home, sender.clone());
-    workspace.init().await?;
-    workspace.switch_to(0).await?;
-    kbd.start().await;
+    let (kbd, ac) = kbd::init_kbd(&c, sender.clone());
 
+    init_state(ac, sender.clone(), &wd, &home).await;
+    kbd.start().await;
     execute!(stdout(), Show, LeaveAlternateScreen).unwrap();
     disable_raw_mode().unwrap();
 

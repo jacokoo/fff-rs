@@ -66,7 +66,7 @@ impl Kbd {
     }
 }
 
-pub struct ActionReceiver(Receiver<String>);
+pub struct ActionReceiver(pub Receiver<String>);
 
 pub fn init_kbd(config: &Config, ui_event: UIEventSender) -> (Kbd, ActionReceiver) {
     let (tx, rx) = bounded(10);

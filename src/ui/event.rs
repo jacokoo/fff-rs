@@ -1,3 +1,4 @@
+use crate::model::file::InnerFile;
 use crossbeam_channel::{bounded, Receiver, SendError, Sender};
 
 #[derive(Debug)]
@@ -7,6 +8,19 @@ pub struct FileItem {
     pub mode_str: String,
     pub size: String,
     pub is_dir: bool,
+}
+
+impl From<&InnerFile> for FileItem {
+    fn from(f: &InnerFile) -> Self {
+        let info = f.info();
+        FileItem {
+            name: info.name.clone(),
+            modify_time: f.modify_time_str(),
+            mode_str: info.mode.clone(),
+            size: f.readable_size(),
+            is_dir: f.is_dir(),
+        }
+    }
 }
 
 #[derive(Debug)]
