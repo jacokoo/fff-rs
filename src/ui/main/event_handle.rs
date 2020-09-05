@@ -50,6 +50,7 @@ fn handle_single(ui: &mut UI, ev: UIEvent) {
         RefreshFileItem(fs) => ui.board_mut().refresh_files(fs),
         SetMark(m) => ui.board_mut().set_mark(m),
         SetSelect(ss) => ui.board_mut().set_selected(ss),
+        SetShowDetail(show) => ui.board_mut().set_show_detail(show),
         a => log::debug!("unhandled event: {:?}", a),
     }
 }

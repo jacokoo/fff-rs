@@ -16,16 +16,25 @@ pub struct FileList {
     flex: Flex,
     select_index: Option<usize>,
     marked: Vec<usize>,
+    show_detail: bool,
 }
 
 impl FileList {
-    pub fn new() -> Self {
+    pub fn new(show_detail: bool) -> Self {
         FileList {
             files: Vec::new(),
             flex: Flex::column().also_mut(|it| it.set_stretch()),
             select_index: None,
             marked: Vec::new(),
+            show_detail,
         }
+    }
+
+    pub fn set_show_detail(&mut self, show: bool) {
+        self.show_detail = show;
+        self.files.iter().for_each(|it| {
+            it.borrow_mut().set_show_detail(show);
+        });
     }
 
     pub fn set_files(&mut self, list: Vec<FileItem>) {
@@ -34,7 +43,7 @@ impl FileList {
             .fold(0usize, |acc, it| std::cmp::max(acc, it.size.len()));
         let files: Vec<_> = list
             .into_iter()
-            .map(|it| FileLabel::new(it, max).mrc())
+            .map(|it| FileLabel::new(it, max, self.show_detail).mrc())
             .collect();
         self.files = files;
         self.set_marked(Vec::new());

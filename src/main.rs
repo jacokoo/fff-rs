@@ -63,8 +63,8 @@ async fn main() -> Res<()> {
     let sender = ui::init_ui(4);
     let (kbd, ac) = kbd::init_kbd(&c, sender.clone());
     let mut ws = Workspace::new(wd, home, sender.clone());
-    ws.init().await;
-    ws.switch_to(0).await;
+    ws.init().await.unwrap();
+    ws.switch_to(0).await.unwrap();
 
     tokio::select! {
         _ = init_action(ac, ws) => {},

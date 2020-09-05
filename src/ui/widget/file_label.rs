@@ -39,14 +39,14 @@ pub struct FileLabel {
 }
 
 impl FileLabel {
-    pub fn new(item: FileItem, max: usize) -> Self {
+    pub fn new(item: FileItem, max: usize, show_detail: bool) -> Self {
         let c = if item.is_dir {
             Colors::new(Color::Cyan, Color::Black)
         } else {
             Colors::new(Color::White, Color::Black)
         };
 
-        let (labels, body) = FileLabel::create_body(false, max, &item);
+        let (labels, body) = FileLabel::create_body(show_detail, max, &item, &c);
         FileLabel {
             selected: false,
             marked: false,
@@ -56,7 +56,7 @@ impl FileLabel {
             background: Background::new(body, c.background.unwrap()),
             item,
             labels,
-            show_detail: false,
+            show_detail,
             max,
         }
     }
@@ -82,8 +82,13 @@ impl FileLabel {
     }
 
     pub fn set_show_detail(&mut self, show: bool) {
+        log::debug!("show detail {}", show);
+        if self.show_detail == show {
+            return;
+        }
+
         self.show_detail = show;
-        let (labels, flex) = FileLabel::create_body(show, self.max, &self.item);
+        let (labels, flex) = FileLabel::create_body(show, self.max, &self.item, &self.color);
         self.labels = labels;
         self.background.set_child(flex);
         self.ensure_color();
@@ -107,7 +112,12 @@ impl FileLabel {
         self.background.set_color(used_color);
     }
 
-    fn create_body(show_detail: bool, max: usize, item: &FileItem) -> (Vec<Mrc<Label>>, Mrc<Flex>) {
+    fn create_body(
+        show_detail: bool,
+        max: usize,
+        item: &FileItem,
+        c: &Colors,
+    ) -> (Vec<Mrc<Label>>, Mrc<Flex>) {
         let mut ls = Vec::new();
         let mut flex = Flex::row();
         flex = if !show_detail {
@@ -127,7 +137,7 @@ impl FileLabel {
         } else {
             flex.also_mut(|it| {
                 let l1 = Label::from(format!(
-                    "{0} {1} {2:>3$} {4}",
+                    "{0}  {1}  {2:>3$}  {4}",
                     &item.modify_time, &item.mode_str, &item.size, max, &item.name
                 ))
                 .mrc();
@@ -139,6 +149,9 @@ impl FileLabel {
                 it.add(Space::new_with_width(2).mrc());
             })
         };
+        ls.iter().for_each(|it| {
+            it.borrow_mut().set_color(c.clone());
+        });
         (ls, flex.mrc())
     }
 }

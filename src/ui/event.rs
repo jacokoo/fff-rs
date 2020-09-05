@@ -39,6 +39,8 @@ pub enum UIEvent {
     SetSelect(Option<usize>),
     SetMark(Vec<usize>),
 
+    SetShowDetail(bool),
+
     SetBookmark(Vec<String>),
     UpdateFileItem(Vec<FileItem>),
     ShowKeyNav(Vec<(String, String)>),

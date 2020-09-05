@@ -4,7 +4,9 @@ use crate::model::state::bookmark::Bookmark;
 use crate::model::state::group::Group;
 use crate::model::state::list::list::FileList;
 use crate::model::state::list::SelectorTrait;
-use crate::ui::event::UIEvent::{RefreshFileItem, SetBookmark, SetMark, SetSelect, SwitchTab};
+use crate::ui::event::UIEvent::{
+    RefreshFileItem, SetBookmark, SetMark, SetSelect, SetShowDetail, SwitchTab,
+};
 use crate::ui::event::{FileItem, UIEventSender};
 use std::borrow::Borrow;
 use std::convert::TryFrom;
@@ -47,6 +49,7 @@ impl Workspace {
         for _ in 0..MAX_GROUP_COUNT {
             let mut g = Group::new();
             g.current_mut().update(&self.enter_path).await?;
+            self.bind_list(g.current_mut());
             self.groups.push(g)
         }
         self.ui_event
@@ -85,8 +88,9 @@ impl Workspace {
         self.current_mut().current_mut()
     }
 
-    pub fn select(&mut self, delta: i32) {
-        self.current_list_mut().move_select(delta);
+    pub fn toggle_show_detail(&mut self) {
+        self.show_detail = !self.show_detail;
+        self.ui_event.send(SetShowDetail(self.show_detail)).unwrap();
     }
 
     fn bind_list(&self, list: &mut FileList) {
@@ -94,17 +98,19 @@ impl Workspace {
         list.subscribe_file_change(move |fs| {
             s1.send(RefreshFileItem(
                 fs.iter().map(|f| FileItem::from(f.borrow())).collect(),
-            ));
+            ))
+            .unwrap();
         });
 
         let mut s2 = self.ui_event.clone();
         list.subscribe_mark_change(move |m| {
-            s2.send(SetMark(m.iter().map(|it| it.clone()).collect()));
+            s2.send(SetMark(m.iter().map(|it| it.clone()).collect()))
+                .unwrap();
         });
 
         let mut s3 = self.ui_event.clone();
         list.subscribe_select_change(move |s| {
-            s3.send(SetSelect(Some(s.clone())));
+            s3.send(SetSelect(Some(s.clone()))).unwrap();
         });
     }
 }

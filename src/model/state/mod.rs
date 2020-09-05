@@ -1,4 +1,4 @@
 mod bookmark;
 mod group;
-mod list;
+pub mod list;
 pub mod workspace;

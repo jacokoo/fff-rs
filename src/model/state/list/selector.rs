@@ -51,11 +51,11 @@ impl SelectorTrait for FileSelector {
             i = 0;
         }
 
-        self.selected = i;
         if i == self.selected {
             return false;
         }
 
+        self.selected = i;
         self.publisher.notify(&self.selected);
         return true;
     }

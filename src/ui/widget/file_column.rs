@@ -59,6 +59,7 @@ pub struct FileColumn {
     columns: Vec<Mrc<FileList>>,
     lines: Vec<Mrc<SizedBox>>,
     flex: Flex,
+    show_detail: bool,
 }
 
 impl FileColumn {
@@ -67,7 +68,17 @@ impl FileColumn {
             columns: Vec::new(),
             lines: Vec::new(),
             flex: Flex::row(),
+            show_detail: false,
         }
+    }
+
+    pub fn set_show_detail(&mut self, show: bool) {
+        if self.show_detail == show {
+            return;
+        }
+
+        self.show_detail = show;
+        self.current_mut().set_show_detail(show);
     }
 
     pub fn current(&self) -> Ref<FileList> {
@@ -93,8 +104,9 @@ impl FileColumn {
         }
 
         if self.columns.len() < lists.len() {
-            for _ in 0..(lists.len() - self.columns.len()) {
-                self.columns.push(FileList::new().mrc());
+            for i in 0..(lists.len() - self.columns.len()) {
+                self.columns
+                    .push(FileList::new(self.show_detail && (i == lists.len() - 1)).mrc());
                 self.add_line();
             }
         }
@@ -136,14 +148,6 @@ impl FileColumn {
         }
     }
 
-    pub fn last(&self) -> Option<RefMut<FileList>> {
-        if let Some(v) = self.columns.last() {
-            Some(v.deref().borrow_mut())
-        } else {
-            None
-        }
-    }
-
     fn add_line(&mut self) {
         let line = SizedBox::new(CornerLine::new('│', '┬', '─').mrc())
             .max_height()
@@ -154,7 +158,12 @@ impl FileColumn {
     fn prepare_ensure(&mut self) {
         self.flex.empty_it();
         for (idx, it) in self.columns.iter().enumerate() {
-            self.flex.add(SizedBox::new(it.clone()).width(30).mrc());
+            if (idx == self.columns.len() - 1) && self.show_detail {
+                self.flex.add(it.clone());
+            } else {
+                self.flex.add(SizedBox::new(it.clone()).width(30).mrc());
+            }
+
             self.flex.add(self.lines[idx].clone());
         }
     }

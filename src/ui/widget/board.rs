@@ -76,6 +76,10 @@ impl Board {
             .current_mut()
             .set_selected(selected);
     }
+
+    pub fn set_show_detail(&mut self, show: bool) {
+        self.column.borrow_mut().set_show_detail(show);
+    }
 }
 
 #[draw_to(main)]

@@ -1,4 +1,4 @@
-use crate::ui::base::draw::{Draw};
+use crate::ui::base::draw::Draw;
 
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::ColorNone;
@@ -27,6 +27,10 @@ impl Label {
 
     pub fn new(txt: &str) -> Self {
         Label::from(txt.to_string())
+    }
+
+    pub fn text(&self) -> &String {
+        &self.text
     }
 
     pub fn set_text(&mut self, txt: String) {
