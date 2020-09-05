@@ -15,7 +15,7 @@ impl FileHolder for FileSorter {
         &self.sorted
     }
 
-    fn subscribe_change<F: Fn(&FileVec) + 'static + Send>(&mut self, f: F) {
+    fn subscribe_change<F: Fn(&FileVec) + 'static + Send + Sync>(&mut self, f: F) {
         self.publisher.subscribe(f);
     }
 }

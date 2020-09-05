@@ -4,7 +4,6 @@ use crate::model::result::{Error, Res, Void};
 use crate::model::state::list::{FileHolder, FileVec, FilterTrait};
 use std::convert::TryFrom;
 use std::ops::Sub;
-use std::sync::Mutex;
 use std::time::SystemTime;
 use tokio::time::Duration;
 
@@ -21,7 +20,7 @@ impl FileHolder for FileFilter {
         return &self.filtered;
     }
 
-    fn subscribe_change<F: Fn(&FileVec) + 'static + Send>(&mut self, f: F) {
+    fn subscribe_change<F: Fn(&FileVec) + 'static + Send + Sync>(&mut self, f: F) {
         self.publisher.subscribe(f);
     }
 }

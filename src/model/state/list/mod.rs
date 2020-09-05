@@ -19,7 +19,7 @@ pub enum FileSortBy {
 
 trait FileHolder {
     fn get_files(&self) -> &FileVec;
-    fn subscribe_change<F: Fn(&FileVec) + 'static + Send>(&mut self, f: F);
+    fn subscribe_change<F: Fn(&FileVec) + 'static + Send + Sync>(&mut self, f: F);
 }
 
 pub trait FilterTrait {

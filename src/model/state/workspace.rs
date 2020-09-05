@@ -90,19 +90,21 @@ impl Workspace {
     }
 
     fn bind_list(&self, list: &mut FileList) {
-        list.subscribe_file_change(|fs| {
-            self.ui_event.send(RefreshFileItem(
+        let mut s1 = self.ui_event.clone();
+        list.subscribe_file_change(move |fs| {
+            s1.send(RefreshFileItem(
                 fs.iter().map(|f| FileItem::from(f.borrow())).collect(),
             ));
         });
 
-        list.subscribe_mark_change(|m| {
-            self.ui_event
-                .send(SetMark(m.iter().map(|it| it.clone()).collect()));
+        let mut s2 = self.ui_event.clone();
+        list.subscribe_mark_change(move |m| {
+            s2.send(SetMark(m.iter().map(|it| it.clone()).collect()));
         });
 
-        list.subscribe_select_change(|s| {
-            self.ui_event.send(SetSelect(Some(s.clone())));
+        let mut s3 = self.ui_event.clone();
+        list.subscribe_select_change(move |s| {
+            s3.send(SetSelect(Some(s.clone())));
         });
     }
 }

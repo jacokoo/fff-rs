@@ -20,7 +20,7 @@ impl FileMarker {
         self.files = files.iter().map(|it| it.clone()).collect();
     }
 
-    pub fn subscribe_change<F: Fn(&Vec<usize>) + 'static + Send>(&mut self, f: F) {
+    pub fn subscribe_change<F: Fn(&Vec<usize>) + 'static + Send + Sync>(&mut self, f: F) {
         self.publisher.subscribe(f)
     }
 

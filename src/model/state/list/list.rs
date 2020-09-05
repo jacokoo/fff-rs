@@ -74,11 +74,11 @@ impl FileList {
         self.sorter.lock().unwrap().subscribe_change(f);
     }
 
-    pub fn subscribe_select_change<F: Fn(&usize) + 'static + Send>(&self, f: F) {
+    pub fn subscribe_select_change<F: Fn(&usize) + 'static + Send + Sync>(&self, f: F) {
         self.selector.lock().unwrap().subscribe_change(f);
     }
 
-    pub fn subscribe_mark_change<F: Fn(&Vec<usize>) + 'static + Send>(&self, f: F) {
+    pub fn subscribe_mark_change<F: Fn(&Vec<usize>) + 'static + Send + Sync>(&self, f: F) {
         self.marker.lock().unwrap().subscribe_change(f);
     }
 

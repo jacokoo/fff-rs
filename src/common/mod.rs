@@ -16,14 +16,14 @@ pub trait Functional: Sized {
 
 impl<T: Sized> Functional for T {}
 
-pub struct Publisher<T: Send>(Vec<Box<dyn Fn(&T) + 'static + Send>>);
+pub struct Publisher<T: Send + Sync>(Vec<Box<dyn Fn(&T) + 'static + Send + Sync>>);
 
-impl<T: Send> Publisher<T> {
+impl<T: Send + Sync> Publisher<T> {
     pub fn new() -> Self {
         Publisher(Vec::new())
     }
 
-    pub fn subscribe<F: Fn(&T) + 'static + Send>(&mut self, ff: F) {
+    pub fn subscribe<F: Fn(&T) + 'static + Send + Sync>(&mut self, ff: F) {
         self.0.push(Box::new(ff));
     }
 
