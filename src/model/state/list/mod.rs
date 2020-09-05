@@ -1,7 +1,6 @@
 use crate::model::file::InnerFile;
 use crate::model::result::Void;
-
-use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 
 mod filter;
 pub mod list;
@@ -9,7 +8,7 @@ mod marker;
 mod selector;
 mod sorter;
 
-pub type FileVec = Vec<Rc<InnerFile>>;
+pub type FileVec = Vec<Arc<InnerFile>>;
 
 #[derive(PartialEq, PartialOrd, Clone)]
 pub enum FileSortBy {
@@ -20,7 +19,7 @@ pub enum FileSortBy {
 
 trait FileHolder {
     fn get_files(&self) -> &FileVec;
-    fn subscribe_change<F: Fn(&FileVec) + 'static>(&self, f: F);
+    fn subscribe_change<F: Fn(&FileVec) + 'static + Send>(&mut self, f: F);
 }
 
 pub trait FilterTrait {
@@ -37,7 +36,7 @@ pub trait SorterTrait {
 
 pub trait SelectorTrait {
     fn selected(&self) -> Option<usize>;
-    fn selected_file(&self) -> Option<Rc<InnerFile>>;
+    fn selected_file(&self) -> Option<Arc<InnerFile>>;
     fn select(&mut self, idx: usize) -> bool;
     fn move_select(&mut self, delta: i32) -> bool;
     fn select_by_name(&mut self, name: &str) -> bool;

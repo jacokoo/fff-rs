@@ -9,7 +9,7 @@ use crate::ui::widget::file_list::FileList;
 use crate::ui::widget::label::Label;
 use crate::ui::widget::line::Line;
 use crate::ui::{Mrc, ToMrc};
-use std::cell::RefMut;
+use std::cell::{Ref, RefMut};
 use std::ops::Deref;
 
 pub struct CornerLine {
@@ -68,6 +68,14 @@ impl FileColumn {
             lines: Vec::new(),
             flex: Flex::row(),
         }
+    }
+
+    pub fn current(&self) -> Ref<FileList> {
+        self.columns.last().unwrap().borrow()
+    }
+
+    pub fn current_mut(&self) -> RefMut<FileList> {
+        self.columns.last().unwrap().borrow_mut()
     }
 
     pub fn clear(&mut self) {

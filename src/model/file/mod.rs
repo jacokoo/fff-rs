@@ -11,7 +11,6 @@ use crate::model::file::path::InnerPath;
 use crate::model::result::{Error, Res, Void};
 use chrono::{DateTime, Local};
 
-
 pub mod path;
 
 mod cmd;
@@ -48,8 +47,8 @@ pub struct ProtocolInfo {
 }
 
 pub enum InnerFile {
-    File(Box<dyn FileOp>),
-    Dir(Box<dyn DirOp>),
+    File(Box<dyn FileOp + Send + Sync>),
+    Dir(Box<dyn DirOp + Send + Sync>),
 }
 
 impl InnerFile {

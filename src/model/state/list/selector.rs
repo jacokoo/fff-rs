@@ -1,13 +1,13 @@
 use crate::common::Publisher;
 use crate::model::file::InnerFile;
 use crate::model::state::list::{FileVec, SelectorTrait};
-use std::cell::RefCell;
 use std::rc::Rc;
+use std::sync::Arc;
 
 pub struct FileSelector {
     files: FileVec,
     selected: usize,
-    publisher: RefCell<Publisher<usize>>,
+    publisher: Publisher<usize>,
 }
 
 impl FileSelector {
@@ -15,7 +15,7 @@ impl FileSelector {
         FileSelector {
             files: Vec::new(),
             selected: 0,
-            publisher: RefCell::new(Publisher::new()),
+            publisher: Publisher::new(),
         }
     }
 
@@ -23,8 +23,8 @@ impl FileSelector {
         self.files = fs.iter().map(|it| it.clone()).collect();
     }
 
-    pub fn subscribe_change<F: Fn(&usize) + 'static>(&self, f: F) {
-        self.publisher.borrow_mut().subscribe(f)
+    pub fn subscribe_change<F: Fn(&usize) + 'static + Send>(&mut self, f: F) {
+        self.publisher.subscribe(f)
     }
 }
 
@@ -37,7 +37,7 @@ impl SelectorTrait for FileSelector {
         }
     }
 
-    fn selected_file(&self) -> Option<Rc<InnerFile>> {
+    fn selected_file(&self) -> Option<Arc<InnerFile>> {
         self.selected().map(|it| self.files[it].clone())
     }
 
@@ -56,7 +56,7 @@ impl SelectorTrait for FileSelector {
             return false;
         }
 
-        self.publisher.borrow_mut().notify(&self.selected);
+        self.publisher.notify(&self.selected);
         return true;
     }
 

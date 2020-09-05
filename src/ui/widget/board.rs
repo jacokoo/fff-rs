@@ -61,6 +61,21 @@ impl Board {
     pub fn init_marked(&mut self, marks: Vec<Vec<usize>>) {
         self.column.borrow_mut().init_marked(marks);
     }
+
+    pub fn refresh_files(&mut self, files: Vec<FileItem>) {
+        self.column.borrow_mut().current_mut().set_files(files);
+    }
+
+    pub fn set_mark(&mut self, mark: Vec<usize>) {
+        self.column.borrow_mut().current_mut().set_marked(mark);
+    }
+
+    pub fn set_selected(&mut self, selected: Option<usize>) {
+        self.column
+            .borrow_mut()
+            .current_mut()
+            .set_selected(selected);
+    }
 }
 
 #[draw_to(main)]

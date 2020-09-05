@@ -1,11 +1,10 @@
 use crate::common::Publisher;
 use crate::model::state::list::{FileVec, MarkerTrait};
-use std::cell::RefCell;
 
 pub struct FileMarker {
     marks: Vec<usize>,
     files: FileVec,
-    publisher: RefCell<Publisher<Vec<usize>>>,
+    publisher: Publisher<Vec<usize>>,
 }
 
 impl FileMarker {
@@ -13,7 +12,7 @@ impl FileMarker {
         FileMarker {
             marks: Vec::new(),
             files: Vec::new(),
-            publisher: RefCell::new(Publisher::new()),
+            publisher: Publisher::new(),
         }
     }
 
@@ -21,12 +20,12 @@ impl FileMarker {
         self.files = files.iter().map(|it| it.clone()).collect();
     }
 
-    pub fn subscribe_change<F: Fn(&Vec<usize>) + 'static>(&self, f: F) {
-        self.publisher.borrow_mut().subscribe(f)
+    pub fn subscribe_change<F: Fn(&Vec<usize>) + 'static + Send>(&mut self, f: F) {
+        self.publisher.subscribe(f)
     }
 
     fn fire(&self) {
-        self.publisher.borrow().notify(&self.marks);
+        self.publisher.notify(&self.marks);
     }
 }
 

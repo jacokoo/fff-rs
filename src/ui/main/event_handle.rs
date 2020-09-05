@@ -47,6 +47,9 @@ fn handle_single(ui: &mut UI, ev: UIEvent) {
         InitSelect(ss) => ui.board_mut().init_selected(ss),
         InitMark(ms) => ui.board_mut().init_marked(ms),
         ShowKeyNav(ns) => ui.show_key_nav(ns),
+        RefreshFileItem(fs) => ui.board_mut().refresh_files(fs),
+        SetMark(m) => ui.board_mut().set_mark(m),
+        SetSelect(ss) => ui.board_mut().set_selected(ss),
         a => log::debug!("unhandled event: {:?}", a),
     }
 }

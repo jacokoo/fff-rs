@@ -7,7 +7,7 @@ pub struct FileSorter {
     files: FileVec,
     sorted: FileVec,
     order: FileSortBy,
-    publisher: RefCell<Publisher<FileVec>>,
+    publisher: Publisher<FileVec>,
 }
 
 impl FileHolder for FileSorter {
@@ -15,8 +15,8 @@ impl FileHolder for FileSorter {
         &self.sorted
     }
 
-    fn subscribe_change<F: Fn(&FileVec) + 'static>(&self, f: F) {
-        self.publisher.borrow_mut().subscribe(f);
+    fn subscribe_change<F: Fn(&FileVec) + 'static + Send>(&mut self, f: F) {
+        self.publisher.subscribe(f);
     }
 }
 
@@ -26,7 +26,7 @@ impl FileSorter {
             files: Vec::new(),
             sorted: Vec::new(),
             order,
-            publisher: RefCell::new(Publisher::new()),
+            publisher: Publisher::new(),
         }
     }
 
@@ -54,7 +54,7 @@ impl FileSorter {
             };
         });
 
-        self.publisher.borrow().notify(&self.sorted);
+        self.publisher.notify(&self.sorted);
     }
 }
 

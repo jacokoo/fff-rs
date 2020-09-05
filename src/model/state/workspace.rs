@@ -4,8 +4,9 @@ use crate::model::state::bookmark::Bookmark;
 use crate::model::state::group::Group;
 use crate::model::state::list::list::FileList;
 use crate::model::state::list::SelectorTrait;
-use crate::ui::event::UIEvent::SetBookmark;
-use crate::ui::event::UIEventSender;
+use crate::ui::event::UIEvent::{RefreshFileItem, SetBookmark, SetMark, SetSelect, SwitchTab};
+use crate::ui::event::{FileItem, UIEventSender};
+use std::borrow::Borrow;
 use std::convert::TryFrom;
 use std::path::PathBuf;
 
@@ -28,8 +29,8 @@ pub struct Workspace {
 }
 
 impl Workspace {
-    pub fn new(enter_path: &PathBuf, home_path: &PathBuf, ui_event: UIEventSender) -> Self {
-        let bookmark = Bookmark::new(home_path);
+    pub fn new(enter_path: PathBuf, home_path: PathBuf, ui_event: UIEventSender) -> Self {
+        let bookmark = Bookmark::new(&home_path);
         Workspace {
             enter_path: InnerPath::try_from(enter_path.display().to_string()).unwrap(),
             home_path: InnerPath::try_from(home_path.display().to_string()).unwrap(),
@@ -62,6 +63,7 @@ impl Workspace {
 
         self.current_group = t;
         let current = &self.groups[t];
+        self.ui_event.queue(SwitchTab(t))?;
         current.sync_to_ui(&self.ui_event)?;
         self.ui_event.end_queue()?;
         Ok(())
@@ -88,10 +90,19 @@ impl Workspace {
     }
 
     fn bind_list(&self, list: &mut FileList) {
-        list.subscribe_file_change(|fs| {});
+        list.subscribe_file_change(|fs| {
+            self.ui_event.send(RefreshFileItem(
+                fs.iter().map(|f| FileItem::from(f.borrow())).collect(),
+            ));
+        });
 
-        list.subscribe_mark_change(|m| {});
+        list.subscribe_mark_change(|m| {
+            self.ui_event
+                .send(SetMark(m.iter().map(|it| it.clone()).collect()));
+        });
 
-        list.subscribe_select_change(|s| {});
+        list.subscribe_select_change(|s| {
+            self.ui_event.send(SetSelect(Some(s.clone())));
+        });
     }
 }

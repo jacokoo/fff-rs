@@ -2,9 +2,9 @@ use crate::common::Publisher;
 use crate::model::file::FileInfo;
 use crate::model::result::{Error, Res, Void};
 use crate::model::state::list::{FileHolder, FileVec, FilterTrait};
-use std::cell::RefCell;
 use std::convert::TryFrom;
 use std::ops::Sub;
+use std::sync::Mutex;
 use std::time::SystemTime;
 use tokio::time::Duration;
 
@@ -13,7 +13,7 @@ pub struct FileFilter {
     filtered: FileVec,
     filter: Filter,
     show_hidden: bool,
-    publisher: RefCell<Publisher<FileVec>>,
+    publisher: Publisher<FileVec>,
 }
 
 impl FileHolder for FileFilter {
@@ -21,8 +21,8 @@ impl FileHolder for FileFilter {
         return &self.filtered;
     }
 
-    fn subscribe_change<F: Fn(&FileVec) + 'static>(&self, f: F) {
-        self.publisher.borrow_mut().subscribe(f);
+    fn subscribe_change<F: Fn(&FileVec) + 'static + Send>(&mut self, f: F) {
+        self.publisher.subscribe(f);
     }
 }
 
@@ -33,7 +33,7 @@ impl FileFilter {
             filtered: Vec::new(),
             filter: Filter::new(false),
             show_hidden: false,
-            publisher: RefCell::new(Publisher::new()),
+            publisher: Publisher::new(),
         }
     }
 
@@ -49,7 +49,7 @@ impl FileFilter {
             .filter(|it| self.filter.matches(it.info()))
             .map(|it| it.clone())
             .collect();
-        self.publisher.borrow().notify(&self.filtered);
+        self.publisher.notify(&self.filtered);
     }
 }
 

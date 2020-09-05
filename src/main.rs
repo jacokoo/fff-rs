@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate fff_macros;
 
+use crate::action::init_action;
 use crate::config::Config;
 use crate::model::file::{make, InnerFile};
 use crate::model::init_state;
@@ -55,14 +56,21 @@ async fn main() -> Res<()> {
     std::panic::set_hook(Box::new(|info| {
         execute!(stdout(), Show, LeaveAlternateScreen).unwrap();
         disable_raw_mode().unwrap();
+        log::error!("panic-ed error: {}", info);
         println!("{}", info);
     }));
 
     let sender = ui::init_ui(4);
     let (kbd, ac) = kbd::init_kbd(&c, sender.clone());
+    let mut ws = Workspace::new(wd, home, sender.clone());
+    ws.init().await;
+    ws.switch_to(0).await;
 
-    init_state(ac, sender.clone(), &wd, &home).await;
-    kbd.start().await;
+    tokio::select! {
+        _ = init_action(ac, ws) => {},
+        _ = kbd.start() => {}
+    }
+
     execute!(stdout(), Show, LeaveAlternateScreen).unwrap();
     disable_raw_mode().unwrap();
 
