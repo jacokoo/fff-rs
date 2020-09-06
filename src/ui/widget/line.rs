@@ -5,7 +5,6 @@ use crate::ui::ColorNone;
 use crossterm::style::{Colors, Print, SetColors};
 use crossterm::QueueableCommand;
 
-
 use std::cmp;
 use std::io::stdout;
 
@@ -87,18 +86,3 @@ impl Draw for Line {
         }
     }
 }
-
-pub struct DoubleLine {
-    line: Line,
-}
-
-impl DoubleLine {
-    pub fn new(vertical: bool) -> Self {
-        DoubleLine {
-            line: Line::new_with_char(vertical, '║', '═'),
-        }
-    }
-}
-
-#[draw_to(line)]
-impl Draw for DoubleLine {}
