@@ -1,11 +1,10 @@
-use std::path::Path;
-
-use async_trait::async_trait;
-use std::io::ErrorKind;
-
+use crate::model::file::path::InnerPath;
 use crate::model::file::*;
 use crate::model::result::{Error, Res, Void};
-
+use async_trait::async_trait;
+use std::convert::TryFrom;
+use std::io::ErrorKind;
+use std::path::Path;
 pub struct LocalFile(FileInfo);
 
 impl LocalFile {
@@ -19,17 +18,17 @@ pub fn get(info: &FileInfo) -> &FileInfo {
 }
 
 pub fn parent(info: &FileInfo) -> Res<InnerFile> {
-    match Path::new(&info.path).parent() {
-        Some(p) => make(&p),
+    match info.path.parent() {
+        Some(p) => make(InnerPath::try_from(p)?),
         None => Err(Error::Io(ErrorKind::NotFound)),
     }
 }
 
 pub fn rename(info: &FileInfo, name: &str) -> Void {
-    let n = Path::new(&info.path).parent().map(move |p| p.join(name));
+    let n = &info.path.parent().map(move |p| p.join(name));
 
     if let Some(nn) = n {
-        std::fs::rename(Path::new(&info.path), nn)?;
+        std::fs::rename(&info.path, nn)?;
     }
     Ok(())
 }

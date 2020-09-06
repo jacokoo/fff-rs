@@ -54,7 +54,7 @@ impl FileList {
 }
 
 impl FileList {
-    pub async fn update(&mut self, path: &InnerPath) -> Void {
+    pub async fn update(&mut self, path: InnerPath) -> Void {
         let file = InnerFile::try_from(path)?;
         if let InnerFile::Dir(dir) = &file {
             let fs: Vec<_> = dir
@@ -67,7 +67,7 @@ impl FileList {
             self.filter.set_files(&fs);
             return Ok(());
         }
-        return Err(Error::DirIsRequired(path.to_string()));
+        return Err(Error::DirIsRequired(file.path_str()));
     }
 
     pub fn subscribe_file_change<F: Fn(&FileVec) + 'static + Send + Sync>(&self, f: F) {

@@ -1,38 +1,29 @@
-use std::convert::TryFrom;
-use std::path::Path;
-use std::sync::Arc;
-use std::time::SystemTime;
-
-use async_trait::async_trait;
-
-pub use local::make;
-
 use crate::model::file::path::InnerPath;
 use crate::model::result::{Error, Res, Void};
+use async_trait::async_trait;
 use chrono::{DateTime, Local};
-
-pub mod path;
+pub use local::make;
+use std::convert::TryFrom;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use std::time::SystemTime;
 
 mod cmd;
 mod file_mode;
 mod local;
+pub mod path;
 mod protocol;
 
 pub struct FileInfo {
+    pub inner: InnerPath,
     pub name: String,
-    pub path: String,
+    pub path: PathBuf,
     pub size: u64,
     pub mode: String,
     pub modified: Option<SystemTime>,
     pub is_dir: bool,
     pub link: Option<LinkInfo>,
     pub protocol: Option<ProtocolInfo>,
-}
-
-impl FileInfo {
-    pub fn get_path(&self) -> &Path {
-        Path::new(&self.path)
-    }
 }
 
 pub struct LinkInfo {
@@ -71,7 +62,11 @@ impl InnerFile {
     }
 
     pub fn path_str(&self) -> String {
-        self.info().path.clone()
+        self.inner_path().to_string()
+    }
+
+    pub fn inner_path(&self) -> &InnerPath {
+        &self.info().inner
     }
 
     pub fn readable_size(&self) -> String {
@@ -112,20 +107,12 @@ impl InnerFile {
     }
 }
 
-impl TryFrom<&InnerPath> for InnerFile {
+impl TryFrom<InnerPath> for InnerFile {
     type Error = Error;
 
-    fn try_from(value: &InnerPath) -> Res<Self> {
+    fn try_from(value: InnerPath) -> Res<Self> {
         // TODO check protocol
-        return make(Path::new(&value.path));
-    }
-}
-
-impl TryFrom<String> for InnerFile {
-    type Error = Error;
-
-    fn try_from(value: String) -> Res<Self> {
-        return InnerFile::try_from(&InnerPath::try_from(value)?);
+        return make(value);
     }
 }
 
@@ -152,34 +139,4 @@ pub trait DirOp: Op {
     async fn new_dir(&self, name: &str) -> Void;
     async fn goto(&self, child_path: &str) -> Res<InnerFile>;
     async fn shell(&self) -> Void;
-}
-
-#[cfg(test)]
-mod test {
-    use std::path::Path;
-
-    use crate::model::file::local::make;
-    use crate::model::file::{FileInfo, InnerFile};
-
-    #[test]
-    fn test_make() {
-        file_info("/etc", |_is_dir, fi| {
-            // assert_eq!(is_dir, true);
-            assert_eq!(fi.path, "/etc");
-            assert_eq!(fi.name, "etc");
-            assert_eq!(fi.is_dir, true);
-            assert_eq!(fi.mode, "drwxr-xr-x")
-        });
-    }
-
-    fn file_info<F>(path: &str, ff: F)
-    where
-        F: FnOnce(bool, &FileInfo) -> (),
-    {
-        let ft = make(Path::new(path)).unwrap();
-        match ft {
-            InnerFile::File(file) => ff(false, file.as_ref().get()),
-            InnerFile::Dir(dir) => ff(true, dir.as_ref().get()),
-        }
-    }
 }

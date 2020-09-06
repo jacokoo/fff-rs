@@ -11,18 +11,19 @@ pub async fn init_action(ac: ActionReceiver, mut ws: Workspace) {
                 "ActionSortByName" => ws.current_list_mut().set_order(FileSortBy::NAME),
                 "ActionSortByMtime" => ws.current_list_mut().set_order(FileSortBy::MTIME),
                 "ActionSortBySize" => ws.current_list_mut().set_order(FileSortBy::SIZE),
-                "ActionChangeGroup0" => ws.switch_to(0).await.unwrap(),
-                "ActionChangeGroup1" => ws.switch_to(1).await.unwrap(),
-                "ActionChangeGroup2" => ws.switch_to(2).await.unwrap(),
-                "ActionChangeGroup3" => ws.switch_to(3).await.unwrap(),
-                "ActionToggleHidden" => ws.current_list_mut().toggle_show_hidden(),
-                "ActionToggleDetail" => ws.toggle_show_detail(),
                 "ActionMoveUp" => {
                     ws.current_list_mut().move_select(-1);
                 }
                 "ActionMoveDown" => {
                     ws.current_list_mut().move_select(1);
                 }
+                "ActionOpenFolderRight" => {}
+                "ActionChangeGroup0" => ws.switch_to(0).await.unwrap(),
+                "ActionChangeGroup1" => ws.switch_to(1).await.unwrap(),
+                "ActionChangeGroup2" => ws.switch_to(2).await.unwrap(),
+                "ActionChangeGroup3" => ws.switch_to(3).await.unwrap(),
+                "ActionToggleHidden" => ws.current_list_mut().toggle_show_hidden(),
+                "ActionToggleDetail" => ws.toggle_show_detail(),
                 "ActionMoveToFirst" => {
                     ws.current_list_mut().select_first();
                 }

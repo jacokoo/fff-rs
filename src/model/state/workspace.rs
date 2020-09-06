@@ -5,7 +5,7 @@ use crate::model::state::group::Group;
 use crate::model::state::list::list::FileList;
 use crate::model::state::list::SelectorTrait;
 use crate::ui::event::UIEvent::{
-    RefreshFileItem, SetBookmark, SetMark, SetSelect, SetShowDetail, SwitchTab,
+    Message, RefreshFileItem, SetBookmark, SetMark, SetSelect, SetShowDetail, SwitchTab,
 };
 use crate::ui::event::{FileItem, UIEventSender};
 use std::borrow::Borrow;
@@ -48,7 +48,7 @@ impl Workspace {
     pub async fn init(&mut self) -> Void {
         for _ in 0..MAX_GROUP_COUNT {
             let mut g = Group::new();
-            g.current_mut().update(&self.enter_path).await?;
+            g.current_mut().update(self.enter_path.clone()).await?;
             self.bind_list(g.current_mut());
             self.groups.push(g)
         }
@@ -91,6 +91,26 @@ impl Workspace {
     pub fn toggle_show_detail(&mut self) {
         self.show_detail = !self.show_detail;
         self.ui_event.send(SetShowDetail(self.show_detail)).unwrap();
+    }
+
+    pub async fn open_selected(&mut self) {
+        let of = self.current_list_mut().selected_file();
+        match of {
+            Some(file) => {
+                if file.is_dir() {
+                    self.current_mut().add_file_list().await;
+                } else {
+                    self.ui_event
+                        .send(Message(format!("Can not open {}", file.path_str())))
+                        .unwrap();
+                }
+            }
+            None => {
+                self.ui_event
+                    .send(Message("No dir is selected".to_string()))
+                    .unwrap();
+            }
+        }
     }
 
     fn bind_list(&self, list: &mut FileList) {

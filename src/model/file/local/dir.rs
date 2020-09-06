@@ -1,12 +1,12 @@
-use std::path::PathBuf;
-
-use async_trait::async_trait;
-use std::fs;
-
 use crate::model::file::local::file;
+use crate::model::file::path::InnerPath;
 use crate::model::file::*;
 use crate::model::result::{Error, Res, Void};
+use async_trait::async_trait;
+use std::convert::TryFrom;
+use std::fs;
 use std::fs::read_dir;
+use std::path::PathBuf;
 
 pub struct LocalDir(FileInfo);
 
@@ -34,14 +34,14 @@ impl LocalDir {
         LocalDir(fi)
     }
     fn join_path(&self, name: &str) -> PathBuf {
-        self.0.get_path().join(name)
+        self.0.inner.path.join(name)
     }
 }
 
 #[async_trait]
 impl DirOp for LocalDir {
     async fn list(&self) -> Res<Vec<InnerFile>> {
-        let dir = read_dir(self.0.get_path())?;
+        let dir = read_dir(&self.0.inner.path)?;
         Ok(dir
             .filter(|d| {
                 if let Ok(dd) = d {
@@ -50,7 +50,7 @@ impl DirOp for LocalDir {
                 }
                 false
             })
-            .map(|d| make(&d?.path()))
+            .map(|d| make(InnerPath::try_from(&d?.path())?))
             .filter(|d| d.is_ok())
             .map(|d| d.unwrap())
             .collect::<Vec<InnerFile>>())
@@ -71,7 +71,7 @@ impl DirOp for LocalDir {
     }
 
     async fn goto(&self, child_path: &str) -> Res<InnerFile> {
-        make(&self.join_path(child_path))
+        make(InnerPath::try_from(&self.join_path(child_path))?)
     }
 
     async fn shell(&self) -> Void {

@@ -1,22 +1,24 @@
 use std::fs::{read_link, Metadata};
 use std::os::macos::fs::MetadataExt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::model::file::file_mode::mode_string;
 use crate::model::file::local::dir::LocalDir;
 use crate::model::file::local::file::LocalFile;
+use crate::model::file::path::InnerPath;
 use crate::model::file::{FileInfo, InnerFile, LinkInfo};
 use crate::model::result::{option_from_result, Error, Res};
 
 mod dir;
 mod file;
 
-pub fn make(p: &Path) -> Res<InnerFile> {
+pub fn make(inner: InnerPath) -> Res<InnerFile> {
+    let p = &inner.path;
     if !p.exists() {
-        return Error::PathNotExists(p.display().to_string()).res();
+        return Error::PathNotExists(inner.to_string()).res();
     }
     let meta = p.symlink_metadata()?;
-    let v = make_it(p, &meta);
+    let v = make_it(&meta, inner);
     Ok(if meta.is_dir() {
         InnerFile::Dir(Box::new(LocalDir::new(v)))
     } else {
@@ -24,13 +26,13 @@ pub fn make(p: &Path) -> Res<InnerFile> {
     })
 }
 
-fn make_it(path: &Path, meta: &Metadata) -> FileInfo {
+fn make_it(meta: &Metadata, inner: InnerPath) -> FileInfo {
+    let path = &inner.path;
     let name = path
         .file_name()
         .map(|r| r.to_str().unwrap())
-        .unwrap_or("")
+        .unwrap_or("-")
         .to_string();
-    let pp = path.display().to_string();
     let mode = mode_string(meta.st_mode());
     let link = if meta.file_type().is_symlink() {
         option_from_result(read_link(path)).map(|p| {
@@ -50,8 +52,9 @@ fn make_it(path: &Path, meta: &Metadata) -> FileInfo {
     };
 
     FileInfo {
+        path: path.clone(),
+        inner,
         name,
-        path: pp,
         size: meta.len(),
         mode,
         modified: option_from_result(meta.modified()),

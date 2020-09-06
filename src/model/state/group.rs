@@ -1,9 +1,7 @@
-
 use crate::model::state::list::list::FileList;
 use crate::model::state::list::{MarkerTrait, SelectorTrait};
 use crate::ui::event::UIEvent::*;
 use crate::ui::event::{UIEventResult, UIEventSender};
-
 
 pub struct Group {
     file_list: Vec<FileList>,
@@ -14,6 +12,11 @@ impl Group {
         Group {
             file_list: vec![FileList::new()],
         }
+    }
+
+    pub async fn add_file_list(&mut self) {
+        let fl = FileList::new();
+        // fl.update()
     }
 
     pub fn current(&self) -> &FileList {
