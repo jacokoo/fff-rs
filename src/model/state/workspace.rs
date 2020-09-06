@@ -9,7 +9,7 @@ use crate::ui::event::UIEvent::{
     SwitchTab,
 };
 use crate::ui::event::{FileItem, UIEventSender};
-use std::borrow::{Borrow, BorrowMut};
+use std::borrow::{Borrow};
 use std::convert::TryFrom;
 use std::path::PathBuf;
 

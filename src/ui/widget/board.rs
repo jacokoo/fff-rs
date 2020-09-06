@@ -1,5 +1,4 @@
 use crate::common::Functional;
-use crate::model::state::workspace::ViewMode;
 use crate::ui::base::draw::Draw;
 use crate::ui::event::FileItem;
 use crate::ui::layout::flex::Flex;

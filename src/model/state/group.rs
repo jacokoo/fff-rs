@@ -1,11 +1,10 @@
 use crate::model::file::InnerFile;
-use crate::model::result::{Res, Void};
+use crate::model::result::Res;
 use crate::model::state::list::list::FileList;
 use crate::model::state::list::{MarkerTrait, SelectorTrait};
 use crate::model::state::workspace::ViewMode;
 use crate::ui::event::UIEvent::*;
 use crate::ui::event::{UIEventResult, UIEventSender};
-use std::borrow::Borrow;
 use std::sync::Arc;
 
 pub struct Group {
