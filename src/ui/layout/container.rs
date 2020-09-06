@@ -1,6 +1,5 @@
 use crate::ui::base::draw::{Draw, Drawable};
-
-use crate::ui::base::shape::{Point, Rect, Size};
+use crate::ui::base::shape::{Point, Size};
 use crate::ui::Mrc;
 
 pub struct Container {

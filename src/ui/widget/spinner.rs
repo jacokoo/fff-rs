@@ -1,15 +1,12 @@
 use crate::common::Functional;
 use crate::ui::base::draw::Draw;
-use crate::ui::base::shape::{Point, Rect, Size};
+use crate::ui::base::shape::{Point, Size};
 use crate::ui::layout::space::Space;
 use crate::ui::widget::label::Label;
 use crate::ui::widget::quoted::Quoted;
-use crate::ui::{ToMrc};
-
+use crate::ui::ToMrc;
 use crossterm::style::Colors;
-
 use std::io::{stdout, Write};
-
 use std::sync::{Arc, Mutex, RwLock};
 use std::{thread, time};
 

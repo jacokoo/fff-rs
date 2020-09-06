@@ -1,11 +1,9 @@
 use crate::ui::base::jump::{JumpPoint, JumpType};
 use crate::ui::base::shape::{Point, Rect, Size};
-
+use crate::ui::Mrc;
 use crossterm::style::ResetColor;
 use crossterm::QueueableCommand;
 use delegate::delegate;
-
-use crate::ui::Mrc;
 use std::cell::{Ref, RefMut};
 use std::io::stdout;
 use std::ops::Deref;

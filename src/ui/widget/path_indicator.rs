@@ -1,7 +1,4 @@
 use crate::ui::base::draw::Draw;
-
-use crate::ui::base::shape::{Point, Rect, Size};
-
 use crate::ui::widget::label::Label;
 use crate::ui::widget::quoted::Quoted;
 use crate::ui::{Mrc, ToMrc};

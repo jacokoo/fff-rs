@@ -1,7 +1,6 @@
-use crate::ui::base::draw::Draw;
-
 use crate::common::Functional;
-use crate::ui::base::shape::{Point, Rect, Size};
+use crate::ui::base::draw::Draw;
+use crate::ui::base::shape::Size;
 use crate::ui::layout::center::Center;
 use crate::ui::layout::flex::Flex;
 use crate::ui::layout::padding::Padding;

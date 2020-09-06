@@ -1,4 +1,3 @@
-
 use crate::model::result::Error;
 use std::convert::TryFrom;
 use std::path::{Path, PathBuf};

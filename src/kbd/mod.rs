@@ -4,7 +4,6 @@ use crate::kbd::normal_mode::NormalMode;
 use crate::ui::event::UIEventSender;
 use crossbeam_channel::{bounded, Receiver, Sender};
 use crossterm::event::{read, Event, KeyEvent};
-
 use std::sync::{Arc, Mutex};
 
 mod code;

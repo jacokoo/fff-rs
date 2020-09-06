@@ -1,6 +1,5 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
-
 pub fn key_event_code(ev: &KeyEvent) -> String {
     let mut parts: Vec<String> = Vec::new();
 
