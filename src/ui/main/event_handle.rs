@@ -2,7 +2,7 @@ use crate::ui::event::UIEvent::*;
 use crate::ui::event::{EventBody, UIEvent};
 use crate::ui::main::ui::UI;
 use crossbeam_channel::{Receiver, Sender};
-use std::io::{stdout, Write};
+use std::io::{Write};
 
 pub fn handle(mut ui: UI, rx: Receiver<EventBody>) {
     while let Ok(ev) = rx.recv() {

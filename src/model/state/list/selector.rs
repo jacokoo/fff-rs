@@ -1,7 +1,7 @@
 use crate::common::Publisher;
 use crate::model::file::InnerFile;
 use crate::model::state::list::{FileVec, SelectorTrait};
-use std::rc::Rc;
+
 use std::sync::Arc;
 
 pub struct FileSelector {

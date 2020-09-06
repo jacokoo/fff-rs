@@ -7,7 +7,7 @@ use crate::ui::layout::flex::Flex;
 use crate::ui::layout::sized::SizedBox;
 use crate::ui::widget::bookmark::Bookmark;
 use crate::ui::widget::file_column::{CornerLine, FileColumn};
-use crate::ui::widget::file_list::FileList;
+
 use crate::ui::widget::line::Line;
 use crate::ui::{Mrc, ToMrc};
 

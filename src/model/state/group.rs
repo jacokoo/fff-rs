@@ -15,7 +15,7 @@ impl Group {
     }
 
     pub async fn add_file_list(&mut self) {
-        let fl = FileList::new();
+        let _fl = FileList::new();
         // fl.update()
     }
 

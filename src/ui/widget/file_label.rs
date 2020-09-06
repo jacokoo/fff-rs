@@ -1,14 +1,12 @@
-use crate::ui::base::draw::Draw;
-
 use crate::common::Functional;
+use crate::ui::base::draw::Draw;
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::event::FileItem;
 use crate::ui::layout::background::Background;
 use crate::ui::layout::flex::Flex;
-use crate::ui::layout::sized::SizedBox;
 use crate::ui::layout::space::Space;
 use crate::ui::widget::label::Label;
-use crate::ui::{ColorNone, Mrc, ToMrc};
+use crate::ui::{Mrc, ToMrc};
 use crossterm::style::{Color, Colors};
 use std::ops::Deref;
 

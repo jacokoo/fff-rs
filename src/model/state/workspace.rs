@@ -114,7 +114,7 @@ impl Workspace {
     }
 
     fn bind_list(&self, list: &mut FileList) {
-        let mut s1 = self.ui_event.clone();
+        let s1 = self.ui_event.clone();
         list.subscribe_file_change(move |fs| {
             s1.send(RefreshFileItem(
                 fs.iter().map(|f| FileItem::from(f.borrow())).collect(),
@@ -122,13 +122,13 @@ impl Workspace {
             .unwrap();
         });
 
-        let mut s2 = self.ui_event.clone();
+        let s2 = self.ui_event.clone();
         list.subscribe_mark_change(move |m| {
             s2.send(SetMark(m.iter().map(|it| it.clone()).collect()))
                 .unwrap();
         });
 
-        let mut s3 = self.ui_event.clone();
+        let s3 = self.ui_event.clone();
         list.subscribe_select_change(move |s| {
             s3.send(SetSelect(Some(s.clone()))).unwrap();
         });

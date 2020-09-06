@@ -3,7 +3,6 @@ extern crate fff_macros;
 
 use crate::action::init_action;
 use crate::config::Config;
-use crate::model::file::{make, InnerFile};
 use crate::model::result::Res;
 use crate::model::state::workspace::Workspace;
 use crossterm::cursor::{Hide, Show};

@@ -1,6 +1,6 @@
 use std::fs::{read_link, Metadata};
 use std::os::macos::fs::MetadataExt;
-use std::path::{Path, PathBuf};
+use std::path::{Path};
 
 use crate::model::file::file_mode::mode_string;
 use crate::model::file::local::dir::LocalDir;

@@ -1,6 +1,6 @@
 use crate::common::Publisher;
 use crate::model::state::list::{FileHolder, FileSortBy, FileVec, SorterTrait};
-use std::cell::RefCell;
+
 use std::cmp::Ordering;
 
 pub struct FileSorter {

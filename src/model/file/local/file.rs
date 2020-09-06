@@ -4,7 +4,7 @@ use crate::model::result::{Error, Res, Void};
 use async_trait::async_trait;
 use std::convert::TryFrom;
 use std::io::ErrorKind;
-use std::path::Path;
+
 pub struct LocalFile(FileInfo);
 
 impl LocalFile {

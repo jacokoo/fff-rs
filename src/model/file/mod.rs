@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use chrono::{DateTime, Local};
 pub use local::make;
 use std::convert::TryFrom;
-use std::path::{Path, PathBuf};
+use std::path::{PathBuf};
 use std::sync::Arc;
 use std::time::SystemTime;
 

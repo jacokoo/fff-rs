@@ -39,7 +39,7 @@ fn get_methods(used: Vec<String>, target: Ident) -> Vec<ImplItem> {
 
     if !used.contains(&"get_rect".to_string()) {
         ms.push(to_m(quote! {
-            fn get_rect(&self) -> &Rect {
+            fn get_rect(&self) -> &crate::ui::base::shape::Rect {
                 self.#target.get_rect()
             }
         }))
@@ -47,7 +47,7 @@ fn get_methods(used: Vec<String>, target: Ident) -> Vec<ImplItem> {
 
     if !used.contains(&"move_to".to_string()) {
         ms.push(to_m(quote! {
-            fn move_to(&mut self, point: &Point) {
+            fn move_to(&mut self, point: &crate::ui::base::shape::Point) {
                 self.#target.move_to(point);
             }
         }))
@@ -55,7 +55,7 @@ fn get_methods(used: Vec<String>, target: Ident) -> Vec<ImplItem> {
 
     if !used.contains(&"ensure".to_string()) {
         ms.push(to_m(quote! {
-            fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+            fn ensure(&mut self, min: &crate::ui::base::shape::Size, max: &crate::ui::base::shape::Size) -> crate::ui::base::shape::Size {
                 self.#target.ensure(min, max)
             }
         }))

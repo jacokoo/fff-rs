@@ -1,6 +1,6 @@
 use crate::model::file::InnerFile;
 use crate::model::result::Void;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc};
 
 mod filter;
 pub mod list;
