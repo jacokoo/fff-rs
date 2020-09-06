@@ -1,62 +1,22 @@
+use crate::model::state::workspace::ViewMode;
 use crate::ui::base::draw::Draw;
 use crate::ui::base::shape::{Point, Size};
 use crate::ui::event::FileItem;
 use crate::ui::layout::flex::Flex;
 use crate::ui::layout::sized::SizedBox;
+use crate::ui::widget::corner_line::CornerLine;
 use crate::ui::widget::file_list::FileList;
 use crate::ui::widget::label::Label;
 use crate::ui::widget::line::Line;
 use crate::ui::{Mrc, ToMrc};
 use std::cell::{Ref, RefMut};
 
-pub struct CornerLine {
-    line: Line,
-    label: Label,
-    corner_char: char,
-    clear_char: char,
-}
-
-impl CornerLine {
-    pub fn new(line_char: char, corner_char: char, clear_char: char) -> Self {
-        CornerLine {
-            line: Line::new_vertical(line_char),
-            label: Label::from(corner_char.to_string()),
-            corner_char,
-            clear_char,
-        }
-    }
-}
-
-#[draw_to(line)]
-impl Draw for CornerLine {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
-        self.label.ensure(min, max);
-        return self.line.ensure(min, max);
-    }
-
-    fn move_to(&mut self, point: &Point) {
-        self.line.move_to(point);
-        self.label.move_to(&(point + (0, -1)));
-    }
-
-    fn do_draw(&mut self) {
-        self.line.draw();
-        self.label.draw();
-    }
-
-    fn clear(&mut self) {
-        self.line.clear();
-        self.label.set_text(self.clear_char.to_string());
-        self.label.draw();
-        self.label.set_text(self.corner_char.to_string());
-    }
-}
-
 pub struct FileColumn {
     columns: Vec<Mrc<FileList>>,
     lines: Vec<Mrc<SizedBox>>,
     flex: Flex,
     show_detail: bool,
+    mode: ViewMode,
 }
 
 impl FileColumn {
@@ -66,6 +26,7 @@ impl FileColumn {
             lines: Vec::new(),
             flex: Flex::row(),
             show_detail: false,
+            mode: ViewMode::InColumn,
         }
     }
 
@@ -125,8 +86,20 @@ impl FileColumn {
         }
     }
 
-    pub fn add_file_list(&mut self, list: Mrc<FileList>) {
-        self.columns.push(list.clone());
+    pub fn add_file_list(&mut self, files: Vec<FileItem>) {
+        if let ViewMode::InList = self.mode {
+            self.current_mut().set_files(files);
+            return;
+        }
+
+        if self.show_detail {
+            self.current_mut().set_show_detail(false);
+        }
+
+        let mut ls = FileList::new(self.show_detail);
+        ls.set_files(files);
+
+        self.columns.push(ls.mrc());
         self.add_line();
     }
 

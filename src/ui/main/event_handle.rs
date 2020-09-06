@@ -2,7 +2,6 @@ use crate::ui::event::UIEvent::*;
 use crate::ui::event::{EventBody, UIEvent};
 use crate::ui::main::ui::UI;
 use crossbeam_channel::{Receiver, Sender};
-use std::io::{Write};
 
 pub fn handle(mut ui: UI, rx: Receiver<EventBody>) {
     while let Ok(ev) = rx.recv() {
@@ -50,6 +49,7 @@ fn handle_single(ui: &mut UI, ev: UIEvent) {
         RefreshFileItem(fs) => ui.board_mut().refresh_files(fs),
         SetMark(m) => ui.board_mut().set_mark(m),
         SetSelect(ss) => ui.board_mut().set_selected(ss),
+        AddFileList(fs) => ui.board_mut().add_files(fs),
         SetShowDetail(show) => ui.board_mut().set_show_detail(show),
         a => log::debug!("unhandled event: {:?}", a),
     }

@@ -1,11 +1,12 @@
 use crate::common::Functional;
+use crate::model::state::workspace::ViewMode;
 use crate::ui::base::draw::Draw;
 use crate::ui::event::FileItem;
 use crate::ui::layout::flex::Flex;
 use crate::ui::layout::sized::SizedBox;
 use crate::ui::widget::bookmark::Bookmark;
-use crate::ui::widget::file_column::{CornerLine, FileColumn};
-
+use crate::ui::widget::corner_line::CornerLine;
+use crate::ui::widget::file_column::FileColumn;
 use crate::ui::widget::line::Line;
 use crate::ui::{Mrc, ToMrc};
 
@@ -62,6 +63,10 @@ impl Board {
 
     pub fn refresh_files(&mut self, files: Vec<FileItem>) {
         self.column.borrow_mut().current_mut().set_files(files);
+    }
+
+    pub fn add_files(&mut self, files: Vec<FileItem>) {
+        self.column.borrow_mut().add_file_list(files);
     }
 
     pub fn set_mark(&mut self, mark: Vec<usize>) {

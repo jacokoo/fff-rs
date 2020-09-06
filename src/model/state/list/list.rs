@@ -10,11 +10,12 @@ use crate::model::state::list::{
 };
 use crate::ui::event::FileItem;
 use delegate::delegate;
+use std::borrow::Borrow;
 use std::convert::TryFrom;
 use std::sync::{Arc, Mutex};
 
 pub struct FileList {
-    pub dir: Option<InnerFile>,
+    dir: Option<Arc<InnerFile>>,
     filter: FileFilter,
     sorter: Arc<Mutex<FileSorter>>,
     selector: Arc<Mutex<FileSelector>>,
@@ -55,8 +56,11 @@ impl FileList {
 
 impl FileList {
     pub async fn update(&mut self, path: InnerPath) -> Void {
-        let file = InnerFile::try_from(path)?;
-        if let InnerFile::Dir(dir) = &file {
+        self.update_dir(Arc::new(InnerFile::try_from(path)?)).await
+    }
+
+    pub async fn update_dir(&mut self, file: Arc<InnerFile>) -> Void {
+        if let InnerFile::Dir(dir) = file.borrow() {
             let fs: Vec<_> = dir
                 .list()
                 .await?
@@ -90,6 +94,13 @@ impl FileList {
             .iter()
             .map(|f| FileItem::from(f.as_ref()))
             .collect()
+    }
+
+    pub fn dir(&self) -> Option<&InnerFile> {
+        if let Some(v) = &self.dir {
+            return Some(v.borrow());
+        }
+        None
     }
 }
 

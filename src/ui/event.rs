@@ -36,6 +36,7 @@ pub enum UIEvent {
     InitMark(Vec<Vec<usize>>),
 
     RefreshFileItem(Vec<FileItem>),
+    AddFileList(Vec<FileItem>),
     SetSelect(Option<usize>),
     SetMark(Vec<usize>),
 

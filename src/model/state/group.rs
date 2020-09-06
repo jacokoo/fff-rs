@@ -1,7 +1,12 @@
+use crate::model::file::InnerFile;
+use crate::model::result::{Res, Void};
 use crate::model::state::list::list::FileList;
 use crate::model::state::list::{MarkerTrait, SelectorTrait};
+use crate::model::state::workspace::ViewMode;
 use crate::ui::event::UIEvent::*;
 use crate::ui::event::{UIEventResult, UIEventSender};
+use std::borrow::Borrow;
+use std::sync::Arc;
 
 pub struct Group {
     file_list: Vec<FileList>,
@@ -14,17 +19,26 @@ impl Group {
         }
     }
 
-    pub async fn add_file_list(&mut self) {
-        let _fl = FileList::new();
-        // fl.update()
+    pub async fn add_file_list(
+        &mut self,
+        file: Arc<InnerFile>,
+        mode: &ViewMode,
+    ) -> Res<&mut FileList> {
+        if let ViewMode::InColumn = mode {
+            self.file_list.push(FileList::new());
+        }
+
+        self.current_mut().update_dir(file).await?;
+        Ok(self.current_mut())
     }
 
     pub fn current(&self) -> &FileList {
-        &self.file_list[0]
+        &self.file_list.last().unwrap()
     }
 
     pub fn current_mut(&mut self) -> &mut FileList {
-        &mut self.file_list[0]
+        let idx = self.file_list.len() - 1;
+        &mut self.file_list[idx]
     }
 
     pub fn items(&self) -> &Vec<FileList> {
@@ -34,7 +48,7 @@ impl Group {
     pub fn sync_to_ui(&self, event: &UIEventSender) -> UIEventResult {
         event.queue(SetPath(
             self.current()
-                .dir
+                .dir()
                 .as_ref()
                 .map_or("-".to_string(), |it| it.path_str()),
         ))?;

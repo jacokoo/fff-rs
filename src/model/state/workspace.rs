@@ -3,12 +3,13 @@ use crate::model::result::Void;
 use crate::model::state::bookmark::Bookmark;
 use crate::model::state::group::Group;
 use crate::model::state::list::list::FileList;
-use crate::model::state::list::SelectorTrait;
+use crate::model::state::list::{MarkerTrait, SelectorTrait};
 use crate::ui::event::UIEvent::{
-    Message, RefreshFileItem, SetBookmark, SetMark, SetSelect, SetShowDetail, SwitchTab,
+    AddFileList, Message, RefreshFileItem, SetBookmark, SetMark, SetSelect, SetShowDetail,
+    SwitchTab,
 };
 use crate::ui::event::{FileItem, UIEventSender};
-use std::borrow::Borrow;
+use std::borrow::{Borrow, BorrowMut};
 use std::convert::TryFrom;
 use std::path::PathBuf;
 
@@ -49,7 +50,7 @@ impl Workspace {
         for _ in 0..MAX_GROUP_COUNT {
             let mut g = Group::new();
             g.current_mut().update(self.enter_path.clone()).await?;
-            self.bind_list(g.current_mut());
+            Workspace::bind_list(&self.ui_event, g.current_mut());
             self.groups.push(g)
         }
         self.ui_event
@@ -93,28 +94,42 @@ impl Workspace {
         self.ui_event.send(SetShowDetail(self.show_detail)).unwrap();
     }
 
-    pub async fn open_selected(&mut self) {
+    pub async fn open_selected(&mut self) -> Void {
         let of = self.current_list_mut().selected_file();
         match of {
             Some(file) => {
                 if file.is_dir() {
-                    self.current_mut().add_file_list().await;
+                    let mode = match self.current_mode {
+                        ViewMode::InColumn => ViewMode::InColumn,
+                        ViewMode::InList => ViewMode::InList,
+                    };
+                    self.current_list_mut().clear_mark();
+                    let sender = self.ui_event.clone();
+                    let fl = self
+                        .current_mut()
+                        .add_file_list(file.clone(), &mode)
+                        .await?;
+                    Workspace::bind_list(&sender, fl);
+                    let vs = self.current_list().file_items();
+                    self.ui_event.batch_send(vec![
+                        AddFileList(vs),
+                        SetSelect(self.current_list().selected()),
+                    ])?;
                 } else {
                     self.ui_event
-                        .send(Message(format!("Can not open {}", file.path_str())))
-                        .unwrap();
+                        .send(Message(format!("Can not open {}", file.path_str())))?;
                 }
             }
             None => {
                 self.ui_event
-                    .send(Message("No dir is selected".to_string()))
-                    .unwrap();
+                    .send(Message("No dir is selected".to_string()))?;
             }
         }
+        Ok(())
     }
 
-    fn bind_list(&self, list: &mut FileList) {
-        let s1 = self.ui_event.clone();
+    fn bind_list(sender: &UIEventSender, list: &mut FileList) {
+        let s1 = sender.clone();
         list.subscribe_file_change(move |fs| {
             s1.send(RefreshFileItem(
                 fs.iter().map(|f| FileItem::from(f.borrow())).collect(),
@@ -122,13 +137,13 @@ impl Workspace {
             .unwrap();
         });
 
-        let s2 = self.ui_event.clone();
+        let s2 = sender.clone();
         list.subscribe_mark_change(move |m| {
             s2.send(SetMark(m.iter().map(|it| it.clone()).collect()))
                 .unwrap();
         });
 
-        let s3 = self.ui_event.clone();
+        let s3 = sender.clone();
         list.subscribe_select_change(move |s| {
             s3.send(SetSelect(Some(s.clone()))).unwrap();
         });
