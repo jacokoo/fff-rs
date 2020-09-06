@@ -1,10 +1,10 @@
-use crate::model::file::InnerFile;
-use crate::model::result::Res;
+use crate::model::file::{InnerFile, Op};
+use crate::model::result::{Res, Void};
 use crate::model::state::list::list::FileList;
 use crate::model::state::list::{MarkerTrait, SelectorTrait};
 use crate::model::state::workspace::ViewMode;
 use crate::ui::event::UIEvent::*;
-use crate::ui::event::{UIEventResult, UIEventSender};
+use crate::ui::event::{FileItem, UIEventResult, UIEventSender};
 use std::sync::Arc;
 
 pub struct Group {
@@ -31,6 +31,23 @@ impl Group {
         Ok(self.current_mut())
     }
 
+    pub async fn close_last(&mut self) -> Res<(bool, Option<Vec<FileItem>>)> {
+        if self.file_list.len() == 1 {
+            return match self.current_mut().dir() {
+                Some(v) => {
+                    let p = v.parent().await?;
+                    log::debug!("close to {}, is dir {}", p.path_str(), p.is_dir());
+                    self.current_mut().update_dir(Arc::new(p)).await?;
+                    Ok((true, Some(self.current().file_items())))
+                }
+                None => Ok((false, None)),
+            };
+        }
+
+        self.file_list.pop();
+        Ok((true, None))
+    }
+
     pub fn current(&self) -> &FileList {
         &self.file_list.last().unwrap()
     }
@@ -48,7 +65,6 @@ impl Group {
         event.queue(SetPath(
             self.current()
                 .dir()
-                .as_ref()
                 .map_or("-".to_string(), |it| it.path_str()),
         ))?;
         event.queue(InitColumn(self.map(|fl| fl.file_items())))?;

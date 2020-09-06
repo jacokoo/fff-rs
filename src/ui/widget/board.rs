@@ -68,6 +68,10 @@ impl Board {
         self.column.borrow_mut().add_file_list(files);
     }
 
+    pub fn remove_files(&mut self, files: Option<Vec<FileItem>>) {
+        self.column.borrow_mut().remove_file_list(files);
+    }
+
     pub fn set_mark(&mut self, mark: Vec<usize>) {
         self.column.borrow_mut().current_mut().set_marked(mark);
     }

@@ -19,6 +19,7 @@ pub async fn init_action(ac: ActionReceiver, mut ws: Workspace) {
                 "ActionMoveUp" => ok(ws.current_list_mut().move_select(-1)),
                 "ActionMoveDown" => ok(ws.current_list_mut().move_select(1)),
                 "ActionOpenFolderRight" => ws.open_selected().await,
+                "ActionCloseFolderRight" => ws.close_right().await,
                 "ActionChangeGroup0" => ws.switch_to(0).await,
                 "ActionChangeGroup1" => ws.switch_to(1).await,
                 "ActionChangeGroup2" => ws.switch_to(2).await,

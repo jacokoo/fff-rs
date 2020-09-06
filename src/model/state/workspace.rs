@@ -1,15 +1,15 @@
 use crate::model::file::path::InnerPath;
-use crate::model::result::Void;
+use crate::model::result::{Res, Void};
 use crate::model::state::bookmark::Bookmark;
 use crate::model::state::group::Group;
 use crate::model::state::list::list::FileList;
 use crate::model::state::list::{MarkerTrait, SelectorTrait};
 use crate::ui::event::UIEvent::{
-    AddFileList, Message, RefreshFileItem, SetBookmark, SetMark, SetSelect, SetShowDetail,
-    SwitchTab,
+    AddFileList, Message, RefreshFileItem, RemoveFileList, SetBookmark, SetMark, SetPath,
+    SetSelect, SetShowDetail, SwitchTab,
 };
 use crate::ui::event::{FileItem, UIEventSender};
-use std::borrow::{Borrow};
+use std::borrow::Borrow;
 use std::convert::TryFrom;
 use std::path::PathBuf;
 
@@ -92,6 +92,28 @@ impl Workspace {
     pub fn toggle_show_detail(&mut self) {
         self.show_detail = !self.show_detail;
         self.ui_event.send(SetShowDetail(self.show_detail)).unwrap();
+    }
+
+    pub async fn close_right(&mut self) -> Void {
+        let (succ, vs) = self.current_mut().close_last().await?;
+        if !succ {
+            return Ok(());
+        }
+
+        let some = vs.is_some();
+        self.ui_event.send(RemoveFileList(vs))?;
+
+        if some {
+            self.ui_event.batch_send(vec![
+                SetPath(
+                    self.current_list()
+                        .dir()
+                        .map_or("-".to_string(), |f| f.path_str()),
+                ),
+                SetSelect(self.current_list().selected()),
+            ])?;
+        }
+        Ok(())
     }
 
     pub async fn open_selected(&mut self) -> Void {

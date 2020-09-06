@@ -101,6 +101,15 @@ impl FileColumn {
         self.add_line();
     }
 
+    pub fn remove_file_list(&mut self, files: Option<Vec<FileItem>>) {
+        if self.columns.len() > 1 {
+            self.columns.pop();
+            return;
+        }
+
+        self.current_mut().set_files(files.unwrap());
+    }
+
     pub fn keep_last(&mut self) {
         let c = self.columns.last();
         let l = self.lines.last();

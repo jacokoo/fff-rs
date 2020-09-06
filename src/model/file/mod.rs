@@ -116,6 +116,48 @@ impl TryFrom<InnerPath> for InnerFile {
     }
 }
 
+#[async_trait]
+impl Op for InnerFile {
+    fn get(&self) -> &FileInfo {
+        match self {
+            InnerFile::File(v) => v.get(),
+            InnerFile::Dir(v) => v.get(),
+        }
+    }
+
+    async fn parent(&self) -> Res<InnerFile> {
+        match self {
+            InnerFile::File(v) => v.parent(),
+            InnerFile::Dir(v) => v.parent(),
+        }
+        .await
+    }
+
+    async fn rename(&mut self, name: &str) -> Void {
+        match self {
+            InnerFile::File(v) => v.rename(name),
+            InnerFile::Dir(v) => v.rename(name),
+        }
+        .await
+    }
+
+    async fn delete(&self) -> Void {
+        match self {
+            InnerFile::File(v) => v.delete(),
+            InnerFile::Dir(v) => v.delete(),
+        }
+        .await
+    }
+
+    async fn open(&self) -> Void {
+        match self {
+            InnerFile::File(v) => v.open(),
+            InnerFile::Dir(v) => v.open(),
+        }
+        .await
+    }
+}
+
 // common file operators
 #[async_trait]
 pub trait Op {
