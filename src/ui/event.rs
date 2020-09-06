@@ -27,6 +27,7 @@ impl From<&InnerFile> for FileItem {
 pub enum UIEvent {
     StartLoading,
     Message(String),
+    StartQueue,
     EndQueue,
 
     SwitchTab(usize),
@@ -52,7 +53,6 @@ pub enum UIEvent {
 pub enum EventBody {
     Single(UIEvent, Option<Sender<bool>>),
     Batch(Vec<UIEvent>, Option<Sender<bool>>),
-    Queue(UIEvent, Option<Sender<bool>>),
 }
 
 pub struct UIEventSender(Sender<EventBody>);
@@ -91,19 +91,12 @@ impl UIEventSender {
         self.0.send(EventBody::Batch(events, None))
     }
 
-    pub fn queue_sync(&self, event: UIEvent) -> UIEventResult {
-        let (tx, rx) = bounded(0);
-        self.0.send(EventBody::Queue(event, Some(tx)))?;
-        rx.recv().unwrap();
-        Ok(())
-    }
-
-    pub fn queue(&self, event: UIEvent) -> UIEventResult {
-        self.0.send(EventBody::Queue(event, None))
+    pub fn start_queue(&self) -> UIEventResult {
+        self.0.send(EventBody::Single(UIEvent::StartQueue, None))
     }
 
     pub fn end_queue(&self) -> UIEventResult {
-        self.0.send(EventBody::Queue(UIEvent::EndQueue, None))
+        self.0.send(EventBody::Single(UIEvent::EndQueue, None))
     }
 }
 

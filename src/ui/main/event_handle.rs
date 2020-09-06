@@ -4,33 +4,33 @@ use crate::ui::main::ui::UI;
 use crossbeam_channel::{Receiver, Sender};
 
 pub fn handle(mut ui: UI, rx: Receiver<EventBody>) {
+    let mut in_queue = false;
     while let Ok(ev) = rx.recv() {
         match ev {
-            EventBody::Single(data, tx) => {
-                ui.stop_loading();
-                handle_single(&mut ui, data);
-                ack(tx);
-                ui.flush();
-            }
+            EventBody::Single(data, tx) => match data {
+                UIEvent::StartQueue => {
+                    in_queue = true;
+                }
+                UIEvent::EndQueue => {
+                    in_queue = false;
+                    ui.flush();
+                }
+                d => {
+                    ui.stop_loading();
+                    handle_single(&mut ui, d);
+                    ack(tx);
+                    if !in_queue {
+                        ui.flush();
+                    }
+                }
+            },
             EventBody::Batch(data, tx) => {
                 ui.stop_loading();
                 data.into_iter().for_each(|it| handle_single(&mut ui, it));
                 ack(tx);
-                ui.flush();
-            }
-            EventBody::Queue(data, tx) => {
-                ui.start_loading();
-                match data {
-                    EndQueue => {
-                        ui.stop_loading();
-                        ui.flush();
-                        ui.flush();
-                    }
-                    a => {
-                        handle_single(&mut ui, a);
-                    }
+                if !in_queue {
+                    ui.flush();
                 }
-                ack(tx);
             }
         }
     }

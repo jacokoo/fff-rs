@@ -54,7 +54,7 @@ async fn main() -> Res<()> {
     ws.switch_to(0).await.unwrap();
 
     tokio::select! {
-        _ = init_action(ac, ws) => {},
+        _ = init_action(ac, ws, sender.clone()) => {},
         _ = kbd.start() => {}
     }
 

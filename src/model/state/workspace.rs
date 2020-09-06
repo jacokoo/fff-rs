@@ -1,3 +1,4 @@
+use crate::common::Functional;
 use crate::model::file::path::InnerPath;
 use crate::model::result::{Res, Void};
 use crate::model::state::bookmark::Bookmark;
@@ -53,8 +54,9 @@ impl Workspace {
             Workspace::bind_list(&self.ui_event, g.current_mut());
             self.groups.push(g)
         }
+        self.ui_event.start_queue();
         self.ui_event
-            .queue(SetBookmark(self.bookmark.keys().clone()))?;
+            .send(SetBookmark(self.bookmark.keys().clone()))?;
         Ok(())
     }
 
@@ -67,7 +69,8 @@ impl Workspace {
 
         self.current_group = t;
         let current = &self.groups[t];
-        self.ui_event.queue(SwitchTab(t))?;
+        self.ui_event.start_queue();
+        self.ui_event.send(SwitchTab(t))?;
         current.sync_to_ui(&self.ui_event)?;
         self.ui_event.end_queue()?;
         Ok(())
@@ -102,16 +105,11 @@ impl Workspace {
 
         let some = vs.is_some();
         self.ui_event.send(RemoveFileList(vs))?;
+        self.ui_event.send(SetPath(self.current().current_path()))?;
 
         if some {
-            self.ui_event.batch_send(vec![
-                SetPath(
-                    self.current_list()
-                        .dir()
-                        .map_or("-".to_string(), |f| f.path_str()),
-                ),
-                SetSelect(self.current_list().selected()),
-            ])?;
+            self.ui_event
+                .send(SetSelect(self.current_list().selected()))?;
         }
         Ok(())
     }
@@ -134,6 +132,7 @@ impl Workspace {
                     Workspace::bind_list(&sender, fl);
                     let vs = self.current_list().file_items();
                     self.ui_event.batch_send(vec![
+                        SetPath(self.current().current_path()),
                         AddFileList(vs),
                         SetSelect(self.current_list().selected()),
                     ])?;

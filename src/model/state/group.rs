@@ -61,15 +61,19 @@ impl Group {
         &self.file_list
     }
 
+    pub fn current_path(&self) -> String {
+        self.current()
+            .dir()
+            .map_or("-".to_string(), |it| it.path_str())
+    }
+
     pub fn sync_to_ui(&self, event: &UIEventSender) -> UIEventResult {
-        event.queue(SetPath(
-            self.current()
-                .dir()
-                .map_or("-".to_string(), |it| it.path_str()),
-        ))?;
-        event.queue(InitColumn(self.map(|fl| fl.file_items())))?;
-        event.queue(InitSelect(self.map(|fl| fl.selected())))?;
-        event.queue(InitMark(self.map(|fl| fl.marked())))?;
+        event.batch_send(vec![
+            SetPath(self.current_path()),
+            InitColumn(self.map(|fl| fl.file_items())),
+            InitSelect(self.map(|fl| fl.selected())),
+            InitMark(self.map(|fl| fl.marked())),
+        ])?;
         Ok(())
     }
 
