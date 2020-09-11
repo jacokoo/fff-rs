@@ -16,7 +16,7 @@ impl Container {
 
 #[draw_to(drawable)]
 impl Draw for Container {
-    fn ensure(&mut self, _: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, _: &Size, max: &Size) -> Size {
         let s = Size::new(max.width, max.height);
         self.drawable.set_size(&s);
         self.drawable.mut_child().ensure(&Size::new(0, 0), &s);
@@ -59,7 +59,7 @@ impl UseMin {
 
 #[draw_to(drawable)]
 impl Draw for UseMin {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         let mi = min.clone();
         let mut ma = max.clone();
         if self.height {

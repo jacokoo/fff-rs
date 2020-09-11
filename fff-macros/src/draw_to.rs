@@ -53,10 +53,26 @@ fn get_methods(used: Vec<String>, target: Ident) -> Vec<ImplItem> {
         }))
     }
 
-    if !used.contains(&"ensure".to_string()) {
+    if !used.contains(&"do_ensure".to_string()) {
         ms.push(to_m(quote! {
-            fn ensure(&mut self, min: &crate::ui::base::shape::Size, max: &crate::ui::base::shape::Size) -> crate::ui::base::shape::Size {
-                self.#target.ensure(min, max)
+            fn do_ensure(&mut self, min: &crate::ui::base::shape::Size, max: &crate::ui::base::shape::Size) -> crate::ui::base::shape::Size {
+                self.#target.do_ensure(min, max)
+            }
+        }))
+    }
+
+    if !used.contains(&"record_last".to_string()) {
+        ms.push(to_m(quote! {
+            fn record_last(&mut self, min: &crate::ui::base::shape::Size, max: &crate::ui::base::shape::Size) {
+                self.#target.record_last(min, max);
+            }
+        }))
+    }
+
+    if !used.contains(&"last".to_string()) {
+        ms.push(to_m(quote! {
+            fn last(&self) -> Option<(crate::ui::base::shape::Size, crate::ui::base::shape::Size)> {
+                self.#target.last()
             }
         }))
     }

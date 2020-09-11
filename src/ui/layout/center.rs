@@ -16,7 +16,7 @@ impl Center {
 
 #[draw_to(drawable)]
 impl Draw for Center {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         let mut s = self.drawable.mut_child().ensure(&Size::new(0, 0), max);
         s.keep_max(min);
         self.drawable.set_size(&s);

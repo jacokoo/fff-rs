@@ -27,7 +27,7 @@ impl Background {
 
 #[draw_to(drawable)]
 impl Draw for Background {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         let s = self.drawable.mut_child().ensure(min, max);
         self.drawable.set_size(&s);
         s

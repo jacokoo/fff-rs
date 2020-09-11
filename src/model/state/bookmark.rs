@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::fs::{read_to_string, File, OpenOptions};
+use std::fs::{create_dir_all, read_to_string, File, OpenOptions};
 use std::io::Write;
 use std::path::PathBuf;
 
@@ -13,6 +13,7 @@ impl Bookmark {
     pub fn new(home: &PathBuf) -> Bookmark {
         let p = home.join(".config/fff/bookmarks");
         if !p.exists() {
+            create_dir_all(p.parent().unwrap()).unwrap();
             File::create(&p).unwrap();
         }
         let s = read_to_string(&p).unwrap();

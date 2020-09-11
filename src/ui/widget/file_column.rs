@@ -11,7 +11,7 @@ use std::cell::{Ref, RefMut};
 
 pub struct FileColumn {
     columns: Vec<Mrc<FileList>>,
-    lines: Vec<Mrc<SizedBox>>,
+    lines: Vec<Mrc<CornerLine>>,
     flex: Flex,
     show_detail: bool,
     mode: ViewMode,
@@ -52,6 +52,7 @@ impl FileColumn {
     }
 
     pub fn init_file_list(&mut self, lists: Vec<Vec<FileItem>>) {
+        log::debug!("init {:?}, {:?}", self.last(), self.get_rect());
         if self.columns.len() > lists.len() {
             for _ in 0..(self.columns.len() - lists.len()) {
                 self.columns.pop();
@@ -104,6 +105,7 @@ impl FileColumn {
     pub fn remove_file_list(&mut self, files: Option<Vec<FileItem>>) {
         if self.columns.len() > 1 {
             self.columns.pop();
+            self.lines.pop().unwrap().borrow_mut().clear();
             return;
         }
 
@@ -126,10 +128,7 @@ impl FileColumn {
     }
 
     fn add_line(&mut self) {
-        let line = SizedBox::new(CornerLine::new('│', '┬', '─').mrc())
-            .max_height()
-            .mrc();
-        self.lines.push(line.clone());
+        self.lines.push(CornerLine::new('│', '┬', '─').mrc());
     }
 
     fn prepare_ensure(&mut self) {
@@ -141,14 +140,15 @@ impl FileColumn {
                 self.flex.add(SizedBox::new(it.clone()).width(30).mrc());
             }
 
-            self.flex.add(self.lines[idx].clone());
+            self.flex
+                .add(SizedBox::new(self.lines[idx].clone()).max_height().mrc());
         }
     }
 }
 
 #[draw_to(flex)]
 impl Draw for FileColumn {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         self.prepare_ensure();
         self.flex.ensure(min, max)
     }

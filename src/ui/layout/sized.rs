@@ -52,7 +52,7 @@ impl SizedBox {
 
 #[draw_to(drawable)]
 impl Draw for SizedBox {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         let h = cmp::min(max.height, self.inner.height);
         let w = cmp::min(max.width, self.inner.width);
 

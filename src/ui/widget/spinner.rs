@@ -84,7 +84,7 @@ impl Draw for Spinner {
         l.move_to(&(point + (1, 0)));
     }
 
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         let mut l = self.label.lock().unwrap();
         l.ensure(min, max);
         self.main.ensure(min, max)

@@ -46,16 +46,20 @@ impl FileList {
         self.files = files;
         self.set_marked(Vec::new());
         self.set_selected(None);
+
+        self.redraw();
     }
 
     pub fn set_selected(&mut self, selected: Option<usize>) {
         if let Some(s) = self.select_index {
             self.files[s].borrow_mut().set_selected(false);
+            self.files[s].borrow_mut().redraw();
         }
 
         self.select_index = selected;
         if let Some(s) = self.select_index {
-            self.files[s].borrow_mut().set_selected(true)
+            self.files[s].borrow_mut().set_selected(true);
+            self.files[s].borrow_mut().redraw();
         }
     }
 
@@ -67,7 +71,9 @@ impl FileList {
         self.marked = marked;
         self.marked.iter().for_each(|it| {
             self.files[it.clone()].borrow_mut().set_marked(true);
-        })
+        });
+
+        self.redraw();
     }
 
     fn prepare_ensure(&mut self, height: usize) {
@@ -100,7 +106,7 @@ impl FileList {
 
 #[draw_to(flex)]
 impl Draw for FileList {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         self.prepare_ensure(max.height as usize);
         let s = self.flex.ensure(min, max);
         return s;

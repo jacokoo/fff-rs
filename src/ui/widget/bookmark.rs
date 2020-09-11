@@ -63,7 +63,7 @@ impl Bookmark {
 
 #[draw_to(main)]
 impl Draw for Bookmark {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         self.prepare_ensure(max.height);
         return self.main.ensure(min, max);
     }

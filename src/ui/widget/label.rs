@@ -11,6 +11,7 @@ pub struct Label {
     text: String,
     text_width: u16,
     colors: Colors,
+    last: Option<(Size, Size)>,
 }
 
 impl Label {
@@ -20,6 +21,7 @@ impl Label {
             text_width: Label::width(&txt),
             text: txt,
             colors: Colors::none(),
+            last: None,
         }
     }
 
@@ -93,7 +95,7 @@ impl Draw for Label {
         self.rect.set_position(point);
     }
 
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         let s = Size::new(
             if self.text_width > max.width {
                 Label::max_width_to(&self.text, max.width)
@@ -125,5 +127,13 @@ impl Draw for Label {
 
     fn clear(&mut self) {
         self.rect.clear()
+    }
+
+    fn record_last(&mut self, min: &Size, max: &Size) {
+        self.last = Some((min.clone(), max.clone()));
+    }
+
+    fn last(&self) -> Option<(Size, Size)> {
+        self.last.clone()
     }
 }

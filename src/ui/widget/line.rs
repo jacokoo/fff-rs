@@ -45,7 +45,7 @@ impl Line {
 
 #[draw_to(drawable)]
 impl Draw for Line {
-    fn ensure(&mut self, min: &Size, _max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, _max: &Size) -> Size {
         let s = if self.vertical {
             min.new_width(cmp::max(min.width, 1))
         } else {

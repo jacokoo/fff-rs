@@ -11,23 +11,39 @@ use std::ops::Deref;
 pub trait Draw {
     fn get_rect(&self) -> &Rect;
     fn move_to(&mut self, point: &Point);
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size;
-    fn do_draw(&mut self);
     fn clear(&mut self);
 
-    fn collect(&self, _tp: JumpType) -> Option<Vec<JumpPoint>> {
-        None
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size;
+    fn record_last(&mut self, min: &Size, max: &Size);
+    fn last(&self) -> Option<(Size, Size)>;
+    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+        self.record_last(min, max);
+        self.do_ensure(min, max)
+    }
+    fn redraw(&mut self) {
+        self.clear();
+        if let Some((ref min, ref max)) = self.last() {
+            self.do_ensure(min, max);
+            self.move_to(&self.get_rect().top_left());
+        }
+        self.draw();
     }
 
+    fn do_draw(&mut self);
     fn draw(&mut self) {
         self.do_draw();
         stdout().queue(ResetColor).unwrap();
+    }
+
+    fn collect(&self, _tp: JumpType) -> Option<Vec<JumpPoint>> {
+        None
     }
 }
 
 pub struct Drawable {
     pub rect: Rect,
     pub children: Vec<Mrc<dyn Draw>>,
+    last_size: Option<(Size, Size)>,
 }
 
 impl Drawable {
@@ -46,6 +62,7 @@ impl Drawable {
         Drawable {
             rect: Rect::new(),
             children: Vec::new(),
+            last_size: None,
         }
     }
 
@@ -53,6 +70,7 @@ impl Drawable {
         Drawable {
             rect: Rect::new(),
             children: vec![child],
+            last_size: None,
         }
     }
 
@@ -66,6 +84,14 @@ impl Drawable {
 
     pub fn move_to(&mut self, point: &Point) {
         self.rect.set_position(point);
+    }
+
+    pub fn record_last(&mut self, min: &Size, max: &Size) {
+        self.last_size = Some((min.clone(), max.clone()));
+    }
+
+    pub fn last(&self) -> Option<(Size, Size)> {
+        self.last_size.clone()
     }
 
     pub fn mut_child(&mut self) -> RefMut<dyn Draw> {

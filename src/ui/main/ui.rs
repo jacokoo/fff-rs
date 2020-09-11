@@ -106,6 +106,7 @@ impl UI {
                 .borrow_mut()
                 .add_flex(Label::from(format!("[{}] {}", key, msg)).mrc(), 1);
         });
+        self.message.borrow_mut().redraw();
     }
 
     pub fn flush(&mut self) {
@@ -113,15 +114,8 @@ impl UI {
             self.show_message = 0
         } else {
             self.message.borrow_mut().empty_it();
+            self.message.borrow_mut().redraw();
         }
-
-        self.clear();
-        let size = self
-            .get_rect()
-            .map_to(|it| Size::new(it.get_width(), it.get_height()));
-        self.ensure(&size, &size);
-        self.move_to(&self.get_rect().top_left());
-        self.draw();
         stdout().flush().unwrap();
     }
 }

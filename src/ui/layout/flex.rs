@@ -156,7 +156,7 @@ impl Flex {
 
 #[draw_to(drawable)]
 impl Draw for Flex {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         let (mut cmax, mut csum) = self.ensure_non_flex(min, max);
         if self.flex_count == 0 {
             return self.before_end_ensure(min, max, &cmax, &csum);

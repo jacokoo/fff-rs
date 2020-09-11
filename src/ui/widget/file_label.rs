@@ -1,6 +1,6 @@
 use crate::common::Functional;
 use crate::ui::base::draw::Draw;
-use crate::ui::base::shape::{Size};
+use crate::ui::base::shape::Size;
 use crate::ui::event::FileItem;
 use crate::ui::layout::background::Background;
 use crate::ui::layout::flex::Flex;
@@ -156,7 +156,7 @@ impl FileLabel {
 
 #[draw_to(background)]
 impl Draw for FileLabel {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         self.marker.ensure(min, max);
         self.background.ensure(min, max)
     }

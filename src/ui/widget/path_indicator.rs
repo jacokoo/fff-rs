@@ -21,8 +21,7 @@ impl PathIndicator {
 
     pub fn set_path(&mut self, str: &str) {
         self.label.borrow_mut().set_text(str.to_string());
-        self.clear();
-        self.draw();
+        self.redraw();
     }
 }
 

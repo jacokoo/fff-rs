@@ -50,7 +50,7 @@ impl Padding {
 
 #[draw_to(drawable)]
 impl Draw for Padding {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         let (t, b, l, r) = self.padding;
         let s = (l + r, t + b);
 

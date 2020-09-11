@@ -42,7 +42,7 @@ impl Space {
 
 #[draw_to(drawable)]
 impl Draw for Space {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         let s = Size::new(
             cmp::min(max.width, cmp::max(min.width, self.width)),
             cmp::min(max.height, cmp::max(min.height, self.height)),

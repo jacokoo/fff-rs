@@ -23,7 +23,7 @@ impl CornerLine {
 
 #[draw_to(line)]
 impl Draw for CornerLine {
-    fn ensure(&mut self, min: &Size, max: &Size) -> Size {
+    fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
         self.label.ensure(min, max);
         return self.line.ensure(min, max);
     }
