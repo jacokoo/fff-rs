@@ -42,8 +42,13 @@ impl SelectorTrait for FileSelector {
     }
 
     fn select(&mut self, idx: usize) -> bool {
-        if self.files.is_empty() || idx == self.selected {
+        if self.files.is_empty() {
             return false;
+        }
+
+        if idx == self.selected {
+            self.publisher.notify(&idx);
+            return true;
         }
 
         let mut i = idx;

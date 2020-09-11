@@ -1,10 +1,14 @@
+use std::cell::RefCell;
+use std::ops::Deref;
+use std::rc::Rc;
+
 pub trait Functional: Sized {
     fn also<F: FnOnce(&Self)>(self, f: F) -> Self {
         f(&self);
         self
     }
 
-    fn also_mut<F: FnMut(&mut Self)>(mut self, mut f: F) -> Self {
+    fn also_mut<F: FnOnce(&mut Self)>(mut self, mut f: F) -> Self {
         f(&mut self);
         self
     }

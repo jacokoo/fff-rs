@@ -1,10 +1,9 @@
-
 use crate::model::file::path::InnerPath;
-use crate::model::result::{Void};
+use crate::model::result::Void;
 use crate::model::state::bookmark::Bookmark;
 use crate::model::state::group::Group;
 use crate::model::state::list::list::FileList;
-use crate::model::state::list::{MarkerTrait, SelectorTrait};
+use crate::model::state::list::{FileSortBy, FilterTrait, MarkerTrait, SelectorTrait, SorterTrait};
 use crate::ui::event::UIEvent::{
     AddFileList, Message, RefreshFileItem, RemoveFileList, SetBookmark, SetMark, SetPath,
     SetSelect, SetShowDetail, SwitchTab,
@@ -112,6 +111,29 @@ impl Workspace {
                 .send(SetSelect(self.current_list().selected()))?;
         }
         Ok(())
+    }
+
+    pub fn set_order(&mut self, order: FileSortBy) {
+        self.keep_select(move |s| {
+            s.current_list_mut().set_order(order);
+        });
+    }
+
+    pub fn toggle_show_hidden(&mut self) {
+        self.keep_select(|s| {
+            s.current_list_mut().toggle_show_hidden();
+        });
+    }
+
+    fn keep_select<T: FnOnce(&mut Workspace)>(&mut self, f: T) {
+        let sn = self.current_list().selected_file();
+        {
+            f(self);
+        }
+        if let Some(n) = sn {
+            self.current_list_mut()
+                .select_by_name(n.info().name.as_ref());
+        }
     }
 
     pub async fn open_selected(&mut self) -> Void {

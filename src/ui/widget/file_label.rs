@@ -126,8 +126,8 @@ impl FileLabel {
                 ls.push(l2.clone());
 
                 it.add(Space::new_with_width(2).mrc());
-                it.add(l);
-                it.add_flex(Space::new_with_width(2).mrc(), 1);
+                it.add_flex(l, 1);
+                it.add(Space::new_with_width(2).mrc());
                 it.add(l2);
                 it.add(Space::new_with_width(2).mrc());
             })

@@ -15,9 +15,9 @@ pub async fn init_action(ac: ActionReceiver, mut ws: Workspace, sender: UIEventS
         while let Ok(s) = ac.0.recv() {
             sender.start_queue().unwrap();
             let res = match s.as_ref() {
-                "ActionSortByName" => ok(ws.current_list_mut().set_order(FileSortBy::NAME)),
-                "ActionSortByMtime" => ok(ws.current_list_mut().set_order(FileSortBy::MTIME)),
-                "ActionSortBySize" => ok(ws.current_list_mut().set_order(FileSortBy::SIZE)),
+                "ActionSortByName" => ok(ws.set_order(FileSortBy::NAME)),
+                "ActionSortByMtime" => ok(ws.set_order(FileSortBy::MTIME)),
+                "ActionSortBySize" => ok(ws.set_order(FileSortBy::SIZE)),
                 "ActionMoveUp" => ok(ws.current_list_mut().move_select(-1)),
                 "ActionMoveDown" => ok(ws.current_list_mut().move_select(1)),
                 "ActionOpenFolderRight" => ws.open_selected().await,
@@ -26,13 +26,13 @@ pub async fn init_action(ac: ActionReceiver, mut ws: Workspace, sender: UIEventS
                 "ActionChangeGroup1" => ws.switch_to(1).await,
                 "ActionChangeGroup2" => ws.switch_to(2).await,
                 "ActionChangeGroup3" => ws.switch_to(3).await,
-                "ActionToggleHidden" => ok(ws.current_list_mut().toggle_show_hidden()),
+                "ActionToggleHidden" => ok(ws.toggle_show_hidden()),
                 "ActionToggleDetail" => ok(ws.toggle_show_detail()),
                 "ActionMoveToFirst" => ok(ws.current_list_mut().select_first()),
                 "ActionMoveToLast" => ok(ws.current_list_mut().select_last()),
                 a => ok(log::debug!("unhandled action {}", a)),
             };
-            sender.end_queue();
+            sender.end_queue().unwrap();
 
             if let Err(e) = res {
                 log::error!("error {:?}", e);

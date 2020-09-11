@@ -3,6 +3,7 @@ use crate::ui::base::draw::{Draw, Drawable};
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::Mrc;
 
+use crate::common::Functional;
 use std::cmp;
 use std::collections::HashMap;
 use std::ops::Deref;
@@ -178,12 +179,11 @@ impl Flex {
         });
 
         let ma = max.new_width(max.width - w - 1);
-        {
-            let mut ww = widget.deref().borrow_mut();
+        widget.deref().borrow_mut().also_mut(|ww| {
             ww.ensure(&min, &ma);
             ww.move_to(&(&self.get_rect().top_left() + (w as i32, 0i32)));
             ww.draw();
-        }
+        });
         self.drawable.children.push(widget);
     }
 }
