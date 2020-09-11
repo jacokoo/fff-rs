@@ -1,3 +1,4 @@
+use crate::common::Functional;
 use crate::model::state::workspace::ViewMode;
 use crate::ui::base::draw::Draw;
 use crate::ui::event::FileItem;
@@ -29,9 +30,11 @@ impl FileColumn {
         }
 
         self.show_detail = show;
-        self.current_mut().clear();
-        self.current_mut().set_show_detail(show);
-        self.current_mut().redraw();
+        self.current_mut().also_mut(|it| {
+            it.clear();
+            it.set_show_detail(show);
+            it.redraw();
+        });
     }
 
     pub fn current(&self) -> Ref<FileList> {
@@ -84,8 +87,10 @@ impl FileColumn {
         }
 
         if self.show_detail {
-            self.current_mut().set_show_detail(false);
-            self.current_mut().redraw();
+            self.current_mut().also_mut(|it| {
+                it.set_show_detail(false);
+                it.redraw();
+            });
         }
 
         let mut ls = FileList::new(self.show_detail);
@@ -101,8 +106,10 @@ impl FileColumn {
             self.columns.pop();
             self.flex.pop();
             if self.show_detail {
-                self.current_mut().set_show_detail(true);
-                self.current_mut().redraw();
+                self.current_mut().also_mut(|it| {
+                    it.set_show_detail(true);
+                    it.redraw();
+                });
             }
             return;
         }

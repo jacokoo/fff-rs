@@ -6,8 +6,10 @@ use crate::ui::main::event_handle::handle;
 use crossterm::style::{Color, Colors};
 use crossterm::terminal::size;
 use main::ui::UI;
-use std::cell::RefCell;
+use std::borrow::Borrow;
+use std::cell::{Ref, RefCell, RefMut};
 use std::io::{stdout, Write};
+use std::ops::Deref;
 use std::rc::Rc;
 use std::thread;
 
@@ -26,6 +28,22 @@ pub trait ToMrc: Sized {
 }
 
 impl<T: Sized + Draw> ToMrc for T {}
+
+pub trait InnerFunctional<T: Sized + Draw> {
+    fn apply<F: FnOnce(RefMut<T>)>(&self, f: F);
+    fn inner_also<F: FnOnce(RefMut<T>)>(self, f: F) -> Self;
+}
+
+impl<T: Sized + Draw> InnerFunctional<T> for Rc<RefCell<T>> {
+    fn apply<F: FnOnce(RefMut<T>)>(&self, f: F) {
+        f(self.deref().borrow_mut());
+    }
+
+    fn inner_also<F: FnOnce(RefMut<T>)>(self, f: F) -> Self {
+        f(self.deref().borrow_mut());
+        self
+    }
+}
 
 pub trait ColorNone {
     fn none() -> Self;
