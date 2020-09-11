@@ -1,5 +1,5 @@
 use crate::model::file::{InnerFile, Op};
-use crate::model::result::{Res, Void};
+use crate::model::result::{Res};
 use crate::model::state::list::list::FileList;
 use crate::model::state::list::{MarkerTrait, SelectorTrait};
 use crate::model::state::workspace::ViewMode;

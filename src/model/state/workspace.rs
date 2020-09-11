@@ -1,6 +1,6 @@
-use crate::common::Functional;
+
 use crate::model::file::path::InnerPath;
-use crate::model::result::{Res, Void};
+use crate::model::result::{Void};
 use crate::model::state::bookmark::Bookmark;
 use crate::model::state::group::Group;
 use crate::model::state::list::list::FileList;

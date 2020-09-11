@@ -1,9 +1,7 @@
 use crate::model::state::workspace::ViewMode;
 use crate::ui::base::draw::Draw;
-use crate::ui::base::shape::Size;
 use crate::ui::event::FileItem;
 use crate::ui::layout::flex::Flex;
-use crate::ui::layout::sized::SizedBox;
 use crate::ui::widget::file_list::FileList;
 use crate::ui::{Mrc, ToMrc};
 use std::cell::{Ref, RefMut};

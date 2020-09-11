@@ -180,7 +180,7 @@ impl Flex {
         let ma = max.new_width(max.width - w - 1);
         {
             let mut ww = widget.deref().borrow_mut();
-            let ws = ww.ensure(&min, &ma);
+            ww.ensure(&min, &ma);
             ww.move_to(&(&self.get_rect().top_left() + (w as i32, 0i32)));
             ww.draw();
         }
