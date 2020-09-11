@@ -52,17 +52,14 @@ impl Board {
 
     pub fn init_files(&mut self, files: Vec<Vec<FileItem>>) {
         self.column.borrow_mut().init_file_list(files);
-        self.column.borrow_mut().redraw();
     }
 
     pub fn init_selected(&mut self, selected: Vec<Option<usize>>) {
         self.column.borrow_mut().init_selected(selected);
-        self.column.borrow_mut().redraw();
     }
 
     pub fn init_marked(&mut self, marks: Vec<Vec<usize>>) {
         self.column.borrow_mut().init_marked(marks);
-        self.column.borrow_mut().redraw();
     }
 
     pub fn refresh_files(&mut self, files: Vec<FileItem>) {
@@ -71,12 +68,10 @@ impl Board {
 
     pub fn add_files(&mut self, files: Vec<FileItem>) {
         self.column.borrow_mut().add_file_list(files);
-        self.column.borrow_mut().redraw();
     }
 
     pub fn remove_files(&mut self, files: Option<Vec<FileItem>>) {
         self.column.borrow_mut().remove_file_list(files);
-        self.column.borrow_mut().redraw();
     }
 
     pub fn set_mark(&mut self, mark: Vec<usize>) {

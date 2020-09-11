@@ -31,7 +31,7 @@ pub struct FileLabel {
     marked_color: Colors,
     marker: Label,
     background: Background,
-    item: FileItem,
+    pub item: FileItem,
     pub show_detail: bool,
     max: usize,
 }
@@ -80,7 +80,6 @@ impl FileLabel {
     }
 
     pub fn set_show_detail(&mut self, show: bool) {
-        log::debug!("show detail {}", show);
         if self.show_detail == show {
             return;
         }

@@ -68,10 +68,6 @@ impl FileList {
                 .map(|it| Arc::new(it))
                 .collect();
             self.dir = Some(file);
-            log::debug!("file count: {}", fs.len());
-            fs.iter().for_each(|it| {
-                log::debug!("{}", &it.path_str());
-            });
             self.filter.set_files(&fs);
             return Ok(());
         }

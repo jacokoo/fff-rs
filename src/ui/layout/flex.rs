@@ -152,6 +152,40 @@ impl Flex {
 
         (cmax, csum)
     }
+
+    // only for file column
+    pub fn pop(&mut self) {
+        let idx = self.drawable.children.len() - 1;
+        if let Some(v) = self.drawable.children.pop() {
+            if self.flex_children.contains_key(&idx) {
+                self.flex_children.remove(&idx);
+                self.flex_count -= 1;
+            }
+            v.deref().borrow_mut().clear();
+        }
+    }
+
+    // only for file column
+    pub fn push<T: Draw + 'static>(&mut self, widget: Mrc<T>) {
+        let last = self.last();
+        if last.is_none() {
+            return;
+        }
+
+        let (min, max) = last.unwrap();
+        let w = self.drawable.children.iter().fold(0, |acc, it| {
+            acc + it.deref().borrow().get_rect().get_width()
+        });
+
+        let ma = max.new_width(max.width - w - 1);
+        {
+            let mut ww = widget.deref().borrow_mut();
+            let ws = ww.ensure(&min, &ma);
+            ww.move_to(&(&self.get_rect().top_left() + (w as i32, 0i32)));
+            ww.draw();
+        }
+        self.drawable.children.push(widget);
+    }
 }
 
 #[draw_to(drawable)]

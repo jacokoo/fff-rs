@@ -13,7 +13,7 @@ fn ok<T>(_: T) -> Res<()> {
 pub async fn init_action(ac: ActionReceiver, mut ws: Workspace, sender: UIEventSender) {
     tokio::spawn(async move {
         while let Ok(s) = ac.0.recv() {
-            sender.start_queue();
+            sender.start_queue().unwrap();
             let res = match s.as_ref() {
                 "ActionSortByName" => ok(ws.current_list_mut().set_order(FileSortBy::NAME)),
                 "ActionSortByMtime" => ok(ws.current_list_mut().set_order(FileSortBy::MTIME)),

@@ -21,12 +21,12 @@ pub trait Draw {
         self.do_ensure(min, max)
     }
     fn redraw(&mut self) {
-        self.clear();
         if let Some((ref min, ref max)) = self.last() {
+            self.clear();
             self.do_ensure(min, max);
             self.move_to(&self.get_rect().top_left());
+            self.draw();
         }
-        self.draw();
     }
 
     fn do_draw(&mut self);

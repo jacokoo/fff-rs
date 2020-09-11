@@ -114,7 +114,6 @@ fn read_binding_type(map: &mut Bindings, value: &Value, key: &str) {
                     let mut mp: HashMap<String, (String, String)> = HashMap::new();
                     for (kk, vv) in tt.iter() {
                         let s = read_str(vv, kk.borrow());
-                        log::debug!("key {} {:?} {}", s, vv, kk);
                         let ss: Vec<_> = s.split("#").collect();
                         if ss.len() != 2 {
                             panic!("prefixed action should have description");

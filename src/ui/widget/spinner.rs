@@ -70,7 +70,6 @@ impl Spinner {
     fn update_char(label: &Arc<Mutex<Label>>, c: String) {
         let mut it = label.lock().unwrap();
         it.set_text(c);
-        it.clear();
         it.draw();
         stdout().flush().unwrap();
     }

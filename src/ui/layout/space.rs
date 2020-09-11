@@ -47,7 +47,6 @@ impl Draw for Space {
             cmp::min(max.width, cmp::max(min.width, self.width)),
             cmp::min(max.height, cmp::max(min.height, self.height)),
         );
-
         self.drawable.set_size(&s);
         s
     }

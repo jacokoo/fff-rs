@@ -37,6 +37,8 @@ pub fn handle(mut ui: UI, rx: Receiver<EventBody>) {
 }
 
 fn handle_single(ui: &mut UI, ev: UIEvent) {
+    log::debug!("handle {:?}", ev);
+
     match ev {
         SwitchTab(idx) => ui.switch_tab(idx),
         StartLoading => ui.start_loading(),

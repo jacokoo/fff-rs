@@ -54,7 +54,7 @@ impl Workspace {
             Workspace::bind_list(&self.ui_event, g.current_mut());
             self.groups.push(g)
         }
-        self.ui_event.start_queue();
+        self.ui_event.start_queue().unwrap();
         self.ui_event
             .send(SetBookmark(self.bookmark.keys().clone()))?;
         Ok(())
@@ -69,7 +69,7 @@ impl Workspace {
 
         self.current_group = t;
         let current = &self.groups[t];
-        self.ui_event.start_queue();
+        self.ui_event.start_queue().unwrap();
         self.ui_event.send(SwitchTab(t))?;
         current.sync_to_ui(&self.ui_event)?;
         self.ui_event.end_queue()?;

@@ -68,6 +68,7 @@ impl Draw for UseMin {
         if self.width {
             ma.width = min.width;
         }
+
         self.drawable.mut_child().ensure(&mi, &ma)
     }
 

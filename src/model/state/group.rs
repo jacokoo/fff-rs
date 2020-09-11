@@ -36,7 +36,6 @@ impl Group {
             return match self.current_mut().dir() {
                 Some(v) => {
                     let p = v.parent().await?;
-                    log::debug!("close to {}, is dir {}", p.path_str(), p.is_dir());
                     self.current_mut().update_dir(Arc::new(p)).await?;
                     Ok((true, Some(self.current().file_items())))
                 }
