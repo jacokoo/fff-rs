@@ -1,9 +1,6 @@
 use crate::ui::base::draw::{Draw, Drawable};
-
 use crate::ui::base::shape::{Point, Rect, Size};
 use crate::ui::{InnerFunctional, Mrc};
-
-use crate::common::Functional;
 use std::cmp;
 use std::collections::HashMap;
 use std::ops::Deref;

@@ -6,8 +6,8 @@ use crate::ui::main::event_handle::handle;
 use crossterm::style::{Color, Colors};
 use crossterm::terminal::size;
 use main::ui::UI;
-use std::borrow::Borrow;
-use std::cell::{Ref, RefCell, RefMut};
+
+use std::cell::{RefCell, RefMut};
 use std::io::{stdout, Write};
 use std::ops::Deref;
 use std::rc::Rc;
