@@ -133,7 +133,7 @@ impl Draw for FileList {
         self.drawable.move_to(point);
         self.flex.move_to(point);
         self.line
-            .move_to(&(point + (self.flex.get_rect().get_width() as i32, 0)))
+            .move_to(&(point.delta_x(self.flex.get_rect().get_width() as i16)))
     }
 
     fn clear(&mut self) {

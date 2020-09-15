@@ -65,6 +65,7 @@ pub fn init_ui(tab_count: usize) -> UIEventSender {
             it.move_to(&Point::new(0, 0));
             it.draw();
         });
+        
         stdout().flush().unwrap();
 
         handle(ui, rx);

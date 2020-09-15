@@ -1,15 +1,17 @@
 use crate::kbd::action::*;
+use crate::kbd::Kbd;
 use crate::kbd::ActionReceiver;
 use crate::model::result::Res;
-use crate::model::state::list::{FileSortBy, FilterTrait, MarkerTrait, SelectorTrait, SorterTrait};
+use crate::model::state::list::{FileSortBy, MarkerTrait, SelectorTrait};
 use crate::model::state::workspace::Workspace;
 use crate::ui::event::{UIEvent, UIEventSender};
+use std::sync::Arc;
 
 fn ok<T>(_: T) -> Res<()> {
     Ok(())
 }
 
-pub async fn init_action(ac: ActionReceiver, mut ws: Workspace, sender: UIEventSender) {
+pub async fn init_action(ac: ActionReceiver, mut ws: Workspace, sender: UIEventSender, kbd: Arc<Kbd>) {
     tokio::spawn(async move {
         while let Ok(s) = ac.0.recv() {
             sender.start_queue().unwrap();
@@ -31,7 +33,11 @@ pub async fn init_action(ac: ActionReceiver, mut ws: Workspace, sender: UIEventS
                 NORMAL_MOVE_LAST => ok(ws.current_list_mut().select_last()),
                 NORMAL_TOGGLE_MARK => ok(ws.toggle_mark()),
                 NORMAL_TOGGLE_MARK_ALL => ok(ws.current_list_mut().toggle_mark_all()),
-                INPUT_QUIT_ACTION => ok(sender.send(UIEvent::InputQuit).unwrap()),
+                NORMAL_NEW_FILE => ws.new_file().await,
+                INPUT_QUIT_ACTION => {
+                    kbd.switch_to_normal();
+                    ok(sender.send(UIEvent::InputQuit).unwrap())
+                }
                 "Quit" => break,
                 a => ok(log::debug!("unhandled action {}", a)),
             };

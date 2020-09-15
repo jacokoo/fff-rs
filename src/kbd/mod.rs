@@ -1,8 +1,8 @@
 use crate::config::Config;
 use crate::kbd::input_mode::InputMode;
-use crate::kbd::mode::KeyEventHandler;
 use crate::kbd::normal_mode::NormalMode;
 use crate::ui::event::UIEventSender;
+use crate::ui::event::UIEvent;
 use crossbeam_channel::{bounded, Receiver, Sender};
 use crossterm::event::{read, Event, KeyEvent};
 use std::borrow::Borrow;
@@ -22,16 +22,6 @@ pub enum Answer {
 }
 
 impl Answer {
-    fn try_from(s: &str, multiple: bool) -> Option<Answer> {
-        match s {
-            "y" => Some(Answer::Yes),
-            "n" => Some(Answer::No),
-            "Y" if multiple => Some(Answer::YesToAll),
-            "N" if multiple => Some(Answer::NoToAll),
-            _ => None,
-        }
-    }
-
     fn desc(multiple: bool) -> Vec<String> {
         if multiple {
             vec![
@@ -107,19 +97,20 @@ impl Kbd {
         .unwrap()
     }
 
-    pub async fn request_input(&self, _prompt: &str) -> Option<String> {
+    pub async fn request_input(&self, prompt: &str) -> Option<String> {
         let (mode, rx) = InputMode::new_input(
             self.config.borrow(),
             self.sender.clone(),
             self.ui_event.clone(),
         );
         self.set_mode(ModeEnum::Input(mode));
+        self.ui_event.send(UIEvent::InputEnter(prompt.to_string())).unwrap();
         tokio::spawn(async move { rx.recv().unwrap() })
             .await
             .unwrap()
     }
 
-    pub async fn request_answer(&self, _prompt: &str, multiple: bool) -> Option<Answer> {
+    pub async fn request_answer(&self, prompt: &str, multiple: bool) -> Option<Answer> {
         let (mode, rx) = InputMode::new_answer(
             self.config.borrow(),
             self.sender.clone(),
@@ -127,6 +118,7 @@ impl Kbd {
             multiple,
         );
         self.set_mode(ModeEnum::Input(mode));
+        self.ui_event.send(UIEvent::InputEnter(prompt.to_string())).unwrap();
         tokio::spawn(async move { rx.recv().unwrap() })
             .await
             .unwrap()

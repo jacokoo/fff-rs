@@ -127,9 +127,9 @@ impl Flex {
 
     fn calc_next_point(&self, prev: &Rect) -> Point {
         if self.vertical {
-            &prev.bottom_left() + (0, 1)
+            prev.bottom_left().delta_y(1)
         } else {
-            &prev.top_right() + (1, 0)
+            prev.top_right().delta_x(1)
         }
     }
 
@@ -178,7 +178,7 @@ impl Flex {
         let ma = max.new_width(max.width - w - 1);
         widget.inner_apply(|mut ww| {
             ww.ensure(&min, &ma);
-            ww.move_to(&(&self.get_rect().top_left() + (w as i32, 0i32)));
+            ww.move_to(&(self.get_rect().top_left().delta_x(w as i16)));
             ww.draw();
         });
         self.drawable.children.push(widget);

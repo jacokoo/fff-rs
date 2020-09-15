@@ -63,8 +63,7 @@ impl Draw for Padding {
 
     fn move_to(&mut self, point: &Point) {
         self.drawable.move_to(point);
-        let p = (self.padding.2, self.padding.0);
-        self.drawable.mut_child().move_to(&(point + p))
+        self.drawable.mut_child().move_to(&(point.delta(self.padding.2 as i16, self.padding.0 as i16)))
     }
 
     fn do_draw(&mut self) {

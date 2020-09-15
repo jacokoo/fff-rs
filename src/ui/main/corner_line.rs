@@ -30,7 +30,7 @@ impl Draw for CornerLine {
 
     fn move_to(&mut self, point: &Point) {
         self.line.move_to(point);
-        self.label.move_to(&(point + (0, -1)));
+        self.label.move_to(&(point.delta_y(-1)));
     }
 
     fn do_draw(&mut self) {

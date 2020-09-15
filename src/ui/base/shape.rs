@@ -4,7 +4,7 @@ use crossterm::QueueableCommand;
 use std::cmp::max;
 use std::io::stdout;
 use std::iter::FromIterator;
-use std::ops::{Add, AddAssign, Sub};
+use std::ops::{AddAssign, Sub, Add};
 
 #[derive(Debug)]
 pub struct Point {
@@ -26,24 +26,20 @@ impl Point {
         Point { x, y }
     }
 
-    pub fn move_to(&self) -> MoveTo {
+    pub fn cursor(&self) -> MoveTo {
         MoveTo(self.x as u16, self.y as u16)
     }
-}
 
-impl Add<(i32, i32)> for &Point {
-    type Output = Point;
-
-    fn add(self, rhs: (i32, i32)) -> Self::Output {
-        Point::new(self.x + rhs.0 as i16, self.y + rhs.1 as i16)
+    pub fn delta_x(&self, delta: i16) -> Self {
+        Point {x: self.x + delta, y: self.y}
     }
-}
 
-impl Add<(u16, u16)> for &Point {
-    type Output = Point;
+    pub fn delta_y(&self, delta: i16) -> Self {
+        Point {x: self.x, y: self.y + delta}
+    }
 
-    fn add(self, rhs: (u16, u16)) -> Self::Output {
-        Point::new(self.x + (rhs.0 as i16), self.y + (rhs.1 as i16))
+    pub fn delta(&self, delta_x: i16, delta_y: i16) -> Self {
+        Point {x: self.x + delta_x, y: self.y + delta_y}
     }
 }
 
@@ -184,7 +180,7 @@ impl Rect {
         }
         (tl.y..=br.y).enumerate().for_each(|(i, _)| {
             let cc = (tl.x..=br.x).map(|_| ' ').collect::<Vec<char>>();
-            out.queue((&tl + (0, i as i32)).move_to()).unwrap();
+            out.queue(tl.delta_y(i as i16).cursor()).unwrap();
             out.queue(Print(String::from_iter(cc))).unwrap();
         })
     }

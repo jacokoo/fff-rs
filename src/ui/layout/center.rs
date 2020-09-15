@@ -30,7 +30,7 @@ impl Draw for Center {
         cw = (self.get_rect().get_width() - cw) / 2;
         ch = (self.get_rect().get_height() - ch) / 2;
 
-        self.drawable.mut_child().move_to(&(point + (cw, ch)));
+        self.drawable.mut_child().move_to(&(point.delta(cw as i16, ch as i16)));
     }
 
     fn do_draw(&mut self) {

@@ -30,7 +30,7 @@ impl Input {
         self.main.apply(|it| {
             it.empty_it();
             it.add(Label::from(format!("{}: ", prompt)).mrc());
-            it.add(ii)
+            it.add(ii);
         });
     }
 
@@ -40,7 +40,7 @@ impl Input {
             it.set_text(text);
             it.redraw();
 
-            let m = (&it.get_rect().top_left() + (self.cursor as i32, 0)).move_to();
+            let m = (&it.get_rect().top_left().delta_x(self.cursor as i16)).cursor();
             stdout().queue(m).unwrap();
         });
     }
@@ -48,7 +48,7 @@ impl Input {
     pub fn move_cursor(&mut self, cursor: usize) {
         self.cursor = cursor;
         stdout()
-            .queue((&self.input.borrow().get_rect().top_left() + (self.cursor as i32, 0)).move_to())
+            .queue((&self.input.borrow().get_rect().top_left().delta_x(self.cursor as i16)).cursor())
             .unwrap();
     }
 }
@@ -60,7 +60,7 @@ impl Draw for Input {
         stdout()
             .queue(Show)
             .unwrap()
-            .queue((&self.input.borrow().get_rect().top_left() + (self.cursor as i32, 0)).move_to())
+            .queue((&self.input.borrow().get_rect().top_left().delta_x(self.cursor as i16)).cursor())
             .unwrap();
     }
 

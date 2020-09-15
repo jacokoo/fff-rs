@@ -63,7 +63,7 @@ impl Draw for Line {
             io.queue(SetColors(self.colors)).unwrap();
 
             for i in 0..self.get_rect().get_height() {
-                io.queue((&p + (0, i)).move_to())
+                io.queue((p.delta_y(i as i16)).cursor())
                     .unwrap()
                     .queue(Print(self.vchar))
                     .unwrap();
@@ -75,7 +75,7 @@ impl Draw for Line {
             }
 
             stdout()
-                .queue(self.get_rect().top_left().move_to())
+                .queue(self.get_rect().top_left().cursor())
                 .unwrap()
                 .queue(SetColors(self.colors))
                 .unwrap()

@@ -164,7 +164,7 @@ impl Draw for FileLabel {
         self.background.draw();
         if self.marked {
             self.marker
-                .move_to(&(&self.background.get_rect().top_left() + (1, 0)));
+                .move_to(&(&self.background.get_rect().top_left().delta_x(1)));
             self.marker.draw()
         }
     }

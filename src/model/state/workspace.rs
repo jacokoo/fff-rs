@@ -2,6 +2,7 @@ use crate::common::Functional;
 use crate::kbd::Kbd;
 use crate::model::context::Context;
 use crate::model::file::path::InnerPath;
+use crate::model::file::InnerFile;
 use crate::model::result::Void;
 use crate::model::state::bookmark::Bookmark;
 use crate::model::state::group::Group;
@@ -192,6 +193,13 @@ impl Workspace {
                 self.ui_event
                     .send(Message("No dir is selected".to_string()))?;
             }
+        }
+        Ok(())
+    }
+
+    pub async fn new_file(&self) -> Void {
+        if let Some(InnerFile::Dir(d)) = self.current_list().dir() {
+            d.new_file(&self.context).await?;
         }
         Ok(())
     }

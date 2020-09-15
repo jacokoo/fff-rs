@@ -24,3 +24,5 @@ pub const NORMAL_MOVE_FIRST: &'static str = "ActionMoveToFirst";
 pub const NORMAL_MOVE_LAST: &'static str = "ActionMoveToLast";
 pub const NORMAL_TOGGLE_MARK: &'static str = "ActionToggleMark";
 pub const NORMAL_TOGGLE_MARK_ALL: &'static str = "ActionToggleMarkAll";
+pub const NORMAL_NEW_FILE: &'static str = "ActionNewFile";
+pub const NORMAL_NEW_DIR: &'static str = "ActionNewDir";

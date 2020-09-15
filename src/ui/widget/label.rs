@@ -117,7 +117,7 @@ impl Draw for Label {
         };
 
         stdout()
-            .queue(self.get_rect().top_left().move_to())
+            .queue(self.get_rect().top_left().cursor())
             .unwrap()
             .queue(SetColors(self.colors.clone()))
             .unwrap()

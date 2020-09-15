@@ -10,7 +10,6 @@ use crossterm::event::{KeyCode, KeyEvent};
 pub struct AnswerInput {
     result: Sender<Option<Answer>>,
     sender: Sender<String>,
-    ui_event: UIEventSender,
     multiple: bool,
 }
 
@@ -106,7 +105,6 @@ impl InputMode {
         let ai = AnswerInput {
             result: tx,
             sender: sender.clone(),
-            ui_event: ui_event.clone(),
             multiple,
         };
 

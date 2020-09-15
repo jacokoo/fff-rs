@@ -58,10 +58,6 @@ impl Group {
         &mut self.file_list[idx]
     }
 
-    pub fn items(&self) -> &Vec<FileList> {
-        &self.file_list
-    }
-
     pub fn current_path(&self) -> String {
         self.current()
             .dir()

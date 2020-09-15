@@ -102,19 +102,21 @@ impl UI {
 
     pub fn show_key_nav(&mut self, navs: Vec<(String, String)>) {
         self.show_message = 1;
-        self.message.borrow_mut().empty_it();
-        navs.into_iter().for_each(|(key, msg)| {
-            self.message
-                .borrow_mut()
-                .add_flex(Label::from(format!("[{}] {}", key, msg)).mrc(), 1);
+        self.message.inner_apply(|mut it| {
+            it.empty_it();
+            navs.into_iter().for_each(|(key, msg)| {
+                it.add_flex(Label::from(format!("[{}] {}", key, msg)).mrc(), 1);
+            });
+            it.redraw();
         });
-        self.message.borrow_mut().redraw();
     }
 
     pub fn show_input(&mut self, prompt: String) {
+        self.show_message = 1;
         self.input.inner_apply(|mut it| it.init(prompt));
         self.message.inner_apply(|mut it| {
             it.empty_it();
+            it.add(Label::new("hello").mrc());
             it.add(self.input.clone());
             it.redraw();
         });
@@ -136,11 +138,6 @@ impl UI {
     }
 
     pub fn flush(&mut self) {
-        if self.show_message == 1 {
-            self.show_message = 0
-        } else {
-            self.clear_message();
-        }
         stdout().flush().unwrap();
     }
 }

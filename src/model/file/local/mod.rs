@@ -5,7 +5,6 @@ use crate::model::file::path::InnerPath;
 use crate::model::file::{FileInfo, InnerFile, LinkInfo};
 use crate::model::result::{option_from_result, Error, Res};
 use std::fs::{read_link, Metadata};
-use std::os::macos::fs::MetadataExt;
 use std::path::Path;
 
 mod dir;
@@ -32,7 +31,7 @@ fn make_it(meta: &Metadata, inner: InnerPath) -> FileInfo {
         .map(|r| r.to_str().unwrap())
         .unwrap_or("-")
         .to_string();
-    let mode = mode_string(meta.st_mode());
+    let mode = mode_string(0);
     let link = if meta.file_type().is_symlink() {
         option_from_result(read_link(path)).map(|p| {
             let broken = !p.exists();

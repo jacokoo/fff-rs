@@ -80,7 +80,7 @@ impl Draw for Spinner {
     fn move_to(&mut self, point: &Point) {
         self.main.move_to(point);
         let mut l = self.label.lock().unwrap();
-        l.move_to(&(point + (1, 0)));
+        l.move_to(&(point.delta_x(1)));
     }
 
     fn do_ensure(&mut self, min: &Size, max: &Size) -> Size {
