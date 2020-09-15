@@ -18,5 +18,5 @@ impl Context {
         self.kbd.request_answer(msg, multiple).await
     }
 
-    pub fn message(&self, msg: &str) {}
+    pub fn message(&self, _msg: &str) {}
 }

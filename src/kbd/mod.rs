@@ -1,12 +1,12 @@
 use crate::config::Config;
-use crate::kbd::input_mode::{AnswerInput, InputMode};
+use crate::kbd::input_mode::{InputMode};
 use crate::kbd::mode::KeyEventHandler;
 use crate::kbd::normal_mode::NormalMode;
 use crate::ui::event::UIEventSender;
 use crossbeam_channel::{bounded, Receiver, Sender};
 use crossterm::event::{read, Event, KeyEvent};
 use std::borrow::Borrow;
-use std::collections::HashMap;
+
 use std::sync::{Arc, Mutex};
 
 mod code;
@@ -103,7 +103,7 @@ impl Kbd {
         .unwrap()
     }
 
-    pub async fn request_input(&self, prompt: &str) -> Option<String> {
+    pub async fn request_input(&self, _prompt: &str) -> Option<String> {
         let (mode, rx) = InputMode::new_input(
             self.config.borrow(),
             self.sender.clone(),
@@ -115,7 +115,7 @@ impl Kbd {
             .unwrap()
     }
 
-    pub async fn request_answer(&self, prompt: &str, multiple: bool) -> Option<Answer> {
+    pub async fn request_answer(&self, _prompt: &str, multiple: bool) -> Option<Answer> {
         let (mode, rx) = InputMode::new_answer(
             self.config.borrow(),
             self.sender.clone(),
