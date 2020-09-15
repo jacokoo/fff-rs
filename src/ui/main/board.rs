@@ -3,9 +3,9 @@ use crate::ui::base::draw::Draw;
 use crate::ui::event::FileItem;
 use crate::ui::layout::flex::Flex;
 use crate::ui::layout::sized::SizedBox;
-use crate::ui::widget::bookmark::Bookmark;
-use crate::ui::widget::corner_line::CornerLine;
-use crate::ui::widget::file_column::FileColumn;
+use crate::ui::main::bookmark::Bookmark;
+use crate::ui::main::corner_line::CornerLine;
+use crate::ui::main::file_column::FileColumn;
 use crate::ui::widget::line::Line;
 use crate::ui::{Mrc, ToMrc};
 
@@ -22,7 +22,7 @@ impl Board {
         let line = CornerLine::new('║', '╥', '─').mrc();
         let column = FileColumn::new().mrc();
         let items = Flex::row()
-            .also_mut(|it| {
+            .also(|it| {
                 it.add(bookmark.clone());
                 it.add(SizedBox::new(line.clone()).max_height().mrc());
                 it.add(column.clone());
@@ -30,7 +30,7 @@ impl Board {
             .mrc();
 
         Board {
-            main: Flex::column().also_mut(|it| {
+            main: Flex::column().also(|it| {
                 it.add(SizedBox::new(Line::new(false).mrc()).max_width().mrc());
                 it.add_flex(items.clone(), 1);
             }),

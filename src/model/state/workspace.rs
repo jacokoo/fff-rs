@@ -142,7 +142,7 @@ impl Workspace {
 
     pub fn toggle_mark(&mut self) {
         if let Some(idx) = self.current_list().selected() {
-            self.current_list_mut().also_mut(|it| {
+            self.current_list_mut().also(|it| {
                 it.toggle_mark(idx);
                 it.move_select(1);
             });

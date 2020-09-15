@@ -23,7 +23,7 @@ impl Spinner {
     pub fn new() -> Self {
         let label = Arc::new(Mutex::new(Label::new(OK)));
         Spinner {
-            main: Quoted::new(Space::new().also_mut(|it| it.set(1, 1)).mrc()),
+            main: Quoted::new(Space::new().also(|it| it.set(1, 1)).mrc()),
             label,
             started: Arc::new(RwLock::new(false)),
             chars: "-\\|/".chars().collect(),

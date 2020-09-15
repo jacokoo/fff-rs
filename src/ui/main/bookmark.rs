@@ -19,13 +19,13 @@ pub struct Bookmark {
 impl Bookmark {
     pub fn new(title: String) -> Self {
         let list = Flex::column()
-            .also_mut(|it| {
+            .also(|it| {
                 it.set_stretch();
             })
             .mrc();
         Bookmark {
             items: Vec::new(),
-            main: Flex::column().also_mut(|it| {
+            main: Flex::column().also(|it| {
                 it.set_stretch();
                 it.add(
                     Padding::new(Center::new(Label::new(&title).mrc()).mrc())

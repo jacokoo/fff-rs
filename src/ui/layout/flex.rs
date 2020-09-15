@@ -176,7 +176,7 @@ impl Flex {
         });
 
         let ma = max.new_width(max.width - w - 1);
-        widget.apply(|mut ww| {
+        widget.inner_apply(|mut ww| {
             ww.ensure(&min, &ma);
             ww.move_to(&(&self.get_rect().top_left() + (w as i32, 0i32)));
             ww.draw();

@@ -5,10 +5,10 @@ use crate::ui::layout::flex::Flex;
 use crate::ui::layout::padding::Padding;
 use crate::ui::layout::sized::SizedBox;
 use crate::ui::layout::space::Space;
-use crate::ui::widget::board::Board;
+use crate::ui::main::board::Board;
+use crate::ui::main::path_indicator::PathIndicator;
+use crate::ui::main::statusbar::Statusbar;
 use crate::ui::widget::label::Label;
-use crate::ui::widget::path_indicator::PathIndicator;
-use crate::ui::widget::statusbar::Statusbar;
 use crate::ui::widget::tab::Tab;
 use crate::ui::{Mrc, ToMrc};
 use std::cell::RefMut;
@@ -36,7 +36,7 @@ impl UI {
         let bottom = SizedBox::new(message.clone()).max_width().height(1).mrc();
 
         let top = Flex::row()
-            .also_mut(|it| {
+            .also(|it| {
                 it.add(tab.clone());
                 it.add(path.clone());
                 it.add_flex(Space::new().mrc(), 1);
@@ -46,7 +46,7 @@ impl UI {
 
         let main = Container::new(
             Flex::column()
-                .also_mut(|it| {
+                .also(|it| {
                     it.add(Padding::new(top.clone()).top_bottom(1).mrc());
                     it.add_flex(SizedBox::new(board.clone()).max().mrc(), 1);
                     it.add(statusbar.clone());

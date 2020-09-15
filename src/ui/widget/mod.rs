@@ -1,13 +1,5 @@
-pub mod board;
-pub mod bookmark;
-pub mod corner_line;
-pub mod file_column;
-pub mod file_label;
-pub mod file_list;
 pub mod label;
 pub mod line;
-pub mod path_indicator;
 pub mod quoted;
 pub mod spinner;
-pub mod statusbar;
 pub mod tab;

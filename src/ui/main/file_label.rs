@@ -117,8 +117,8 @@ impl FileLabel {
     ) -> (Vec<Mrc<Label>>, Mrc<Flex>) {
         let mut ls = Vec::new();
         let mut flex = Flex::row();
-        flex = if !show_detail {
-            flex.also_mut(|it| {
+        if !show_detail {
+            flex.apply(|it| {
                 let l = Label::new(&item.name).mrc();
                 let l2 = Label::new(&item.size).mrc();
 
@@ -132,7 +132,7 @@ impl FileLabel {
                 it.add(Space::new_with_width(2).mrc());
             })
         } else {
-            flex.also_mut(|it| {
+            flex.apply(|it| {
                 let l1 = Label::from(format!(
                     "{0}  {1}  {2:>3$}  {4}",
                     &item.modify_time, &item.mode_str, &item.size, max, &item.name
@@ -145,7 +145,7 @@ impl FileLabel {
                 it.add(l1);
                 it.add(Space::new_with_width(2).mrc());
             })
-        };
+        }
         ls.iter().for_each(|it| {
             it.borrow_mut().set_color(c.clone());
         });

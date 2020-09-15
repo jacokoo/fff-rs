@@ -3,7 +3,7 @@ use crate::model::state::workspace::ViewMode;
 use crate::ui::base::draw::Draw;
 use crate::ui::event::FileItem;
 use crate::ui::layout::flex::Flex;
-use crate::ui::widget::file_list::FileList;
+use crate::ui::main::file_list::FileList;
 use crate::ui::{Mrc, ToMrc};
 use std::cell::{Ref, RefMut};
 
@@ -30,7 +30,7 @@ impl FileColumn {
         }
 
         self.show_detail = show;
-        self.current_mut().also_mut(|it| {
+        self.current_mut().apply(|it| {
             it.clear();
             it.set_show_detail(show);
             it.redraw();
@@ -87,7 +87,7 @@ impl FileColumn {
         }
 
         if self.show_detail {
-            self.current_mut().also_mut(|it| {
+            self.current_mut().apply(|it| {
                 it.set_show_detail(false);
                 it.redraw();
             });
@@ -106,7 +106,7 @@ impl FileColumn {
             self.columns.pop();
             self.flex.pop();
             if self.show_detail {
-                self.current_mut().also_mut(|it| {
+                self.current_mut().apply(|it| {
                     it.set_show_detail(true);
                     it.redraw();
                 });

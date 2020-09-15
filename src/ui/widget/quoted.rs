@@ -16,7 +16,7 @@ impl Quoted {
         let ll = Label::new("[").mrc();
         let lr = Label::new("]").mrc();
         Quoted {
-            main: Flex::row().also_mut(|it| {
+            main: Flex::row().also(|it| {
                 it.add(ll.clone());
                 it.add(child.clone());
                 it.add(lr.clone());

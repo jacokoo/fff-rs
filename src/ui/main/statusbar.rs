@@ -17,7 +17,7 @@ impl Statusbar {
     pub fn new() -> Self {
         let c = Colors::new(Color::Black, Color::Cyan);
         let sp = Spinner::new()
-            .also_mut(|it| {
+            .also(|it| {
                 it.set_color(c.clone());
             })
             .mrc();
@@ -25,11 +25,11 @@ impl Statusbar {
             main: Background::new(
                 SizedBox::new(
                     Flex::row()
-                        .also_mut(|it| {
+                        .also(|it| {
                             it.add(sp.clone());
                             it.add(
                                 Label::new("status bar")
-                                    .also_mut(|l| l.set_color(c.clone()))
+                                    .also(|l| l.set_color(c.clone()))
                                     .mrc(),
                             )
                         })

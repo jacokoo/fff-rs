@@ -5,10 +5,10 @@ use crate::ui::event::FileItem;
 use crate::ui::layout::container::UseMin;
 use crate::ui::layout::flex::Flex;
 use crate::ui::layout::space::Space;
-use crate::ui::widget::corner_line::CornerLine;
-use crate::ui::widget::file_label::FileLabel;
+use crate::ui::main::corner_line::CornerLine;
+use crate::ui::main::file_label::FileLabel;
 use crate::ui::widget::label::Label;
-use crate::ui::{Mrc, ToMrc};
+use crate::ui::{InnerFunctional, Mrc, ToMrc};
 
 pub struct FileList {
     drawable: Drawable,
@@ -28,14 +28,14 @@ impl FileList {
         FileList {
             drawable: Drawable::new(),
             files: Vec::new(),
-            flex: Flex::column().also_mut(|it| it.set_stretch()),
+            flex: Flex::column().also(|it| it.set_stretch()),
             select_index: None,
             marked: Vec::new(),
             line: CornerLine::new('│', '┬', '─'),
             show_detail,
             indicator_line: UseMin::width(
                 Flex::row()
-                    .also_mut(|it| {
+                    .also(|it| {
                         it.add_flex(Space::new().mrc(), 1);
                         it.add(indicator.clone());
                     })
@@ -87,7 +87,7 @@ impl FileList {
 
     pub fn set_marked(&mut self, marked: Vec<usize>) {
         self.marked.iter().for_each(|it| {
-            self.files[it.clone()].borrow_mut().also_mut(|i| {
+            self.files[it.clone()].inner_apply(|mut i| {
                 i.set_marked(false);
                 i.redraw();
             });
@@ -95,7 +95,7 @@ impl FileList {
 
         self.marked = marked;
         self.marked.iter().for_each(|it| {
-            self.files[it.clone()].borrow_mut().also_mut(|i| {
+            self.files[it.clone()].inner_apply(|mut i| {
                 i.set_marked(true);
                 i.redraw();
             });
