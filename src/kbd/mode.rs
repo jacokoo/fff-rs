@@ -11,8 +11,11 @@ pub trait KeyEventHandler {
     fn handle(&mut self, ev: KeyEvent);
 }
 
-pub struct Mode<T: Sized + KeyEventHandler> {
-    pub name: String,
+pub trait KeyCodeAware {
+    fn got_key(&mut self, ev: &KeyEvent, action: Option<&str>);
+}
+
+pub struct Mode<T: Sized + KeyCodeAware> {
     subs: Option<HashMap<String, (String, String)>>,
     bindings: Bindings,
     sender: Sender<String>,
@@ -20,16 +23,14 @@ pub struct Mode<T: Sized + KeyEventHandler> {
     data: T,
 }
 
-impl<T: Sized + KeyEventHandler> Mode<T> {
+impl<T: Sized + KeyCodeAware> Mode<T> {
     pub(super) fn new(
-        name: &str,
         bindings: Bindings,
         sender: Sender<String>,
         ui_event: UIEventSender,
         data: T,
     ) -> Self {
         Mode {
-            name: name.to_string(),
             subs: None,
             bindings,
             sender,
@@ -58,15 +59,16 @@ impl<T: Sized + KeyEventHandler> Mode<T> {
     }
 }
 
-impl<T: Sized + KeyEventHandler> KeyEventHandler for Mode<T> {
+impl<T: Sized + KeyCodeAware> KeyEventHandler for Mode<T> {
     fn handle(&mut self, ev: KeyEvent) {
         let code = key_event_code(&ev);
         if let Some(sub) = &self.subs {
             if sub.contains_key(&code) {
                 let x = sub.get(&code).unwrap();
                 self.sender.send(x.0.to_string()).unwrap();
+                self.data.got_key(&ev, Some(&x.0));
             } else {
-                self.data.handle(ev);
+                self.data.got_key(&ev, None);
             }
             self.subs = None;
             return;
@@ -75,7 +77,10 @@ impl<T: Sized + KeyEventHandler> KeyEventHandler for Mode<T> {
         let action = self.bindings.get(&code);
         match action {
             Some(a) => match a {
-                Action::Normal(s) => self.sender.send(s.to_string()).unwrap(),
+                Action::Normal(s) => {
+                    self.sender.send(s.to_string()).unwrap();
+                    self.data.got_key(&ev, Some(s));
+                }
                 Action::Prefixed(m) => {
                     let c: Vec<_> = m
                         .iter()
@@ -85,7 +90,7 @@ impl<T: Sized + KeyEventHandler> KeyEventHandler for Mode<T> {
                     self.subs = Some(m.clone());
                 }
             },
-            None => self.data.handle(ev),
+            None => self.data.got_key(&ev, None),
         };
     }
 }

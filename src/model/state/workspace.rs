@@ -1,3 +1,6 @@
+use crate::common::Functional;
+use crate::kbd::Kbd;
+use crate::model::context::Context;
 use crate::model::file::path::InnerPath;
 use crate::model::result::Void;
 use crate::model::state::bookmark::Bookmark;
@@ -12,6 +15,7 @@ use crate::ui::event::{FileItem, UIEventSender};
 use std::borrow::Borrow;
 use std::convert::TryFrom;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 pub enum ViewMode {
     InColumn,
@@ -29,10 +33,17 @@ pub struct Workspace {
     groups: Vec<Group>,
     ui_event: UIEventSender,
     bookmark: Bookmark,
+    context: Arc<Context>,
+    kbd: Arc<Kbd>,
 }
 
 impl Workspace {
-    pub fn new(enter_path: PathBuf, home_path: PathBuf, ui_event: UIEventSender) -> Self {
+    pub fn new(
+        enter_path: PathBuf,
+        home_path: PathBuf,
+        ui_event: UIEventSender,
+        kbd: Arc<Kbd>,
+    ) -> Self {
         let bookmark = Bookmark::new(&home_path);
         Workspace {
             enter_path: InnerPath::try_from(enter_path.display().to_string()).unwrap(),
@@ -43,13 +54,16 @@ impl Workspace {
             groups: Vec::new(),
             ui_event,
             bookmark,
+            context: Arc::new(Context::new(kbd.clone())),
+            kbd,
         }
     }
 
     pub async fn init(&mut self) -> Void {
+        let ctx = self.context.borrow();
         for _ in 0..MAX_GROUP_COUNT {
             let mut g = Group::new();
-            g.current_mut().update(self.enter_path.clone()).await?;
+            g.current_mut().update(self.enter_path.clone(), ctx).await?;
             Workspace::bind_list(&self.ui_event, g.current_mut());
             self.groups.push(g)
         }
@@ -97,7 +111,8 @@ impl Workspace {
     }
 
     pub async fn close_right(&mut self) -> Void {
-        let (succ, vs) = self.current_mut().close_last().await?;
+        let ctx = self.context.clone();
+        let (succ, vs) = self.current_mut().close_last(ctx.borrow()).await?;
         if !succ {
             return Ok(());
         }
@@ -125,6 +140,15 @@ impl Workspace {
         });
     }
 
+    pub fn toggle_mark(&mut self) {
+        if let Some(idx) = self.current_list().selected() {
+            self.current_list_mut().also_mut(|it| {
+                it.toggle_mark(idx);
+                it.move_select(1);
+            });
+        }
+    }
+
     fn keep_select<T: FnOnce(&mut Workspace)>(&mut self, f: T) {
         let sn = self.current_list().selected_file();
         {
@@ -138,6 +162,7 @@ impl Workspace {
 
     pub async fn open_selected(&mut self) -> Void {
         let of = self.current_list_mut().selected_file();
+        let ctx = self.context.clone();
         match of {
             Some(file) => {
                 if file.is_dir() {
@@ -149,7 +174,7 @@ impl Workspace {
                     let sender = self.ui_event.clone();
                     let fl = self
                         .current_mut()
-                        .add_file_list(file.clone(), &mode)
+                        .add_file_list(file.clone(), &mode, ctx.borrow())
                         .await?;
                     Workspace::bind_list(&sender, fl);
                     let vs = self.current_list().file_items();

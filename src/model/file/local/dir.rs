@@ -1,3 +1,4 @@
+use crate::model::context::Context;
 use crate::model::file::local::file;
 use crate::model::file::path::InnerPath;
 use crate::model::file::*;
@@ -15,16 +16,16 @@ impl Op for LocalDir {
     fn get(&self) -> &FileInfo {
         &self.0
     }
-    async fn parent(&self) -> Res<InnerFile> {
+    async fn parent(&self, _: &Context) -> Res<InnerFile> {
         file::parent(&self.0)
     }
-    async fn rename(&mut self, name: &str) -> Void {
-        file::rename(&self.0, name)
+    async fn rename(&self, ctx: &Context) -> Void {
+        file::rename(&self.0, ctx).await
     }
-    async fn delete(&self) -> Void {
+    async fn delete(&self, _: &Context) -> Void {
         file::delete(&self.0)
     }
-    async fn open(&self) -> Void {
+    async fn open(&self, _: &Context) -> Void {
         file::open(&self.0)
     }
 }
@@ -40,7 +41,7 @@ impl LocalDir {
 
 #[async_trait]
 impl DirOp for LocalDir {
-    async fn list(&self) -> Res<Vec<InnerFile>> {
+    async fn list(&self, _: &Context) -> Res<Vec<InnerFile>> {
         let dir = read_dir(&self.0.inner.path)?;
         Ok(dir
             .filter(|d| {
@@ -56,25 +57,30 @@ impl DirOp for LocalDir {
             .collect::<Vec<InnerFile>>())
     }
 
-    async fn new_file(&self, name: &str) -> Void {
-        let p = self.join_path(name);
-        if p.exists() {
-            return Err(Error::FileAlreadyExists(p.display().to_string()));
+    async fn new_file(&self, ctx: &Context) -> Void {
+        if let Some(name) = ctx.request_input("New File").await {
+            let p = self.join_path(&name);
+            if p.exists() {
+                ctx.message("File is already exists.");
+                return Err(Error::FileAlreadyExists(p.display().to_string()));
+            }
+            fs::File::create(p)?;
         }
-        fs::File::create(p)?;
         Ok(())
     }
 
-    async fn new_dir(&self, name: &str) -> Void {
-        fs::create_dir_all(self.join_path(name))?;
+    async fn new_dir(&self, ctx: &Context) -> Void {
+        if let Some(name) = ctx.request_input("New Dir").await {
+            fs::create_dir_all(self.join_path(&name))?;
+        }
         Ok(())
     }
 
-    async fn goto(&self, child_path: &str) -> Res<InnerFile> {
+    async fn goto(&self, _: &Context, child_path: &str) -> Res<InnerFile> {
         make(InnerPath::try_from(&self.join_path(child_path))?)
     }
 
-    async fn shell(&self) -> Void {
+    async fn shell(&self, _: &Context) -> Void {
         Ok(())
     }
 }

@@ -1,5 +1,6 @@
+use crate::model::context::Context;
 use crate::model::file::{InnerFile, Op};
-use crate::model::result::{Res};
+use crate::model::result::Res;
 use crate::model::state::list::list::FileList;
 use crate::model::state::list::{MarkerTrait, SelectorTrait};
 use crate::model::state::workspace::ViewMode;
@@ -22,21 +23,22 @@ impl Group {
         &mut self,
         file: Arc<InnerFile>,
         mode: &ViewMode,
+        ctx: &Context,
     ) -> Res<&mut FileList> {
         if let ViewMode::InColumn = mode {
             self.file_list.push(FileList::new());
         }
 
-        self.current_mut().update_dir(file).await?;
+        self.current_mut().update_dir(file, ctx).await?;
         Ok(self.current_mut())
     }
 
-    pub async fn close_last(&mut self) -> Res<(bool, Option<Vec<FileItem>>)> {
+    pub async fn close_last(&mut self, ctx: &Context) -> Res<(bool, Option<Vec<FileItem>>)> {
         if self.file_list.len() == 1 {
             return match self.current_mut().dir() {
                 Some(v) => {
-                    let p = v.parent().await?;
-                    self.current_mut().update_dir(Arc::new(p)).await?;
+                    let p = v.parent(ctx).await?;
+                    self.current_mut().update_dir(Arc::new(p), ctx).await?;
                     Ok((true, Some(self.current().file_items())))
                 }
                 None => Ok((false, None)),

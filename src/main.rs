@@ -14,6 +14,7 @@ use simplelog::{LevelFilter, WriteLogger};
 use std::env::current_dir;
 use std::fs::File;
 use std::io::{stdout, Write};
+use std::sync::Arc;
 
 #[macro_use]
 mod config;
@@ -35,7 +36,7 @@ async fn main() -> Res<()> {
 
     let wd = current_dir()?;
     let home = dirs::home_dir().unwrap();
-    let c = Config::new(&home);
+    let c = Arc::new(Config::new(&home));
 
     enable_raw_mode().unwrap();
     execute!(stdout(), EnterAlternateScreen, Clear(ClearType::All), Hide).unwrap();
@@ -48,8 +49,9 @@ async fn main() -> Res<()> {
     }));
 
     let sender = ui::init_ui(4);
-    let (kbd, ac) = kbd::init_kbd(&c, sender.clone());
-    let mut ws = Workspace::new(wd, home, sender.clone());
+    let (k, ac) = kbd::init_kbd(c.clone(), sender.clone());
+    let kbd = Arc::new(k);
+    let mut ws = Workspace::new(wd, home, sender.clone(), kbd.clone());
     ws.init().await.unwrap();
     ws.switch_to(0).await.unwrap();
 

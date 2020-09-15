@@ -1,3 +1,4 @@
+use crate::model::context::Context;
 use crate::model::file::path::InnerPath;
 use crate::model::file::*;
 use crate::model::result::{Error, Res, Void};
@@ -13,10 +14,6 @@ impl LocalFile {
     }
 }
 
-pub fn get(info: &FileInfo) -> &FileInfo {
-    info
-}
-
 pub fn parent(info: &FileInfo) -> Res<InnerFile> {
     match info.path.parent() {
         Some(p) => make(InnerPath::try_from(p)?),
@@ -24,11 +21,16 @@ pub fn parent(info: &FileInfo) -> Res<InnerFile> {
     }
 }
 
-pub fn rename(info: &FileInfo, name: &str) -> Void {
-    let n = &info.path.parent().map(move |p| p.join(name));
-
-    if let Some(nn) = n {
-        std::fs::rename(&info.path, nn)?;
+pub async fn rename(info: &FileInfo, ctx: &Context) -> Void {
+    if let Some(name) = ctx.request_input("New file name").await {
+        if let Some(nn) = &info.path.parent().map(move |p| p.join(name)) {
+            if nn.exists() {
+                ctx.message("The new file name is already exists, rename failed.");
+            } else {
+                std::fs::rename(&info.path, nn)?;
+                ctx.message("Rename success.");
+            }
+        }
     }
     Ok(())
 }
@@ -49,26 +51,26 @@ impl Op for LocalFile {
     fn get(&self) -> &FileInfo {
         &self.0
     }
-    async fn parent(&self) -> Res<InnerFile> {
+    async fn parent(&self, _: &Context) -> Res<InnerFile> {
         parent(&self.0)
     }
-    async fn rename(&mut self, name: &str) -> Void {
-        rename(&self.0, name)
+    async fn rename(&self, ctx: &Context) -> Void {
+        rename(&self.0, ctx).await
     }
-    async fn delete(&self) -> Void {
+    async fn delete(&self, _: &Context) -> Void {
         delete(&self.0)
     }
-    async fn open(&self) -> Void {
+    async fn open(&self, _: &Context) -> Void {
         open(&self.0)
     }
 }
 
 #[async_trait]
 impl FileOp for LocalFile {
-    async fn view(&self) -> Void {
+    async fn view(&self, _: &Context) -> Void {
         Ok(())
     }
-    async fn edit(&self) -> Void {
+    async fn edit(&self, _: &Context) -> Void {
         Ok(())
     }
 }

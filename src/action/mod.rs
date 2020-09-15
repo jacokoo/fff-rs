@@ -1,10 +1,8 @@
 use crate::kbd::ActionReceiver;
 use crate::model::result::Res;
-use crate::model::state::list::{FileSortBy, FilterTrait, SelectorTrait, SorterTrait};
+use crate::model::state::list::{FileSortBy, FilterTrait, MarkerTrait, SelectorTrait, SorterTrait};
 use crate::model::state::workspace::Workspace;
 use crate::ui::event::UIEventSender;
-
-mod context;
 
 fn ok<T>(_: T) -> Res<()> {
     Ok(())
@@ -30,6 +28,8 @@ pub async fn init_action(ac: ActionReceiver, mut ws: Workspace, sender: UIEventS
                 "ActionToggleDetail" => ok(ws.toggle_show_detail()),
                 "ActionMoveToFirst" => ok(ws.current_list_mut().select_first()),
                 "ActionMoveToLast" => ok(ws.current_list_mut().select_last()),
+                "ActionToggleMark" => ok(ws.toggle_mark()),
+                "ActionToggleMarkAll" => ok(ws.current_list_mut().toggle_mark_all()),
                 a => ok(log::debug!("unhandled action {}", a)),
             };
             sender.end_queue().unwrap();

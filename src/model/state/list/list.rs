@@ -1,3 +1,4 @@
+use crate::model::context::Context;
 use crate::model::file::path::InnerPath;
 use crate::model::file::InnerFile;
 use crate::model::result::{Error, Void};
@@ -55,14 +56,15 @@ impl FileList {
 }
 
 impl FileList {
-    pub async fn update(&mut self, path: InnerPath) -> Void {
-        self.update_dir(Arc::new(InnerFile::try_from(path)?)).await
+    pub async fn update(&mut self, path: InnerPath, ctx: &Context) -> Void {
+        self.update_dir(Arc::new(InnerFile::try_from(path)?), ctx)
+            .await
     }
 
-    pub async fn update_dir(&mut self, file: Arc<InnerFile>) -> Void {
+    pub async fn update_dir(&mut self, file: Arc<InnerFile>, ctx: &Context) -> Void {
         if let InnerFile::Dir(dir) = file.borrow() {
             let fs: Vec<_> = dir
-                .list()
+                .list(ctx)
                 .await?
                 .into_iter()
                 .map(|it| Arc::new(it))

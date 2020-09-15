@@ -1,3 +1,4 @@
+use crate::model::context::Context;
 use crate::model::file::path::InnerPath;
 use crate::model::result::{Error, Res, Void};
 use async_trait::async_trait;
@@ -125,34 +126,34 @@ impl Op for InnerFile {
         }
     }
 
-    async fn parent(&self) -> Res<InnerFile> {
+    async fn parent(&self, context: &Context) -> Res<InnerFile> {
         match self {
-            InnerFile::File(v) => v.parent(),
-            InnerFile::Dir(v) => v.parent(),
+            InnerFile::File(v) => v.parent(context),
+            InnerFile::Dir(v) => v.parent(context),
         }
         .await
     }
 
-    async fn rename(&mut self, name: &str) -> Void {
+    async fn rename(&self, context: &Context) -> Void {
         match self {
-            InnerFile::File(v) => v.rename(name),
-            InnerFile::Dir(v) => v.rename(name),
+            InnerFile::File(v) => v.rename(context),
+            InnerFile::Dir(v) => v.rename(context),
         }
         .await
     }
 
-    async fn delete(&self) -> Void {
+    async fn delete(&self, context: &Context) -> Void {
         match self {
-            InnerFile::File(v) => v.delete(),
-            InnerFile::Dir(v) => v.delete(),
+            InnerFile::File(v) => v.delete(context),
+            InnerFile::Dir(v) => v.delete(context),
         }
         .await
     }
 
-    async fn open(&self) -> Void {
+    async fn open(&self, context: &Context) -> Void {
         match self {
-            InnerFile::File(v) => v.open(),
-            InnerFile::Dir(v) => v.open(),
+            InnerFile::File(v) => v.open(context),
+            InnerFile::Dir(v) => v.open(context),
         }
         .await
     }
@@ -162,23 +163,23 @@ impl Op for InnerFile {
 #[async_trait]
 pub trait Op {
     fn get(&self) -> &FileInfo;
-    async fn parent(&self) -> Res<InnerFile>;
-    async fn rename(&mut self, name: &str) -> Void;
-    async fn delete(&self) -> Void;
-    async fn open(&self) -> Void;
+    async fn parent(&self, context: &Context) -> Res<InnerFile>;
+    async fn rename(&self, context: &Context) -> Void;
+    async fn delete(&self, context: &Context) -> Void;
+    async fn open(&self, context: &Context) -> Void;
 }
 
 #[async_trait]
 pub trait FileOp: Op {
-    async fn view(&self) -> Void;
-    async fn edit(&self) -> Void;
+    async fn view(&self, context: &Context) -> Void;
+    async fn edit(&self, context: &Context) -> Void;
 }
 
 #[async_trait]
 pub trait DirOp: Op {
-    async fn list(&self) -> Res<Vec<InnerFile>>;
-    async fn new_file(&self, name: &str) -> Void;
-    async fn new_dir(&self, name: &str) -> Void;
-    async fn goto(&self, child_path: &str) -> Res<InnerFile>;
-    async fn shell(&self) -> Void;
+    async fn list(&self, context: &Context) -> Res<Vec<InnerFile>>;
+    async fn new_file(&self, context: &Context) -> Void;
+    async fn new_dir(&self, context: &Context) -> Void;
+    async fn goto(&self, context: &Context, child_path: &str) -> Res<InnerFile>;
+    async fn shell(&self, context: &Context) -> Void;
 }
