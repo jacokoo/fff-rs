@@ -1,5 +1,5 @@
 use crate::config::Config;
-use crate::kbd::input_mode::{InputMode};
+use crate::kbd::input_mode::InputMode;
 use crate::kbd::mode::KeyEventHandler;
 use crate::kbd::normal_mode::NormalMode;
 use crate::ui::event::UIEventSender;
@@ -84,13 +84,17 @@ pub struct Kbd {
 impl Kbd {
     pub async fn start(&self) -> i32 {
         let mode = self.mode.clone();
+        let s = self.sender.clone();
         tokio::spawn(async move {
             loop {
                 match read() {
                     Ok(ev) => {
                         let mut lock = mode.lock().unwrap();
                         match ev {
-                            Event::Key(ke) if lock.is_quit(&ke) => break 1,
+                            Event::Key(ke) if lock.is_quit(&ke) => {
+                                s.send("Quit".to_string()).unwrap();
+                                break 1;
+                            }
                             Event::Key(ke) => lock.handle(ke),
                             _ => (),
                         };

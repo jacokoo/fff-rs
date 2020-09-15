@@ -30,6 +30,7 @@ pub async fn init_action(ac: ActionReceiver, mut ws: Workspace, sender: UIEventS
                 "ActionMoveToLast" => ok(ws.current_list_mut().select_last()),
                 "ActionToggleMark" => ok(ws.toggle_mark()),
                 "ActionToggleMarkAll" => ok(ws.current_list_mut().toggle_mark_all()),
+                "Quit" => break,
                 a => ok(log::debug!("unhandled action {}", a)),
             };
             sender.end_queue().unwrap();
@@ -41,4 +42,6 @@ pub async fn init_action(ac: ActionReceiver, mut ws: Workspace, sender: UIEventS
     })
     .await
     .unwrap();
+
+    log::debug!("action thread ended");
 }
