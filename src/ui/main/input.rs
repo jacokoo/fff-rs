@@ -23,6 +23,7 @@ impl Input {
     }
 
     pub fn init(&mut self, prompt: String) {
+        self.cursor = 0;
         let ii = self.input.clone().inner_also(|mut it| {
             it.set_text("".to_string());
         });
@@ -42,6 +43,13 @@ impl Input {
             let m = (&it.get_rect().top_left() + (self.cursor as i32, 0)).move_to();
             stdout().queue(m).unwrap();
         });
+    }
+
+    pub fn move_cursor(&mut self, cursor: usize) {
+        self.cursor = cursor;
+        stdout()
+            .queue((&self.input.borrow().get_rect().top_left() + (self.cursor as i32, 0)).move_to())
+            .unwrap();
     }
 }
 

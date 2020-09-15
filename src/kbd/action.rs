@@ -1,0 +1,26 @@
+pub const INPUT_QUIT_ACTION: &'static str = "ActionQuitInputMode";
+pub const INPUT_ABORT_ACTION: &'static str = "ActionAbortInputMode";
+pub const INPUT_DELETE_ACTION: &'static str = "ActionInputDelete";
+pub const INPUT_DELETE_BACKWARD_ACTION: &'static str = "ActionInputDeleteBackward";
+pub const INPUT_MOVE_BACK: &'static str = "ActionInputMoveBack";
+pub const INPUT_MOVE_FORWARD: &'static str = "ActionInputMoveForward";
+pub const INPUT_MOVE_TO_START: &'static str = "ActionInputMoveToStart";
+pub const INPUT_MOVE_TO_END: &'static str = "ActionInputMoveToEnd";
+
+pub const NORMAL_SORT_BY_NAME: &'static str = "ActionSortByName";
+pub const NORMAL_SORT_BY_MTIME: &'static str = "ActionSortByMtime";
+pub const NORMAL_SORT_BY_SIZE: &'static str = "ActionSortBySize";
+pub const NORMAL_MOVE_UP: &'static str = "ActionMoveUp";
+pub const NORMAL_MOVE_DOWN: &'static str = "ActionMoveDown";
+pub const NORMAL_OPEN_FOLDER: &'static str = "ActionOpenFolderRight";
+pub const NORMAL_CLOSE_FOLDER: &'static str = "ActionCloseFolderRight";
+pub const NORMAL_GROUP_0: &'static str = "ActionChangeGroup0";
+pub const NORMAL_GROUP_1: &'static str = "ActionChangeGroup1";
+pub const NORMAL_GROUP_2: &'static str = "ActionChangeGroup2";
+pub const NORMAL_GROUP_3: &'static str = "ActionChangeGroup3";
+pub const NORMAL_TOGGLE_HIDDEN: &'static str = "ActionToggleHidden";
+pub const NORMAL_TOGGLE_DETAIL: &'static str = "ActionToggleDetail";
+pub const NORMAL_MOVE_FIRST: &'static str = "ActionMoveToFirst";
+pub const NORMAL_MOVE_LAST: &'static str = "ActionMoveToLast";
+pub const NORMAL_TOGGLE_MARK: &'static str = "ActionToggleMark";
+pub const NORMAL_TOGGLE_MARK_ALL: &'static str = "ActionToggleMarkAll";

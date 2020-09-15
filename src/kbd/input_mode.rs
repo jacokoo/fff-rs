@@ -1,19 +1,11 @@
 use crate::config::enums::BindingType;
 use crate::config::Config;
+use crate::kbd::action::*;
 use crate::kbd::mode::{KeyCodeAware, KeyEventHandler, Mode};
 use crate::kbd::Answer;
 use crate::ui::event::UIEventSender;
 use crossbeam_channel::{bounded, Receiver, Sender};
 use crossterm::event::{KeyCode, KeyEvent};
-
-pub const INPUT_QUIT_ACTION: &'static str = "ActionQuitInputMode";
-pub const INPUT_ABORT_ACTION: &'static str = "ActionAbortInputMode";
-pub const INPUT_DELETE_ACTION: &'static str = "ActionInputDelete";
-pub const INPUT_DELETE_BACKWARD_ACTION: &'static str = "ActionInputDeleteBackward";
-pub const INPUT_MOVE_BACK: &'static str = "ActionInputMoveBack";
-pub const INPUT_MOVE_FORWARD: &'static str = "ActionInputMoveForward";
-pub const INPUT_MOVE_TO_START: &'static str = "ActionInputMoveToStart";
-pub const INPUT_MOVE_TO_END: &'static str = "ActionInputMoveToEnd";
 
 pub struct AnswerInput {
     result: Sender<Option<Answer>>,

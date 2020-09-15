@@ -51,6 +51,7 @@ pub enum UIEvent {
     InputEnter(String),
     InputQuit,
     InputUpdate(String, usize),
+    InputMove(usize),
 }
 
 #[derive(Debug)]

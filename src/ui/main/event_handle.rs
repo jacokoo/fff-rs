@@ -54,6 +54,10 @@ fn handle_single(ui: &mut UI, ev: UIEvent) {
         AddFileList(fs) => ui.board_mut().add_files(fs),
         RemoveFileList(fs) => ui.board_mut().remove_files(fs),
         SetShowDetail(show) => ui.board_mut().set_show_detail(show),
+        InputEnter(p) => ui.show_input(p),
+        InputUpdate(p, u) => ui.update_input(p, u),
+        InputMove(u) => ui.update_input_cursor(u),
+        InputQuit => ui.clear_message(),
         a => log::debug!("unhandled event: {:?}", a),
     }
 }

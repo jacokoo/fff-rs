@@ -6,11 +6,12 @@ use crate::ui::layout::padding::Padding;
 use crate::ui::layout::sized::SizedBox;
 use crate::ui::layout::space::Space;
 use crate::ui::main::board::Board;
+use crate::ui::main::input::Input;
 use crate::ui::main::path_indicator::PathIndicator;
 use crate::ui::main::statusbar::Statusbar;
 use crate::ui::widget::label::Label;
 use crate::ui::widget::tab::Tab;
-use crate::ui::{Mrc, ToMrc};
+use crate::ui::{InnerFunctional, Mrc, ToMrc};
 use std::cell::RefMut;
 use std::io::{stdout, Write};
 
@@ -23,6 +24,7 @@ pub struct UI {
     main: Container,
     loading: bool,
     show_message: u8,
+    input: Mrc<Input>,
 }
 
 impl UI {
@@ -64,6 +66,7 @@ impl UI {
             main,
             loading: false,
             show_message: 0,
+            input: Input::new().mrc(),
         }
     }
 
@@ -108,12 +111,35 @@ impl UI {
         self.message.borrow_mut().redraw();
     }
 
+    pub fn show_input(&mut self, prompt: String) {
+        self.input.inner_apply(|mut it| it.init(prompt));
+        self.message.inner_apply(|mut it| {
+            it.empty_it();
+            it.add(self.input.clone());
+            it.redraw();
+        });
+    }
+
+    pub fn update_input(&mut self, input: String, cursor: usize) {
+        self.input.borrow_mut().update(input, cursor);
+    }
+
+    pub fn update_input_cursor(&mut self, cursor: usize) {
+        self.input.borrow_mut().move_cursor(cursor);
+    }
+
+    pub fn clear_message(&mut self) {
+        self.message.inner_apply(|mut it| {
+            it.empty_it();
+            it.clear();
+        });
+    }
+
     pub fn flush(&mut self) {
         if self.show_message == 1 {
             self.show_message = 0
         } else {
-            self.message.borrow_mut().empty_it();
-            self.message.borrow_mut().redraw();
+            self.clear_message();
         }
         stdout().flush().unwrap();
     }

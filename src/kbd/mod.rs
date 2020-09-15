@@ -6,9 +6,9 @@ use crate::ui::event::UIEventSender;
 use crossbeam_channel::{bounded, Receiver, Sender};
 use crossterm::event::{read, Event, KeyEvent};
 use std::borrow::Borrow;
-
 use std::sync::{Arc, Mutex};
 
+pub mod action;
 mod code;
 mod input_mode;
 mod mode;
