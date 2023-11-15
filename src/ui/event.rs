@@ -47,6 +47,7 @@ pub enum UIEvent {
     SetBookmark(Vec<String>),
     UpdateFileItem(Vec<FileItem>),
     ShowKeyNav(Vec<(String, String)>),
+    ClearKeyNav,
 
     InputEnter(String),
     InputQuit,

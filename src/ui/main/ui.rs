@@ -101,7 +101,7 @@ impl UI {
     }
 
     pub fn show_key_nav(&mut self, navs: Vec<(String, String)>) {
-        self.show_message = 1;
+        self.show_message = 2;
         self.message.inner_apply(|mut it| {
             it.empty_it();
             navs.into_iter().for_each(|(key, msg)| {
@@ -112,14 +112,14 @@ impl UI {
     }
 
     pub fn show_input(&mut self, prompt: String) {
-        self.show_message = 1;
+        self.show_message = 2;
         self.input.inner_apply(|mut it| it.init(prompt));
         self.message.inner_apply(|mut it| {
             it.empty_it();
-            it.add(Label::new("hello").mrc());
             it.add(self.input.clone());
             it.redraw();
         });
+        self.flush();
     }
 
     pub fn update_input(&mut self, input: String, cursor: usize) {
@@ -131,6 +131,16 @@ impl UI {
     }
 
     pub fn clear_message(&mut self) {
+        if self.show_message == 0 {
+            return;
+        }
+
+        self.show_message -= 1;
+        if self.show_message != 0 {
+            return;
+        }
+
+        self.show_message = 0;
         self.message.inner_apply(|mut it| {
             it.empty_it();
             it.clear();

@@ -6,6 +6,8 @@ use crossbeam_channel::{Receiver, Sender};
 pub fn handle(mut ui: UI, rx: Receiver<EventBody>) {
     let mut in_queue = false;
     while let Ok(ev) = rx.recv() {
+        log::debug!("handle {:?}  {}", ev, in_queue);
+
         match ev {
             EventBody::Single(data, tx) => match data {
                 UIEvent::StartQueue => {
@@ -16,29 +18,19 @@ pub fn handle(mut ui: UI, rx: Receiver<EventBody>) {
                     ui.flush();
                 }
                 d => {
-                    ui.stop_loading();
                     handle_single(&mut ui, d);
-                    ack(tx);
-                    if !in_queue {
-                        ui.flush();
-                    }
+                    after_handle(&mut ui, tx, &in_queue);
                 }
             },
             EventBody::Batch(data, tx) => {
-                ui.stop_loading();
                 data.into_iter().for_each(|it| handle_single(&mut ui, it));
-                ack(tx);
-                if !in_queue {
-                    ui.flush();
-                }
+                after_handle(&mut ui, tx, &in_queue)
             }
         }
     }
 }
 
 fn handle_single(ui: &mut UI, ev: UIEvent) {
-    log::debug!("handle {:?}", ev);
-
     match ev {
         SwitchTab(idx) => ui.switch_tab(idx),
         StartLoading => ui.start_loading(),
@@ -62,8 +54,15 @@ fn handle_single(ui: &mut UI, ev: UIEvent) {
     }
 }
 
-fn ack(tx: Option<Sender<bool>>) {
+fn after_handle(ui: &mut UI, tx: Option<Sender<bool>>, in_queue: &bool) {
+    ui.stop_loading();
+    ui.clear_message();
+
     if let Some(t) = tx {
         t.send(true).unwrap();
+    }
+
+    if !in_queue {
+        ui.flush();
     }
 }
